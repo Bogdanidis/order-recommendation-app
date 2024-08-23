@@ -1,8 +1,8 @@
-DROP SCHEMA IF EXISTS oder_app;
+DROP SCHEMA IF EXISTS order_app;
 
-CREATE SCHEMA oder_app;
+CREATE SCHEMA order_app;
 
-USE oder_app;
+USE order_app;
 
 CREATE TABLE customers (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -28,7 +28,7 @@ CREATE TABLE products (
       id BIGINT PRIMARY KEY AUTO_INCREMENT,
       name VARCHAR(255) NOT NULL,
       description VARCHAR(255) NOT NULL,
-      price VARCHAR(255) NOT NULL
+      price DECIMAL NOT NULL
 );
 
 CREATE TABLE order_items (
@@ -46,7 +46,7 @@ CREATE TABLE order_items (
 );
 
 
-
+/*
 CREATE TABLE categories (
       id BIGINT PRIMARY KEY AUTO_INCREMENT,
       name VARCHAR(255) NOT NULL,
@@ -65,3 +65,4 @@ CREATE TABLE product_category (
     PRIMARY KEY(category_id,product_id)
 
 );
+ */
