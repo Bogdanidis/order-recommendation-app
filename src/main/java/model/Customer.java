@@ -2,6 +2,8 @@ package model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 
 @Entity
 @Table(name="customers")
@@ -10,7 +12,7 @@ public class Customer {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name="first_name")
     private String first_name;
@@ -30,11 +32,16 @@ public class Customer {
     @Column(name="country")
     private String country;
 
-    public int getId() {
+    @OneToMany(mappedBy = "customer",
+                cascade={CascadeType.PERSIST,CascadeType.MERGE,
+                         CascadeType.DETACH,CascadeType.REFRESH})
+    private List<Order> orders;
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -86,6 +93,27 @@ public class Customer {
         this.country = country;
     }
 
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
+    public Customer() {
+
+    }
+
+    public Customer(String first_name, String last_name, String email, String phone, String city, String country, List<Order> orders) {
+        this.first_name = first_name;
+        this.last_name = last_name;
+        this.email = email;
+        this.phone = phone;
+        this.city = city;
+        this.country = country;
+        this.orders = orders;
+    }
 
     @Override
     public String toString() {
@@ -97,6 +125,7 @@ public class Customer {
                 ", phone='" + phone + '\'' +
                 ", city='" + city + '\'' +
                 ", country='" + country + '\'' +
+                ", orders=" + orders +
                 '}';
     }
 }

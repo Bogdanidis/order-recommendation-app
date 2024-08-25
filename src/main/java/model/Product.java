@@ -2,6 +2,8 @@ package model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 
 @Entity
 @Table(name="products")
@@ -9,7 +11,7 @@ public class Product {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name="name")
     private String name;
@@ -19,6 +21,12 @@ public class Product {
 
     @Column(name="price")
     private Double price;
+
+
+    @OneToMany(mappedBy = "product",
+            cascade={CascadeType.PERSIST,CascadeType.MERGE,
+                    CascadeType.DETACH,CascadeType.REFRESH})
+    private List<OrderProduct> orderProducts;
 
     public Double getPrice() {
         return price;
@@ -44,12 +52,30 @@ public class Product {
         this.name = name;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<OrderProduct> getOrderProducts() {
+        return orderProducts;
+    }
+
+    public void setOrderProducts(List<OrderProduct> orderProducts) {
+        this.orderProducts = orderProducts;
+    }
+
+    public Product() {
+    }
+
+    public Product(String name, String description, Double price, List<OrderProduct> orderProducts) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.orderProducts = orderProducts;
     }
 
     @Override
@@ -59,6 +85,7 @@ public class Product {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +
+                ", orderProducts=" + orderProducts +
                 '}';
     }
 }
