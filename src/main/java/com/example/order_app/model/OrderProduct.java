@@ -1,9 +1,9 @@
-package model;
+package com.example.order_app.model;
 
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="order_items")
+@Table(name="order_products")
 public class OrderProduct {
 
     @Id
@@ -18,13 +18,13 @@ public class OrderProduct {
     private Long product_id;
 
     //Maybe @Column(name="customer_id")
-    @JoinColumn(name="product_id")
+    @JoinColumn(name="product_id",insertable=false, updatable=false)
     @ManyToOne(fetch = FetchType.EAGER,
             cascade={CascadeType.PERSIST,CascadeType.MERGE,
                     CascadeType.DETACH,CascadeType.REFRESH})
     private Product product;
 
-    @JoinColumn(name="order_id")
+    @JoinColumn(name="order_id",insertable=false, updatable=false)
     @ManyToOne(fetch = FetchType.EAGER,
             cascade={CascadeType.PERSIST,CascadeType.MERGE,
                     CascadeType.DETACH,CascadeType.REFRESH})
