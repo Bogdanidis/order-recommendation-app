@@ -18,9 +18,11 @@ CREATE TABLE customers (
 
 CREATE TABLE orders (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT NOT NULL,
+    customer_id BIGINT NOT NULL,
+    date date NOT NULL,
+    status VARCHAR(255) NOT NULL,
     CONSTRAINT fk_customer
-        FOREIGN KEY(user_id)
+        FOREIGN KEY(customer_id)
         REFERENCES customers(id)
 );
 
@@ -28,10 +30,11 @@ CREATE TABLE products (
       id BIGINT PRIMARY KEY AUTO_INCREMENT,
       name VARCHAR(255) NOT NULL,
       description VARCHAR(255) NOT NULL,
-      price DECIMAL NOT NULL
+      stock INTEGER NOT NULL,
+      price DECIMAL(8,2) NOT NULL
 );
 
-CREATE TABLE order_items (
+CREATE TABLE order_products (
        id BIGINT PRIMARY KEY AUTO_INCREMENT,
        order_id BIGINT NOT NULL,
        CONSTRAINT fk_order
@@ -41,28 +44,25 @@ CREATE TABLE order_items (
        CONSTRAINT fk_product
            FOREIGN KEY(product_id)
            REFERENCES products(id),
-        quantity INT NOT NULL
 
+       quantity INTEGER NOT NULL
 );
 
-
-/*
 CREATE TABLE categories (
       id BIGINT PRIMARY KEY AUTO_INCREMENT,
       name VARCHAR(255) NOT NULL,
       description VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE product_category (
+CREATE TABLE product_categories (
     category_id BIGINT NOT NULL,
-       CONSTRAINT fk_category
-            FOREIGN KEY(category_id)
-            REFERENCES categories(id),
-       product_id BIGINT NOT NULL,
-       CONSTRAINT fk_category_product
-           FOREIGN KEY(product_id)
-           REFERENCES products(id),
+    CONSTRAINT fk_category
+        FOREIGN KEY(category_id)
+        REFERENCES categories(id),
+    product_id BIGINT NOT NULL,
+    CONSTRAINT fk_category_product
+       FOREIGN KEY(product_id)
+       REFERENCES products(id),
     PRIMARY KEY(category_id,product_id)
 
 );
- */
