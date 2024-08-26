@@ -22,6 +22,10 @@ public class Product {
     @Column(name="description", nullable = false)
     private String description;
 
+
+    @Column(name = "stock", nullable = false)
+    private Integer stock;
+
     @Column(name="price", nullable = false)
     private BigDecimal price;
 
@@ -40,21 +44,12 @@ public class Product {
     )
     private Set<Category> categories = new HashSet<>();
 
-
-    public BigDecimal getPrice() {
-        return price;
+    public Long getId() {
+        return id;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -65,12 +60,28 @@ public class Product {
         this.name = name;
     }
 
-    public Long getId() {
-        return id;
+    public String getDescription() {
+        return description;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Integer getStock() {
+        return stock;
+    }
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     public List<OrderProduct> getOrderProducts() {
@@ -92,9 +103,10 @@ public class Product {
     public Product() {
     }
 
-    public Product(String name, String description, BigDecimal price, List<OrderProduct> orderProducts, Set<Category> categories) {
+    public Product(String name, String description, Integer stock, BigDecimal price, List<OrderProduct> orderProducts, Set<Category> categories) {
         this.name = name;
         this.description = description;
+        this.stock = stock;
         this.price = price;
         this.orderProducts = orderProducts;
         this.categories = categories;
@@ -106,6 +118,7 @@ public class Product {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", stock=" + stock +
                 ", price=" + price +
                 ", orderProducts=" + orderProducts +
                 ", categories=" + categories +

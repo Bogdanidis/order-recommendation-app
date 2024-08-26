@@ -2,7 +2,8 @@ package com.example.order_app.model;
 
 import jakarta.persistence.*;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -35,7 +36,7 @@ public class Customer {
     @OneToMany(mappedBy = "customer",
                 cascade={CascadeType.PERSIST,CascadeType.MERGE,
                          CascadeType.DETACH,CascadeType.REFRESH})
-    private List<Order> orders;
+    private Set<Order> orders=new HashSet<>();
 
     public Long getId() {
         return id;
@@ -93,11 +94,11 @@ public class Customer {
         this.country = country;
     }
 
-    public List<Order> getOrders() {
+    public Set<Order> getOrders() {
         return orders;
     }
 
-    public void setOrders(List<Order> orders) {
+    public void setOrders(Set<Order> orders) {
         this.orders = orders;
     }
 
@@ -105,7 +106,7 @@ public class Customer {
 
     }
 
-    public Customer(String first_name, String last_name, String email, String phone, String city, String country, List<Order> orders) {
+    public Customer(String first_name, String last_name, String email, String phone, String city, String country, Set<Order> orders) {
         this.first_name = first_name;
         this.last_name = last_name;
         this.email = email;
