@@ -2,7 +2,10 @@ package com.example.order_app.model;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -13,14 +16,14 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="name")
+    @Column(name="name", nullable = false)
     private String name;
 
-    @Column(name="description")
+    @Column(name="description", nullable = false)
     private String description;
 
-    @Column(name="price")
-    private Double price;
+    @Column(name="price", nullable = false)
+    private BigDecimal price;
 
 
     @OneToMany(mappedBy = "product",
@@ -28,11 +31,21 @@ public class Product {
                     CascadeType.DETACH,CascadeType.REFRESH})
     private List<OrderProduct> orderProducts;
 
-    public Double getPrice() {
+
+    @ManyToMany
+    @JoinTable(
+            name = "product_categories",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categories = new HashSet<>();
+
+
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
@@ -68,14 +81,23 @@ public class Product {
         this.orderProducts = orderProducts;
     }
 
+    public Set<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(Set<Category> categories) {
+        this.categories = categories;
+    }
+
     public Product() {
     }
 
-    public Product(String name, String description, Double price, List<OrderProduct> orderProducts) {
+    public Product(String name, String description, BigDecimal price, List<OrderProduct> orderProducts, Set<Category> categories) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.orderProducts = orderProducts;
+        this.categories = categories;
     }
 
     @Override
@@ -86,6 +108,7 @@ public class Product {
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", orderProducts=" + orderProducts +
+                ", categories=" + categories +
                 '}';
     }
 }
