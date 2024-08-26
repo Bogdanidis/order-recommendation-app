@@ -1,5 +1,6 @@
 package com.example.order_app.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ public class Order {
     @ManyToOne(fetch = FetchType.EAGER,
             cascade={CascadeType.PERSIST,CascadeType.MERGE,
                      CascadeType.DETACH,CascadeType.REFRESH})
+    @JsonBackReference
     private Customer customer;
 
 

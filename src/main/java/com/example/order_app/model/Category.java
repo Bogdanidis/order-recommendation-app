@@ -1,5 +1,6 @@
 package com.example.order_app.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,6 +20,7 @@ public class Category {
     private String description;
 
     @ManyToMany(mappedBy = "categories")
+    @JsonBackReference
     private Set<Product> products = new HashSet<>();
 
     // Getters and Setters

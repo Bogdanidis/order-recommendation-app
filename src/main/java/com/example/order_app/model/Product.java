@@ -1,5 +1,6 @@
 package com.example.order_app.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -33,6 +34,7 @@ public class Product {
     @OneToMany(mappedBy = "product",
             cascade={CascadeType.PERSIST,CascadeType.MERGE,
                     CascadeType.DETACH,CascadeType.REFRESH})
+    @JsonManagedReference
     private List<OrderProduct> orderProducts;
 
 
@@ -42,6 +44,7 @@ public class Product {
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
+    @JsonManagedReference
     private Set<Category> categories = new HashSet<>();
 
     public Long getId() {

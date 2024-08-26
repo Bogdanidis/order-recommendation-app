@@ -1,5 +1,6 @@
 package com.example.order_app.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -23,12 +24,14 @@ public class OrderProduct {
     @ManyToOne(fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
+    @JsonBackReference
     private Product product;
 
     @JoinColumn(name = "order_id", nullable = false)
     @ManyToOne(fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
+    @JsonBackReference
     private Order order;
 
     @Column(name = "quantity", nullable = false)

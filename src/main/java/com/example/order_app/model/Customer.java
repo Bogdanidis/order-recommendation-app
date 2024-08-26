@@ -1,5 +1,6 @@
 package com.example.order_app.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -36,6 +37,7 @@ public class Customer {
     @OneToMany(mappedBy = "customer",
                 cascade={CascadeType.PERSIST,CascadeType.MERGE,
                          CascadeType.DETACH,CascadeType.REFRESH})
+    @JsonManagedReference
     private Set<Order> orders=new HashSet<>();
 
     public Long getId() {
