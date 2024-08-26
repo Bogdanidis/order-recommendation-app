@@ -2,12 +2,16 @@ package com.example.order_app.controller;
 
 import com.example.order_app.model.Product;
 import com.example.order_app.repository.ProductRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 @RestController
 @RequestMapping("/order-api/products")
+@Tag(name = "Products", description = "Endpoints for managing products")
+
 public class ProductRestController {
 
     private final ProductRepository productRepository;
@@ -17,11 +21,13 @@ public class ProductRestController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all products", description = "Fetch a list of all available products")
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get a product by ID", description = "Fetch details of a specific product by its ID")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         return productRepository.findById(id)
                 .map(ResponseEntity::ok)
@@ -29,11 +35,13 @@ public class ProductRestController {
     }
 
     @PostMapping
+    @Operation(summary = "Create a new product", description = "Create a new product with the provided details")
     public Product createProduct(@RequestBody Product product) {
         return productRepository.save(product);
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update an existing product", description = "Update an existing product by its ID")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
         return productRepository.findById(id)
                 .map(product -> {
@@ -47,6 +55,7 @@ public class ProductRestController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a product", description = "Delete a product by its ID")
     public ResponseEntity<Object> deleteProduct(@PathVariable Long id) {
         return productRepository.findById(id)
                 .map(product -> {
