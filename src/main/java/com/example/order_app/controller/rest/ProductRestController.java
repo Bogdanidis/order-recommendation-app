@@ -1,4 +1,4 @@
-package com.example.order_app.controller;
+package com.example.order_app.controller.rest;
 
 import com.example.order_app.model.Product;
 import com.example.order_app.repository.ProductRepository;
@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RestController
 @RequestMapping("/order-api/products")
 @Tag(name = "Products", description = "Endpoints for managing products")

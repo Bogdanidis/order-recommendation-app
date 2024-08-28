@@ -2,22 +2,23 @@ package com.example.order_app.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name="orders")
+@Table(name = "orders")
 public class Order {
     @Id
-    @Column(name="id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @JoinColumn(name="customer_id")
+    @JoinColumn(name = "customer_id")
     @ManyToOne(fetch = FetchType.EAGER,
-            cascade={CascadeType.PERSIST,CascadeType.MERGE,
-                     CascadeType.DETACH,CascadeType.REFRESH})
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.DETACH, CascadeType.REFRESH})
     @JsonBackReference
     private Customer customer;
 
@@ -30,8 +31,8 @@ public class Order {
     private String status;
 
     @OneToMany(mappedBy = "order",
-            cascade={CascadeType.PERSIST,CascadeType.MERGE,
-                    CascadeType.DETACH,CascadeType.REFRESH})
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.DETACH, CascadeType.REFRESH})
     private Set<OrderProduct> order_products = new HashSet<>();
 
     public Set<OrderProduct> getOrder_products() {

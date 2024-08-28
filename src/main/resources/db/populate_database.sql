@@ -1,52 +1,81 @@
--- Populate customers table
-INSERT INTO customers (last_name, first_name, email, phone, city, country) VALUES
-                                       ('Doe', 'John', 'john.doe@example.com', '123-456-7890', 'New York', 'USA'),
-                                       ('Smith', 'Jane', 'jane.smith@example.com', '234-567-8901', 'Los Angeles', 'USA'),
-                                       ('Brown', 'James', 'james.brown@example.com', '345-678-9012', 'Chicago', 'USA'),
-                                       ('Taylor', 'Emily', 'emily.taylor@example.com', '456-789-0123', 'Houston', 'USA'),
-                                       ('Anderson', 'Michael', 'michael.anderson@example.com', '567-890-1234', 'Phoenix', 'USA');
+-- Insert data into users table
+-- passwords are same as usernames BCrypt encrypted
+INSERT INTO users (username, password, email, role)
+VALUES ('johndoe', '$2a$10$ztsgjs4PXf9R67IKXnqHLulCgV562Jsmpf6jooj0rHqtIsZSPgV3u', 'johndoe@example.com',
+        'CUSTOMER'),
+       ('janedoe', '$2a$10$eJL1Gzz3oIf32P4bOdxZA.AAbScHnL4PUKnqo/lOgLEfLW/pq4w..', 'janedoe@example.com',
+        'CUSTOMER'),
+       ('admin1', '$2a$10$p83hQlItvU7dtzzKe.ZPVOcEDgh1gpj.P3MTGt0OfKyAjl9AyO0s6', 'admin1@example.com',
+        'ADMIN'),
+       ('admin2', '$2a$10$QLjB88goihyfVS8/5bmR6uPBG7XFXv8sYP/Etn49sJfDnTg6FedUi', 'admin2@example.com',
+        'ADMIN'),
+       ('susanm', '$2a$10$RhuZvrfC4aA0VjcI8NzHyuHXc/u6IBKQ9Tr7BpFh/PniLodqqT91i', 'susanm@example.com',
+        'CUSTOMER'),
+       ('michaelb', '$2a$10$DfLKNBGX2z7XKZV1O/6JpeQKVtgNO5MY8xhVksKG.BgrZLKeFQCIC', 'michaelb@example.com',
+        'CUSTOMER');
 
--- Populate products table
-INSERT INTO products (name, description, stock, price) VALUES
-                                       ('Laptop', '15 inch, 16GB RAM', 50, 1200.00),
-                                       ('Smartphone', '5.5 inch screen, 64GB storage', 150, 800.00),
-                                       ('Headphones', 'Noise-cancelling, over-ear', 200, 150.00),
-                                       ('Monitor', '27 inch, 4K resolution', 75, 300.00),
-                                       ('Keyboard', 'Mechanical, RGB backlit', 100, 90.00);
+-- Insert data into customers table
+INSERT INTO customers (id, last_name, first_name, phone, city, country)
+VALUES (1, 'Doe', 'John', '123-456-7890', 'New York', 'USA'),
+       (2, 'Doe', 'Jane', '234-567-8901', 'Los Angeles', 'USA'),
+       (5, 'Smith', 'Susan', '345-678-9012', 'Chicago', 'USA'),
+       (6, 'Brown', 'Michael', '456-789-0123', 'Houston', 'USA');
 
--- Populate orders table
-INSERT INTO orders (customer_id, date, status) VALUES
-                                       (1, '2024-08-20', 'Shipped'),
-                                       (2, '2024-08-21', 'Processing'),
-                                       (3, '2024-08-22', 'Delivered'),
-                                       (4, '2024-08-23', 'Cancelled'),
-                                       (5, '2024-08-24', 'Shipped');
+-- Insert data into admins table
+INSERT INTO admins (id)
+VALUES (3),
+       (4);
 
--- Populate order_products table
-INSERT INTO order_products (order_id, product_id, quantity) VALUES
-                                        (1, 1, 1), -- John Doe ordered 1 Laptop
-                                        (1, 3, 2), -- John Doe ordered 2 Headphones
-                                        (2, 2, 1), -- Jane Smith ordered 1 Smartphone
-                                        (3, 4, 2), -- James Brown ordered 2 Monitors
-                                        (4, 5, 1), -- Emily Taylor ordered 1 Keyboard
-                                        (5, 1, 1), -- Michael Anderson ordered 1 Laptop
-                                        (5, 2, 1); -- Michael Anderson ordered 1 Smartphone
+-- Insert data into orders table
+INSERT INTO orders (customer_id, date, status)
+VALUES (1, '2024-08-01', 'Shipped'),
+       (2, '2024-08-02', 'Pending'),
+       (5, '2024-08-05', 'Pending'),
+       (6, '2024-08-06', 'Cancelled'),
+       (1, '2024-08-09', 'Pending'),
+       (2, '2024-08-10', 'Delivered');
 
--- Populate categories table
-INSERT INTO categories (name, description) VALUES
-                           ('Electronics', 'Devices like laptops, smartphones, etc.'),
-                           ('Accessories', 'Computer and mobile accessories like keyboards, headphones, etc.'),
-                           ('Home Office', 'Products suitable for home office setup'),
-                           ('Entertainment', 'Products for personal entertainment, like monitors and headphones'),
-                           ('Peripherals', 'External devices connected to computers like keyboards and monitors');
+-- Insert data into products table
+INSERT INTO products (name, description, stock, price)
+VALUES ('Laptop', 'High-performance laptop', 100, 999.99),
+       ('Smartphone', 'Latest model smartphone', 150, 499.99),
+       ('Headphones', 'Noise-cancelling headphones', 200, 199.99),
+       ('Tablet', 'Lightweight tablet', 80, 299.99),
+       ('Smartwatch', 'Wearable smartwatch', 120, 149.99),
+       ('Camera', 'High-resolution camera', 50, 799.99),
+       ('Printer', 'Wireless printer', 60, 129.99),
+       ('Monitor', '4K UHD monitor', 75, 349.99),
+       ('Keyboard', 'Mechanical keyboard', 90, 89.99),
+       ('Mouse', 'Wireless mouse', 110, 49.99);
 
--- Populate product_categories table
-INSERT INTO product_categories (category_id, product_id) VALUES
-                                     (1, 1), -- Laptop categorized as Electronics
-                                     (1, 2), -- Smartphone categorized as Electronics
-                                     (2, 3), -- Headphones categorized as Accessories
-                                     (4, 3), -- Headphones categorized as Entertainment
-                                     (4, 4), -- Monitor categorized as Entertainment
-                                     (3, 4), -- Monitor categorized as Home Office
-                                     (5, 5), -- Keyboard categorized as Peripherals
-                                     (2, 5); -- Keyboard categorized as Accessories
+-- Insert data into order_products table
+INSERT INTO order_products (order_id, product_id, quantity)
+VALUES (1, 1, 1),
+       (1, 2, 2),
+       (2, 2, 1),
+       (5, 5, 2),
+       (6, 6, 1);
+
+-- Insert data into categories table
+INSERT INTO categories (name, description)
+VALUES ('Electronics', 'Electronic devices and gadgets'),
+       ('Accessories', 'Various accessories'),
+       ('Computers', 'Computers and peripherals'),
+       ('Office Supplies', 'Office supplies and equipment');
+
+-- Insert data into product_categories table
+INSERT INTO product_categories (category_id, product_id)
+VALUES (1, 1),
+       (1, 2),
+       (1, 3),
+       (1, 6),
+       (1, 8),
+       (2, 4),
+       (2, 5),
+       (2, 7),
+       (3, 1),
+       (3, 4),
+       (3, 8),
+       (4, 7),
+       (4, 9),
+       (4, 10);

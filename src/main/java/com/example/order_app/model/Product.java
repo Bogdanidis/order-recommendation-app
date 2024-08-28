@@ -10,30 +10,30 @@ import java.util.Set;
 
 
 @Entity
-@Table(name="products")
+@Table(name = "products")
 public class Product {
     @Id
-    @Column(name="id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="name", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name="description", nullable = false)
+    @Column(name = "description", nullable = false)
     private String description;
 
 
     @Column(name = "stock", nullable = false)
     private Integer stock;
 
-    @Column(name="price", nullable = false)
+    @Column(name = "price", nullable = false)
     private BigDecimal price;
 
 
     @OneToMany(mappedBy = "product",
-            cascade={CascadeType.PERSIST,CascadeType.MERGE,
-                    CascadeType.DETACH,CascadeType.REFRESH})
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.DETACH, CascadeType.REFRESH})
     @JsonManagedReference
     private List<OrderProduct> orderProducts;
 

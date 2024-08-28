@@ -8,37 +8,35 @@ import java.util.Set;
 
 
 @Entity
-@Table(name="customers")
-public class Customer {
+@Table(name = "customers")
+@PrimaryKeyJoinColumn(name = "id")
+public class Customer extends User {
 
     @Id
-    @Column(name="id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="first_name", nullable = false)
+    @Column(name = "first_name", nullable = false)
     private String first_name;
 
-    @Column(name="last_name", nullable = false)
+    @Column(name = "last_name", nullable = false)
     private String last_name;
 
-    @Column(name="email", nullable = false)
-    private String email;
-
-    @Column(name="phone", nullable = false)
+    @Column(name = "phone", nullable = false)
     private String phone;
 
-    @Column(name="city", nullable = false)
+    @Column(name = "city", nullable = false)
     private String city;
 
-    @Column(name="country", nullable = false)
+    @Column(name = "country", nullable = false)
     private String country;
 
     @OneToMany(mappedBy = "customer",
-                cascade={CascadeType.PERSIST,CascadeType.MERGE,
-                         CascadeType.DETACH,CascadeType.REFRESH})
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.DETACH, CascadeType.REFRESH})
     @JsonManagedReference
-    private Set<Order> orders=new HashSet<>();
+    private Set<Order> orders = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -62,14 +60,6 @@ public class Customer {
 
     public void setLast_name(String last_name) {
         this.last_name = last_name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getPhone() {
@@ -105,30 +95,21 @@ public class Customer {
     }
 
     public Customer() {
-
+        super();
+        this.setRole("CUSTOMER");
     }
 
-    public Customer(String first_name, String last_name, String email, String phone, String city, String country, Set<Order> orders) {
+    public Customer(String username, String password, String email,
+                    String last_name, String first_name, String phone, String city, String country) {
+        super(username, password, email);
+        this.last_name = first_name;
         this.first_name = first_name;
-        this.last_name = last_name;
-        this.email = email;
         this.phone = phone;
         this.city = city;
         this.country = country;
-        this.orders = orders;
+        this.setRole("CUSTOMER");
+
     }
 
-    @Override
-    public String toString() {
-        return "Customer{" +
-                "id=" + id +
-                ", first_name='" + first_name + '\'' +
-                ", last_name='" + last_name + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", city='" + city + '\'' +
-                ", country='" + country + '\'' +
-                ", orders=" + orders +
-                '}';
-    }
+
 }
