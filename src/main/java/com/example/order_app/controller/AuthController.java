@@ -6,7 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class HomeController {
+public class AuthController {
 
     @GetMapping("/login")
     public String login() {
@@ -22,19 +22,9 @@ public class HomeController {
         } else if (user.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_CUSTOMER"))) {
             return "redirect:/customer/home";
         } else {
+            //validation-erroring
             return "redirect:/login";
         }
     }
-
-    @GetMapping("/admin/home")
-    public String adminHome() {
-        return "admin_home";
-    }
-
-    @GetMapping("/customer/home")
-    public String userHome() {
-        return "customer_home";
-    }
-
 
 }

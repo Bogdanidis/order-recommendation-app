@@ -29,15 +29,23 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**","/customers/**","/categories/**").hasRole("ADMIN")
                        // .requestMatchers("/user/**").hasRole("CUSTOMER")
-                        .requestMatchers("/", "/login").permitAll()
+                        .requestMatchers("/", "/login","/register").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/default", true)
                         .permitAll()
+                        .failureUrl("/login?error=true")
+
                 )
-                .logout(logout -> logout.permitAll());
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout=true")
+                        .permitAll()
+                ) .exceptionHandling(exception -> exception
+                        .accessDeniedPage("/access-denied")
+                );
 
         return http.build();
     }

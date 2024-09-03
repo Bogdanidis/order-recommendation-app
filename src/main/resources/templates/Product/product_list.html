@@ -19,7 +19,7 @@
             <th scope="col">Description</th>
             <th scope="col">Stock</th>
             <th scope="col">Price</th>
-<!--            <th scope="col">Categories</th>-->
+            <th scope="col">Categories</th>
             <th scope="col">Action</th>
         </tr>
         </thead>
@@ -30,7 +30,14 @@
             <td th:text="${tempProduct.description}"></td>
             <td th:text="${tempProduct.stock}"></td>
             <td th:text="${tempProduct.price}"></td>
-<!--            <td th:text="${tempProduct.categories}"></td>-->
+            <td>
+                <!-- Display each category name separately -->
+                <ul>
+                    <li th:each="category : ${tempProduct.categories}" th:text="${category.name}"></li>
+                </ul>
+
+            </td>
+
             <td>
                 <a class="btn btn-primary" role="button" th:href="${'/products/edit/'+tempProduct.id}"><span>Edit</span></a>
                 <a class="btn btn-danger" onclick="if (!(confirm('Are you sure you want to delete this product?'))) return false"
@@ -39,7 +46,7 @@
         </tr>
         </tbody>
     </table>
-    <a href="/" class="btn btn-secondary">Back to Home</a>
+    <a href="/admin/home" class="btn btn-secondary">Back to Home</a>
 
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

@@ -16,6 +16,7 @@ public class CustomerController {
         this.customerRepository = customerRepository;
     }
 
+
     @GetMapping("/list")
     public String listCustomer(Model model) {
         Iterable<Customer> customers = customerRepository.findAll();
