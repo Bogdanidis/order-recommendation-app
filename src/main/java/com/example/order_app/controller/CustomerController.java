@@ -21,13 +21,13 @@ public class CustomerController {
     public String listCustomer(Model model) {
         Iterable<Customer> customers = customerRepository.findAll();
         model.addAttribute("customers", customers);
-        return "customer/customer_list";
+        return "Customer/customer_list";
     }
 
     @GetMapping("/add")
     public String showAddCustomerForm(Model model) {
         model.addAttribute("customer", new Customer());
-        return "customer/customer_add";
+        return "Customer/customer_add";
     }
 
 
@@ -40,7 +40,7 @@ public class CustomerController {
     @GetMapping("/edit/{id}")
     public String showEditCustomerForm(@PathVariable Long id, Model model) {
         model.addAttribute("customer", customerRepository.findById(id));
-        return "customer/customer_add";
+        return "Customer/customer_add";
     }
 
     @GetMapping("/delete/{id}")

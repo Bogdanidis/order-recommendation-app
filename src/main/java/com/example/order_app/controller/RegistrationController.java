@@ -29,6 +29,8 @@ public class RegistrationController {
     public String registerUserAccount(@ModelAttribute("user") @Valid UserRegistrationDto userDto,
                                       BindingResult result) {
         if (result.hasErrors()) {
+            System.out.println(result.hasErrors());
+            System.out.println(result);
             return "register";
         }
 

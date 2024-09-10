@@ -1,6 +1,7 @@
 package com.example.order_app.model;
 
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
 

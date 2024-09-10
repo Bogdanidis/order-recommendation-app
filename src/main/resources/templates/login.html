@@ -18,6 +18,9 @@
             <input type="password" class="form-control" id="password" name="password" required>
         </div>
         <button type="submit" class="btn btn-primary">Login</button>
+
+        <!-- Register Button -->
+        <a href="/register" class="btn btn-secondary">Register</a>
     </form>
     <!-- Display error messages -->
     <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>

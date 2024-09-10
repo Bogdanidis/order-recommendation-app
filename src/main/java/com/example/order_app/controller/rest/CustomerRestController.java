@@ -44,8 +44,8 @@ public class CustomerRestController {
     public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @RequestBody Customer customerDetails) {
         return customerRepository.findById(id)
                 .map(customer -> {
-                    customer.setFirst_name(customerDetails.getFirst_name());
-                    customer.setLast_name(customerDetails.getLast_name());
+                    customer.setFirstName(customerDetails.getFirstName());
+                    customer.setLastName(customerDetails.getLastName());
                     customer.setEmail(customerDetails.getEmail());
                     customer.setPhone(customerDetails.getPhone());
                     customer.setCity(customerDetails.getCity());

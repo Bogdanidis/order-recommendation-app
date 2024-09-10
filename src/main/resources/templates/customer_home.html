@@ -26,16 +26,17 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/customer/browse-products">Browse Products</a>
                 </li>
-<!--                <li class="nav-item">-->
-<!--                    <a class="nav-link" href="/products/list">My Orders</a>-->
-<!--                </li>-->
-<!--                <li class="nav-item">-->
-<!--                    <a class="nav-link" href="/products/list">My Recommendations</a>-->
-<!--                </li>-->
+                <li class="nav-item">
+                    <a class="nav-link" href="/customer/my-orders">My Orders</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/customer/my-recommendations">My Recommendations</a>
+                </li>
 
             </ul>
         </div>
     </div>
+    <a class="btn btn-danger" href="/logout">Logout</a>
 </nav>
 
 <div class="container">
@@ -50,27 +51,26 @@
                 </div>
             </div>
         </div>
-<!--        <div class="col-md-4">-->
-<!--            <div class="card text-center">-->
-<!--                <div class="card-body">-->
-<!--                    <h5 class="card-title">Orders</h5>-->
-<!--                    <p class="card-text">Your orders.</p>-->
-<!--                    <a href="/customer/orders" class="btn btn-primary">View Orders</a>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="col-md-4">-->
-<!--            <div class="card text-center">-->
-<!--                <div class="card-body">-->
-<!--                    <h5 class="card-title">Recommendations</h5>-->
-<!--                    <p class="card-text">Browse recommendations.</p>-->
-<!--                    <a href="/customer/recommendations" class="btn btn-primary">Browse Recommendations</a>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Orders</h5>
+                    <p class="card-text">Your orders.</p>
+                    <a href="/customer/my-orders" class="btn btn-primary">View Orders</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Recommendations</h5>
+                    <p class="card-text">Your recommendations.</p>
+                    <a href="/customer/my-recommendations" class="btn btn-primary">View Recommendations</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<a href="/logout">Logout</a>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

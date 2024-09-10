@@ -6,24 +6,21 @@ import com.example.order_app.model.UserRegistrationDto;
 import com.example.order_app.repository.AdminRepository;
 import com.example.order_app.repository.CustomerRepository;
 import com.example.order_app.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
 
-    @Autowired
-    private AdminRepository adminRepository;
+    private final AdminRepository adminRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     public void registerUser(UserRegistrationDto userDto) {
         String encodedPassword = passwordEncoder.encode(userDto.getPassword());
@@ -33,17 +30,21 @@ public class UserService {
             admin.setUsername(userDto.getUsername());
             admin.setPassword(encodedPassword);
             admin.setEmail(userDto.getEmail());
+            admin.setCreatedAt(new java.util.Date());
+            admin.setUpdatedAt(new java.util.Date());
             adminRepository.save(admin);
         } else if (userDto.getRole().equalsIgnoreCase("CUSTOMER")) {
             Customer customer = new Customer();
             customer.setUsername(userDto.getUsername());
             customer.setPassword(encodedPassword);
             customer.setEmail(userDto.getEmail());
-            customer.setFirst_name(userDto.getFirstName());
-            customer.setLast_name(userDto.getLastName());
+            customer.setFirstName(userDto.getFirstName());
+            customer.setLastName(userDto.getLastName());
             customer.setPhone(userDto.getPhone());
             customer.setCity(userDto.getCity());
             customer.setCountry(userDto.getCountry());
+            customer.setCreatedAt(new java.util.Date());
+            customer.setUpdatedAt(new java.util.Date());
             customerRepository.save(customer);
         }
     }

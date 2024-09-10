@@ -19,10 +19,10 @@
         <form action="#" th:action="@{/customers/add}"
               th:object="${customer}" method="POST">
 
-            <input type="text" th:field="*{first_name}"
+            <input type="text" th:field="*{firstName}"
                    class="form-control mb-4 w-25" placeholder="First name">
 
-            <input type="text" th:field="*{last_name}"
+            <input type="text" th:field="*{lastName}"
                    class="form-control mb-4 w-25" placeholder="Last name">
 
             <input type="text" th:field="*{email}"

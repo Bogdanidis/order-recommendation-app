@@ -2,12 +2,18 @@ package com.example.order_app.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Setter
+@Getter
+@NoArgsConstructor
 @Table(name = "orders")
 public class Order {
     @Id
@@ -33,57 +39,14 @@ public class Order {
     @OneToMany(mappedBy = "order",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
-    private Set<OrderProduct> order_products = new HashSet<>();
+    private Set<OrderProduct> orderProducts = new HashSet<>();
 
-    public Set<OrderProduct> getOrder_products() {
-        return order_products;
-    }
 
-    public void setOrder_products(Set<OrderProduct> order_products) {
-        this.order_products = order_products;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Order() {
-
-    }
-
-    public Order(Customer customer, Date date, String status, Set<OrderProduct> order_products) {
+    public Order(Customer customer, Date date, String status, Set<OrderProduct> orderProducts) {
         this.customer = customer;
         this.date = date;
         this.status = status;
-        this.order_products = order_products;
+        this.orderProducts = orderProducts;
     }
 
     @Override
@@ -93,7 +56,19 @@ public class Order {
                 ", customer=" + customer +
                 ", date=" + date +
                 ", status='" + status + '\'' +
-                ", order_products=" + order_products +
+                ", orderProducts=" + orderProducts +
                 '}';
     }
+
+/*
+    public BigDecimal getTotalAmount() {
+        return order_products.stream()
+                .mapToBigDecimal(op -> op.getProduct().getPrice() * op.getQuantity())
+                .sum();
+    }
+
+    public Arrays getOrderProducts() {
+    }
+
+ */
 }

@@ -3,18 +3,16 @@ package com.example.order_app.service;
 
 import com.example.order_app.model.Product;
 import com.example.order_app.repository.ProductRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
-
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
 
     public List<Product> getAllProducts() {
         return productRepository.findAll();
