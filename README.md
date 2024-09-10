@@ -23,7 +23,7 @@ This project is a simple e-commerce application that allows users to browse prod
 ## ER Diagram
 Below is the Entity-Relationship (ER) diagram for the application:
 
-`ER.png`
+![ER](ER.png)
 
 The diagram outlines the database schema, including tables for users, customers, admins, orders, products, categories, and their relationships.
 
