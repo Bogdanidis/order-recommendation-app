@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -60,15 +61,9 @@ public class Order {
                 '}';
     }
 
-/*
     public BigDecimal getTotalAmount() {
-        return order_products.stream()
-                .mapToBigDecimal(op -> op.getProduct().getPrice() * op.getQuantity())
-                .sum();
+        return orderProducts.stream()
+                .map(orderProduct -> orderProduct.getProduct().getPrice().multiply(BigDecimal.valueOf(orderProduct.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
-
-    public Arrays getOrderProducts() {
-    }
-
- */
 }

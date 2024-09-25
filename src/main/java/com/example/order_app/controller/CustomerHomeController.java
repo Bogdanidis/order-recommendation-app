@@ -1,7 +1,13 @@
 package com.example.order_app.controller;
 
+import com.example.order_app.model.Order;
 import com.example.order_app.model.Product;
+import com.example.order_app.model.User;
+import com.example.order_app.service.OrderService;
 import com.example.order_app.service.ProductService;
+import com.example.order_app.service.RecommendationService;
+import lombok.AllArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,14 +19,14 @@ import java.util.List;
 
 @Controller
 @RequestMapping("customer")
+@AllArgsConstructor
 
 public class CustomerHomeController {
 
     private final ProductService productService;
+    private final OrderService orderService;
+    private final RecommendationService recommendationService;
 
-    public CustomerHomeController(ProductService productService) {
-        this.productService = productService;
-    }
 
     @GetMapping("/home")
     public String userHome() {
@@ -35,14 +41,19 @@ public class CustomerHomeController {
         return "Product/browse_products";
     }
 
-    // Handle ordering of products
-    @PostMapping("/order")
-    public String orderProducts(@RequestParam("productId") Long productId,
-                                @RequestParam("quantity") Integer quantity) {
-        // Implement logic to add the product to the user's order
-        // Redirect to a confirmation page or back to the products page
-        productService.orderProduct(productId, quantity);
-        return "redirect:/customer/browse-products?orderSuccess=true";
+    // Display the orders for the logged-in customer
+    @GetMapping("/my-orders")
+    public String viewMyOrders(@AuthenticationPrincipal User currentUser, Model model) {
+        List<Order> orders = orderService.getOrdersByCustomerId(currentUser.getId());
+        model.addAttribute("orders", orders);
+        return "Order/my_orders";
     }
 
+
+    @GetMapping("/my-recommendations")
+    public String showRecommendations(Model model) {
+        List<Product> recommendedProducts = recommendationService.getRecommendedProducts(); // Fetch recommended products
+        model.addAttribute("recommendedProducts", recommendedProducts);
+        return "Recommendation/my_recommendations";
+    }
 }
