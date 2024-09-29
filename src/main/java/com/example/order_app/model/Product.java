@@ -36,6 +36,8 @@ public class Product {
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
+    @Column(name = "brand", nullable = false)
+    private String brand;
 
     @OneToMany(mappedBy = "product",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
@@ -43,24 +45,22 @@ public class Product {
     @JsonManagedReference
     private List<OrderProduct> orderProducts;
 
+    @OneToMany(mappedBy = "product",
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> images;
 
-    @ManyToMany
-    @JoinTable(
-            name = "product_categories",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id")
-    )
-    @JsonManagedReference
-    private Set<Category> categories = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name="category_id")
+    private Category category ;
 
 
-    public Product(String name, String description, Integer stock, BigDecimal price, List<OrderProduct> orderProducts, Set<Category> categories) {
+    public Product(String name, String description, Integer stock, BigDecimal price,String brand, Category category) {
         this.name = name;
         this.description = description;
         this.stock = stock;
         this.price = price;
-        this.orderProducts = orderProducts;
-        this.categories = categories;
+        this.brand=brand;
+        this.category = category;
     }
 
     @Override
@@ -71,8 +71,10 @@ public class Product {
                 ", description='" + description + '\'' +
                 ", stock=" + stock +
                 ", price=" + price +
+                ", brand='" + brand + '\'' +
                 ", orderProducts=" + orderProducts +
-                ", categories=" + categories +
+                ", images=" + images +
+                ", category=" + category +
                 '}';
     }
 }

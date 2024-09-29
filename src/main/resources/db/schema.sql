@@ -44,13 +44,23 @@ CREATE TABLE orders
     FOREIGN KEY (customer_id) REFERENCES customers (id)
 );
 
+CREATE TABLE categories
+(
+    id          BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name        VARCHAR(255) NOT NULL,
+    description VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE products
 (
     id          BIGINT PRIMARY KEY AUTO_INCREMENT,
     name        VARCHAR(255)  NOT NULL,
     description VARCHAR(255)  NOT NULL,
     stock       INTEGER       NOT NULL,
-    price       DECIMAL(8, 2) NOT NULL
+    price       DECIMAL(8, 2) NOT NULL,
+    brand VARCHAR(255)  NOT NULL,
+    category_id BIGINT  NOT NULL,
+    FOREIGN KEY (category_id) REFERENCES categories (id)
 );
 
 CREATE TABLE order_products
@@ -63,19 +73,15 @@ CREATE TABLE order_products
     quantity   INTEGER NOT NULL
 );
 
-CREATE TABLE categories
+
+CREATE TABLE images
 (
     id          BIGINT PRIMARY KEY AUTO_INCREMENT,
-    name        VARCHAR(255) NOT NULL,
-    description VARCHAR(255) NOT NULL
+    file_name VARCHAR(255)       NOT NULL,
+    file_type        VARCHAR(255)        NOT NULL,
+    image      mediumblob NOT NULL,
+    download_url VARCHAR(255) NOT NULL,
+    product_id BIGINT  NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES products (id)
 );
 
-CREATE TABLE product_categories
-(
-    category_id BIGINT NOT NULL,
-    FOREIGN KEY (category_id) REFERENCES categories (id),
-    product_id  BIGINT NOT NULL,
-    FOREIGN KEY (product_id) REFERENCES products (id),
-    PRIMARY KEY (category_id, product_id)
-
-);

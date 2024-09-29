@@ -1,8 +1,7 @@
 package com.example.order_app.controller;
 
 import com.example.order_app.model.Product;
-import com.example.order_app.repository.ProductRepository;
-import com.example.order_app.service.ProductService;
+import com.example.order_app.service.product.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

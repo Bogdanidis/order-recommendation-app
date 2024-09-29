@@ -8,8 +8,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Setter
@@ -40,10 +39,10 @@ public class Order {
     @OneToMany(mappedBy = "order",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
-    private Set<OrderProduct> orderProducts = new HashSet<>();
+    private List<OrderProduct> orderProducts;
 
 
-    public Order(Customer customer, Date date, String status, Set<OrderProduct> orderProducts) {
+    public Order(Customer customer, Date date, String status, List<OrderProduct> orderProducts) {
         this.customer = customer;
         this.date = date;
         this.status = status;

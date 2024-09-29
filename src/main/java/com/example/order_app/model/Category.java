@@ -1,6 +1,7 @@
 package com.example.order_app.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -27,14 +29,15 @@ public class Category {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @ManyToMany(mappedBy = "categories")
-    @JsonBackReference
-    private Set<Product> products = new HashSet<>();
+    @OneToMany(mappedBy = "category",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.DETACH, CascadeType.REFRESH})
+    @JsonManagedReference
+    private List<Product> products ;
 
-    public Category(String name, String description, Set<Product> products) {
+    public Category(String name, String description) {
         this.name = name;
         this.description = description;
-        this.products = products;
     }
 
     @Override

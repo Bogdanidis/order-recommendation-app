@@ -1,18 +1,13 @@
 package com.example.order_app.controller;
 
-import com.example.order_app.model.Order;
 import com.example.order_app.model.User;
 import com.example.order_app.service.OrderService;
-import com.example.order_app.service.ProductService;
+import com.example.order_app.service.product.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Controller
 @AllArgsConstructor

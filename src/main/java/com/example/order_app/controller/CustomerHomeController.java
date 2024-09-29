@@ -4,16 +4,14 @@ import com.example.order_app.model.Order;
 import com.example.order_app.model.Product;
 import com.example.order_app.model.User;
 import com.example.order_app.service.OrderService;
-import com.example.order_app.service.ProductService;
+import com.example.order_app.service.product.ProductService;
 import com.example.order_app.service.RecommendationService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 

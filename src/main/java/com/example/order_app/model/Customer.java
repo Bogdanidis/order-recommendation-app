@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -40,7 +41,7 @@ public class Customer extends User {
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
     @JsonManagedReference
-    private Set<Order> orders = new HashSet<>();
+    private List<Order> orders ;
 
     public Customer() {
         super();
