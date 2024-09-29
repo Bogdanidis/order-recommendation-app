@@ -10,6 +10,7 @@ import com.example.order_app.repository.CustomerRepository;
 import com.example.order_app.repository.OrderRepository;
 import com.example.order_app.repository.ProductRepository;
 import com.example.order_app.request.AddProductRequest;
+import com.example.order_app.request.UpdateProductRequest;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -67,10 +68,24 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public void updateProduct(Product product, Long productId) {
+    public Product updateProduct(UpdateProductRequest request, Long productId) {
+        return productRepository.findById(productId)
+                .map(existingProduct->updateExistingProduct(existingProduct,request))
+                .map(productRepository::save)
+                .orElseThrow(()->new ProductNotFoundException("Product not found!"));
 
     }
 
+    private Product updateExistingProduct(Product existingProduct, UpdateProductRequest request) {
+        existingProduct.setName(request.getName());
+        existingProduct.setDescription(request.getDescription());
+        existingProduct.setStock(request.getStock());
+        existingProduct.setPrice(request.getPrice());
+        existingProduct.setBrand(request.getBrand());
+        Category category = categoryRepository.findByName(request.getCategory().getName());
+        existingProduct.setCategory(category);
+        return existingProduct;
+    }
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }

@@ -2,6 +2,7 @@ package com.example.order_app.service.product;
 
 import com.example.order_app.model.Product;
 import com.example.order_app.request.AddProductRequest;
+import com.example.order_app.request.UpdateProductRequest;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ public interface IProductService {
     Product addProduct(AddProductRequest request);
     Product getProductById(Long id);
     void deleteProductById(Long id);
-    void updateProduct(Product product, Long productId);
+    Product updateProduct(UpdateProductRequest product, Long productId);
 
     List<Product> getAllProducts();
     List<Product> getProductsByCategory(String category);
