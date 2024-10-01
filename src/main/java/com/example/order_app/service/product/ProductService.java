@@ -1,18 +1,15 @@
 package com.example.order_app.service.product;
 
-import com.example.order_app.exception.ProductNotFoundException;
-import com.example.order_app.model.Category;
-import com.example.order_app.model.Order;
-import com.example.order_app.model.OrderProduct;
-import com.example.order_app.model.Product;
-import com.example.order_app.repository.CategoryRepository;
-import com.example.order_app.repository.CustomerRepository;
-import com.example.order_app.repository.OrderRepository;
-import com.example.order_app.repository.ProductRepository;
+import com.example.order_app.dto.ImageDto;
+import com.example.order_app.dto.ProductDto;
+import com.example.order_app.exception.ResourceNotFoundException;
+import com.example.order_app.model.*;
+import com.example.order_app.repository.*;
 import com.example.order_app.request.AddProductRequest;
 import com.example.order_app.request.UpdateProductRequest;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,6 +24,9 @@ public class ProductService implements IProductService{
     private final OrderRepository orderRepository;
     private final CustomerRepository customerRepository; // To find customer details if needed
     private final CategoryRepository categoryRepository;
+    private final ImageRepository imageRepository;
+
+    private final ModelMapper modelMapper;
 
     @Override
     public Product addProduct(AddProductRequest request) {
@@ -57,14 +57,14 @@ public class ProductService implements IProductService{
     @Override
     public Product getProductById(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(()->new ProductNotFoundException("Product not found!"));
+                .orElseThrow(()->new ResourceNotFoundException("Product not found!"));
     }
 
     @Override
     public void deleteProductById(Long id) {
         productRepository.findById(id)
                 .ifPresentOrElse(productRepository::delete,
-                        ()->{throw new ProductNotFoundException("Product not found!");});
+                        ()->{throw new ResourceNotFoundException("Product not found!");});
     }
 
     @Override
@@ -72,7 +72,7 @@ public class ProductService implements IProductService{
         return productRepository.findById(productId)
                 .map(existingProduct->updateExistingProduct(existingProduct,request))
                 .map(productRepository::save)
-                .orElseThrow(()->new ProductNotFoundException("Product not found!"));
+                .orElseThrow(()->new ResourceNotFoundException("Product not found!"));
 
     }
 
@@ -146,6 +146,21 @@ public class ProductService implements IProductService{
         return productRepository.countByBrandAndName(brand,name);
     }
 
+    @Override
+    public List<ProductDto> getConvertedProducts(List<Product> products) {
+        return products.stream().map(this::convertToDto).toList();
+    }
+
+    @Override
+    public ProductDto convertToDto(Product product) {
+        ProductDto productDto = modelMapper.map(product, ProductDto.class);
+        List<Image> images = imageRepository.findByProductId(product.getId());
+        List<ImageDto> imageDtos = images.stream()
+                .map(image -> modelMapper.map(image, ImageDto.class))
+                .toList();
+        productDto.setImages(imageDtos);
+        return productDto;
+    }
     public void orderProduct(Long productId, Integer quantity, Long customerId) {
         // Fetch product by ID
         Product product = productRepository.findById(productId)
