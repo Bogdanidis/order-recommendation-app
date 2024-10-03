@@ -3,6 +3,7 @@ package com.example.order_app.service.cart;
 
 import com.example.order_app.exception.ResourceNotFoundException;
 import com.example.order_app.model.Cart;
+import com.example.order_app.model.User;
 import com.example.order_app.repository.CartItemRepository;
 import com.example.order_app.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
@@ -45,13 +47,15 @@ public class CartService implements ICartService{
         return cart.getTotalAmount();
     }
 
-    @Override
-    public Long initializeNewCart() {
-        Cart newCart = new Cart();
-        Long newCartId = cartIdGenerator.incrementAndGet();
-        newCart.setId(newCartId);
-        return cartRepository.save(newCart).getId();
 
+    @Override
+    public Cart initializeNewCart(User user) {
+        return Optional.ofNullable(getCartByUserId(user.getId()))
+                .orElseGet(() -> {
+                    Cart cart = new Cart();
+                    cart.setUser(user);
+                    return cartRepository.save(cart);
+                });
     }
 
     @Override
