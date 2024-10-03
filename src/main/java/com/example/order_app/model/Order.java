@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,6 +24,9 @@ public class Order {
 
     @Column(name = "order_date", nullable = false)
     private LocalDate orderDate;
+
+    @Column(name = "total_amount")
+    private BigDecimal totalAmount;
 
     @Column(name = "order_status", nullable = false)
     @Enumerated(EnumType.STRING)

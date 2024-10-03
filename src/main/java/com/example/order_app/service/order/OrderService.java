@@ -13,9 +13,11 @@ import com.example.order_app.service.cart.CartService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -27,14 +29,24 @@ public class OrderService implements IOrderService {
     private final ModelMapper modelMapper;
 
 
+    @Transactional
     @Override
     public Order placeOrder(Long userId) {
-        return null;
+        Cart cart   = cartService.getCartByUserId(userId);
+        Order order = createOrder(cart);
+        List<OrderItem> orderItemList = createOrderItems(order, cart);
+        order.setOrderItems(new HashSet<>(orderItemList));
+        order.setTotalAmount(calculateTotalAmount(orderItemList));
+        //Save the order
+        Order savedOrder = orderRepository.save(order);
+        //clear the cart
+        cartService.clearCart(cart.getId());
+        return savedOrder;
     }
 
     private Order createOrder(Cart cart) {
         Order order = new Order();
-        // SET USER
+        order.setUser(cart.getUser());
         order.setOrderStatus(OrderStatus.PENDING);
         order.setOrderDate(LocalDate.now());
         return  order;
@@ -71,7 +83,8 @@ public class OrderService implements IOrderService {
 
     @Override
     public List<OrderDto> getUserOrders(Long userId) {
-        return List.of();
+        List<Order> orders = orderRepository.findByUserId(userId);
+        return  orders.stream().map(this :: convertToDto).toList();
     }
 
     private OrderDto convertToDto(Order order) {
