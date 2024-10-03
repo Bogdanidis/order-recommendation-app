@@ -1,16 +1,12 @@
 package com.example.order_app.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -32,7 +28,7 @@ public class Category {
     @OneToMany(mappedBy = "category",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
-    @JsonManagedReference
+    @JsonIgnore
     private List<Product> products ;
 
     public Category(String name, String description) {
@@ -40,13 +36,4 @@ public class Category {
         this.description = description;
     }
 
-    @Override
-    public String toString() {
-        return "Category{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", products=" + products +
-                '}';
-    }
 }

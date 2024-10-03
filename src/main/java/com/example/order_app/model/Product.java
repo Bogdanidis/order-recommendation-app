@@ -40,16 +40,10 @@ public class Product {
     private String brand;
 
     @OneToMany(mappedBy = "product",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-                    CascadeType.DETACH, CascadeType.REFRESH})
-    @JsonManagedReference
-    private List<OrderItem> orderItems;
-
-    @OneToMany(mappedBy = "product",
             cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="category_id")
     private Category category ;
 
@@ -63,18 +57,5 @@ public class Product {
         this.category = category;
     }
 
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", stock=" + stock +
-                ", price=" + price +
-                ", brand='" + brand + '\'' +
-                ", orderProducts=" + orderItems +
-                ", images=" + images +
-                ", category=" + category +
-                '}';
-    }
+
 }

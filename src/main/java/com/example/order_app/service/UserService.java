@@ -2,7 +2,7 @@ package com.example.order_app.service;
 
 import com.example.order_app.model.Admin;
 import com.example.order_app.model.Customer;
-import com.example.order_app.model.UserRegistrationDto;
+import com.example.order_app.dto.UserRegistrationDto;
 import com.example.order_app.repository.AdminRepository;
 import com.example.order_app.repository.CustomerRepository;
 import com.example.order_app.repository.UserRepository;

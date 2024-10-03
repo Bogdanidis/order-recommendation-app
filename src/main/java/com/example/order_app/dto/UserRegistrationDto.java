@@ -1,4 +1,4 @@
-package com.example.order_app.model;
+package com.example.order_app.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;

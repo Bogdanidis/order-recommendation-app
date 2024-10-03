@@ -1,6 +1,6 @@
 package com.example.order_app.controller;
 
-import com.example.order_app.model.UserRegistrationDto;
+import com.example.order_app.dto.UserRegistrationDto;
 import com.example.order_app.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

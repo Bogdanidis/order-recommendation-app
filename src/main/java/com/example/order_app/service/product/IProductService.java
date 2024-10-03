@@ -8,25 +8,19 @@ import com.example.order_app.request.UpdateProductRequest;
 import java.util.List;
 
 public interface IProductService {
-    Product addProduct(AddProductRequest request);
+    Product addProduct(AddProductRequest product);
     Product getProductById(Long id);
     void deleteProductById(Long id);
     Product updateProduct(UpdateProductRequest product, Long productId);
-
     List<Product> getAllProducts();
     List<Product> getProductsByCategory(String category);
     List<Product> getProductsByBrand(String brand);
     List<Product> getProductsByCategoryAndBrand(String category, String brand);
     List<Product> getProductsByName(String name);
-    List<Product> getProductsByBrandAndName(String name, String brand);
+    List<Product> getProductsByBrandAndName(String category, String name);
+    Long countProductsByBrandAndName(String brand, String name);
 
-    Long countProducts();
-    Long countProductsByCategory(String category);
-    Long countProductsByBrand(String brand);
-    Long countProductsByCategoryAndBrand(String category, String brand);
-    Long countProductsByName(String name);
-    Long countProductsByBrandAndName(String name, String brand);
+    List<ProductDto> getConvertedProducts(List<Product> products);
 
-    public List<ProductDto> getConvertedProducts(List<Product> products) ;
-    public ProductDto convertToDto(Product product);
+    ProductDto convertToDto(Product product);
 }

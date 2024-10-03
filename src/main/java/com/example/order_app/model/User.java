@@ -36,8 +36,19 @@ public class User {
     private String password;
 
     /*
+
     @Column(name = "role", nullable = false)
     private String role;
+
+
+    @Column(name = "phone", nullable = false)
+    private String phone;
+
+    @Column(name = "city", nullable = false)
+    private String city;
+
+    @Column(name = "country", nullable = false)
+    private String country;
     */
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

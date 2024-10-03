@@ -1,4 +1,4 @@
-package com.example.order_app.config.security;
+package com.example.order_app.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

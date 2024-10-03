@@ -1,4 +1,4 @@
-package com.example.order_app.config.security;
+package com.example.order_app.security;
 
 import com.example.order_app.service.CustomUserDetailsService;
 import lombok.AllArgsConstructor;
