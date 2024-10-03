@@ -1,7 +1,8 @@
 package com.example.order_app.service;
 
 import com.example.order_app.model.Order;
-import com.example.order_app.model.OrderProduct;
+import com.example.order_app.model.OrderItem;
+import com.example.order_app.model.OrderItem;
 import com.example.order_app.model.Product;
 import com.example.order_app.repository.OrderRepository;
 import com.example.order_app.repository.ProductRepository;
@@ -31,13 +32,13 @@ public class OrderService {
             if ("Pending".equals(order.getStatus())) {  // Check if the order is in a cancellable state
                 order.setStatus("Cancelled");
 
-                Set<OrderProduct> orderProducts = order.getOrderProducts();
-                for (OrderProduct orderProduct : orderProducts) {
-                    Product product = productRepository.findById(orderProduct.getProduct().getId())
+                Set<OrderItem> orderItems = order.getOrderItems();
+                for (OrderItem orderItem : orderItems) {
+                    Product product = productRepository.findById(orderItem.getProduct().getId())
                             .orElseThrow(() -> new RuntimeException("Product not found"));
 
                     // Update cancelled order stock
-                    product.setStock(product.getStock() + orderProduct.getQuantity());
+                    product.setStock(product.getStock() + orderItem.getQuantity());
                     productRepository.save(product);
                 }
 

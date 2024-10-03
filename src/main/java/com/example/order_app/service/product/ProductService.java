@@ -189,13 +189,13 @@ public class ProductService implements IProductService{
         order.setStatus("Pending");
 
         // Create an OrderProduct relationship
-        OrderProduct orderProduct = new OrderProduct();
-        orderProduct.setProduct(product);
-        orderProduct.setQuantity(quantity);
-        orderProduct.setOrder(order);
+        OrderItem orderItem = new OrderItem();
+        orderItem.setProduct(product);
+        orderItem.setQuantity(quantity);
+        orderItem.setOrder(order);
 
         // Add OrderProduct to Order
-        order.getOrderProducts().add(orderProduct);
+        order.getOrderItems().add(orderItem);
 
 
         // Save the order

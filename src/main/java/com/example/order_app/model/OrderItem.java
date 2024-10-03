@@ -6,25 +6,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Setter
 @Getter
 @NoArgsConstructor
-@Table(name = "order_products")
-public class OrderProduct {
+@Table(name = "order_itemss")
+public class OrderItem {
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    /*@Column(name="order_id")
-    private Long order_id;
-
-    @Column(name="product_id")
-    private Long product_id;
-    */
-    //Maybe @Column(name="customer_id")
 
     @JoinColumn(name = "product_id", nullable = false)
     @ManyToOne(fetch = FetchType.EAGER,
@@ -43,21 +37,12 @@ public class OrderProduct {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
+    private BigDecimal price;
 
-
-    public OrderProduct(Product product, Order order, Integer quantity) {
-        this.product = product;
+    public OrderItem(Order order, Product product, Integer quantity, BigDecimal price) {
         this.order = order;
+        this.product = product;
         this.quantity = quantity;
-    }
-
-    @Override
-    public String toString() {
-        return "OrderProduct{" +
-                "id=" + id +
-                ", product=" + product +
-                ", order=" + order +
-                ", quantity=" + quantity +
-                '}';
+        this.price = price;
     }
 }

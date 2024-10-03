@@ -43,7 +43,7 @@ public class Product {
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
     @JsonManagedReference
-    private List<OrderProduct> orderProducts;
+    private List<OrderItem> orderItems;
 
     @OneToMany(mappedBy = "product",
             cascade = CascadeType.ALL, orphanRemoval = true)
@@ -72,7 +72,7 @@ public class Product {
                 ", stock=" + stock +
                 ", price=" + price +
                 ", brand='" + brand + '\'' +
-                ", orderProducts=" + orderProducts +
+                ", orderProducts=" + orderItems +
                 ", images=" + images +
                 ", category=" + category +
                 '}';

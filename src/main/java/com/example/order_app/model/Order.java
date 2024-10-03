@@ -1,5 +1,6 @@
 package com.example.order_app.model;
 
+import com.example.order_app.enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,7 +9,9 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Setter
@@ -33,36 +36,13 @@ public class Order {
     @Temporal(TemporalType.DATE)
     private Date date;
 
-    @Column(name = "status", nullable = false)
-    private String status;
+    @Column(name = "order_status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
 
-    @OneToMany(mappedBy = "order",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-                    CascadeType.DETACH, CascadeType.REFRESH})
-    private List<OrderProduct> orderProducts;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL,orphanRemoval = true)
+    private Set<OrderItem> orderItems= new HashSet<>();
 
 
-    public Order(Customer customer, Date date, String status, List<OrderProduct> orderProducts) {
-        this.customer = customer;
-        this.date = date;
-        this.status = status;
-        this.orderProducts = orderProducts;
-    }
 
-    @Override
-    public String toString() {
-        return "Order{" +
-                "id=" + id +
-                ", customer=" + customer +
-                ", date=" + date +
-                ", status='" + status + '\'' +
-                ", orderProducts=" + orderProducts +
-                '}';
-    }
-
-    public BigDecimal getTotalAmount() {
-        return orderProducts.stream()
-                .map(orderProduct -> orderProduct.getProduct().getPrice().multiply(BigDecimal.valueOf(orderProduct.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
 }
