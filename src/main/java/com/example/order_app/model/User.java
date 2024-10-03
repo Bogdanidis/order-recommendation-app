@@ -15,66 +15,33 @@ import java.util.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@Inheritance(strategy = InheritanceType.JOINED)
-public abstract class User implements UserDetails {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username", nullable = false)
-    private String username;
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
 
-    @Column(name = "password", nullable = false)
-    private String password;
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
+
 
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Date createdAt;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "updated_at", nullable = false)
-    private Date updatedAt;
+    @Column(name = "password", nullable = false)
+    private String password;
 
     @Column(name = "role", nullable = false)
     private String role;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Cart cart;
 
-    protected User(String username, String password, String email) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.createdAt = new java.util.Date();
-        this.updatedAt = new java.util.Date();
-    }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Order> orders;
 
 
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 }
