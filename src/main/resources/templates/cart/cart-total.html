@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Total Price</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-4">
+    <h1>Total Cart Price</h1>
+
+    <div th:if="${error}" class="alert alert-danger" role="alert">
+        <span th:text="${error}"></span>
+    </div>
+
+    <div th:if="${totalPrice}">
+        <h2>Total Price: $<span th:text="${totalPrice}"></span></h2>
+    </div>
+
+    <a th:href="@{/cart/{cartId}/view(cartId=${cart.id})}" class="btn btn-secondary">Back to Cart</a>
+</div>
+</body>
+</html>

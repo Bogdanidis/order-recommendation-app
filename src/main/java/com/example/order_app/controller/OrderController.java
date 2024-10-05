@@ -1,40 +1,66 @@
-//package com.example.order_app.controller;
-//
-//import com.example.order_app.model.User;
-//import com.example.order_app.service.OrderService;
-//import com.example.order_app.service.product.ProductService;
-//import lombok.AllArgsConstructor;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.security.core.Authentication;
-//import org.springframework.stereotype.Controller;
-//import org.springframework.web.bind.annotation.*;
-//
-//@Controller
-//@AllArgsConstructor
-//@RequestMapping("orders")
-//public class OrderController {
-//
-//    private final OrderService orderService;
-//    private final ProductService productService;
-//
-//    // Handle ordering of products
-//    @PostMapping("/make")
-//    public String orderProducts(@RequestParam("productId") Long productId,
-//                                @RequestParam("quantity") Integer quantity, Authentication authentication) {
-//        // Implement logic to add the product to the user's order
-//        // Redirect to a confirmation page or back to the products page
-//        User user = (User) authentication.getPrincipal();
-//        productService.orderProduct(productId, quantity, user.getId());
-//        return "redirect:/customer/browse-products?orderSuccess=true";
-//    }
-//
-//    @PostMapping("/cancel/{orderId}")
-//    public ResponseEntity<String> cancelOrder(@PathVariable Long orderId) {
-//        try {
-//            orderService.cancelOrder(orderId);
-//            return ResponseEntity.ok("Order cancelled successfully.");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).body("Error cancelling order: " + e.getMessage());
-//        }
-//    }
-//}
+package com.example.order_app.controller;
+
+import com.example.order_app.dto.OrderDto;
+import com.example.order_app.exception.ResourceNotFoundException;
+import com.example.order_app.model.Order;
+import com.example.order_app.service.order.IOrderService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
+
+@Controller
+@RequiredArgsConstructor
+@RequestMapping("/orders")
+public class OrderController {
+    private final IOrderService orderService;
+
+
+
+    @GetMapping("/create")
+    public String showCreateOrderForm(Model model) {
+        model.addAttribute("userId", 0);
+        return "orders/create";
+    }
+
+    @PostMapping("/create")
+    public String createOrder(@RequestParam Long userId, RedirectAttributes redirectAttributes) {
+        try {
+            Order order = orderService.placeOrder(userId);
+            redirectAttributes.addFlashAttribute("message", "Order placed successfully");
+            return "redirect:/orders/" + order.getId();
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error occurred: " + e.getMessage());
+            return "redirect:/orders/create";
+        }
+    }
+
+    @GetMapping("/{orderId}")
+    public String getOrderById(@PathVariable Long orderId, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            OrderDto order = orderService.getOrder(orderId);
+            model.addAttribute("order", order);
+            return "orders/details";
+        } catch (ResourceNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/orders/list";
+        }
+    }
+
+    @GetMapping("/user/{userId}")
+    public String getUserOrders(@PathVariable Long userId, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            List<OrderDto> orders = orderService.getUserOrders(userId);
+            model.addAttribute("orders", orders);
+            model.addAttribute("userId", userId);
+            return "orders/user-orders";
+        } catch (ResourceNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/orders/list";
+        }
+    }
+
+}

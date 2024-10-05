@@ -1,4 +1,4 @@
-package com.example.order_app.controller;
+package com.example.order_app.controller.rest;
 
 import com.example.order_app.exception.AlreadyExistsException;
 import com.example.order_app.exception.ResourceNotFoundException;
@@ -6,7 +6,6 @@ import com.example.order_app.model.Category;
 import com.example.order_app.response.ApiResponse;
 import com.example.order_app.service.category.ICategoryService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

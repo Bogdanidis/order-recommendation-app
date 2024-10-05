@@ -5,8 +5,10 @@ import com.example.order_app.model.User;
 import com.example.order_app.request.CreateUserRequest;
 import com.example.order_app.request.UpdateUserRequest;
 
-public interface IUserService {
+import java.util.List;
 
+public interface IUserService {
+    List<User> findAll();
     User getUserById(Long userId);
     User createUser(CreateUserRequest request);
     User updateUser(UpdateUserRequest request, Long userId);

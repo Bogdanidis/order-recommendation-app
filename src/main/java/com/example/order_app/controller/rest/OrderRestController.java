@@ -1,4 +1,4 @@
-package com.example.order_app.controller;
+package com.example.order_app.controller.rest;
 
 import com.example.order_app.dto.OrderDto;
 import com.example.order_app.exception.ResourceNotFoundException;

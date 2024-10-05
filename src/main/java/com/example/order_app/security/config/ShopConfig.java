@@ -76,7 +76,7 @@ public class ShopConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->auth
                         //.requestMatchers(SECURED_URLS.toArray(String[]::new)).authenticated()
-                        .requestMatchers("/api/**").authenticated()
+                        .requestMatchers("${api.prefix}/**").authenticated()
                         .anyRequest().permitAll());
         http.authenticationProvider(daoAuthenticationProvider());
         http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
