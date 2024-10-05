@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -30,6 +31,7 @@ import java.util.List;
 public class ShopConfig {
     private final ShopUserDetailsService userDetailsService;
     private final JwtAuthEntryPoint authEntryPoint;
+    private final CustomLoginSuccessHandler customLoginSuccessHandler;
 
     private static final List<String> SECURED_URLS =
             List.of("/api/v1/carts/**", "/api/v1/cartItems/**");
@@ -64,13 +66,17 @@ public class ShopConfig {
         return authProvider;
     }
 
+    // JWT-based security for /api/** endpoints
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    @Order(1)
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
 
         http.csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth ->auth.requestMatchers(SECURED_URLS.toArray(String[]::new)).authenticated()
+                .authorizeHttpRequests(auth ->auth
+                        //.requestMatchers(SECURED_URLS.toArray(String[]::new)).authenticated()
+                        .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll());
         http.authenticationProvider(daoAuthenticationProvider());
         http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -78,4 +84,32 @@ public class ShopConfig {
 
     }
 
+    // Session-based security for non-API routes (Thymeleaf pages, etc.)
+    @Bean
+    @Order(2)
+    public SecurityFilterChain sessionSecurityFilterChain(HttpSecurity http) throws Exception {
+
+        // Session-based security for non-API routes (Thymeleaf pages, etc.)
+        http
+                //.csrf(AbstractHttpConfigurer::enable)
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/", "/login", "/register", "/css/**", "/js/**").permitAll()  // Public access
+                        .requestMatchers("/admin/**").hasRole("ADMIN")  // Admin only
+                        //.requestMatchers("/user/**").hasRole("USER")  // User only
+                        .anyRequest().authenticated()  // Any other request requires authentication
+                )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .successHandler(customLoginSuccessHandler)
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout=true")
+                        .permitAll()
+                );
+
+        return http.build();
+    }
 }
