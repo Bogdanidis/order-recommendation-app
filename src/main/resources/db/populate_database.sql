@@ -77,11 +77,11 @@ VALUES
     (899.99, 899.99, 1, 2, 2), -- 1 Samsung Galaxy S22 in Jane Smith's cart
     (19.99, 19.99, 1, 3, 7), -- 1 Harry Potter book in Alice Johnson's cart
     (29.99, 29.99, 1, 5, 10); -- 1 Toy Car in Charlie Davis's cart
-
-INSERT INTO images (file_name, file_type, image, download_url, product_id)
-VALUES
-    ('iphone13.jpg', 'image/jpeg', LOAD_FILE('path/to/iphone13.jpg'), 'http://example.com/images/iphone13.jpg', 1),
-    ('samsung_s22.jpg', 'image/jpeg', LOAD_FILE('path/to/samsung_s22.jpg'), 'http://example.com/images/samsung_s22.jpg', 2),
-    ('macbook_pro.jpg', 'image/jpeg', LOAD_FILE('path/to/macbook_pro.jpg'), 'http://example.com/images/macbook_pro.jpg', 3),
-    ('sony_tv.jpg', 'image/jpeg', LOAD_FILE('path/to/sony_tv.jpg'), 'http://example.com/images/sony_tv.jpg', 4),
-    ('washing_machine.jpg', 'image/jpeg', LOAD_FILE('path/to/washing_machine.jpg'), 'http://example.com/images/washing_machine.jpg', 5);
+#
+# INSERT INTO images (file_name, file_type, image, download_url, product_id)
+# VALUES
+#     ('iphone13.jpg', 'image/jpeg', LOAD_FILE('path/to/iphone13.jpg'), 'http://example.com/images/iphone13.jpg', 1),
+#     ('samsung_s22.jpg', 'image/jpeg', LOAD_FILE('path/to/samsung_s22.jpg'), 'http://example.com/images/samsung_s22.jpg', 2),
+#     ('macbook_pro.jpg', 'image/jpeg', LOAD_FILE('path/to/macbook_pro.jpg'), 'http://example.com/images/macbook_pro.jpg', 3),
+#     ('sony_tv.jpg', 'image/jpeg', LOAD_FILE('path/to/sony_tv.jpg'), 'http://example.com/images/sony_tv.jpg', 4),
+#     ('washing_machine.jpg', 'image/jpeg', LOAD_FILE('path/to/washing_machine.jpg'), 'http://example.com/images/washing_machine.jpg', 5);

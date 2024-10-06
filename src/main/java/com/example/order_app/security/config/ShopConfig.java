@@ -34,7 +34,7 @@ public class ShopConfig {
     private final CustomLoginSuccessHandler customLoginSuccessHandler;
 
     private static final List<String> SECURED_URLS =
-            List.of("/api/v1/carts/**", "/api/v1/cartItems/**");
+            List.of("/order-api/v1/carts/**", "/order-api/v1/cartItems/**");
 
 
     @Bean
@@ -71,12 +71,13 @@ public class ShopConfig {
     @Order(1)
     public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
 
+        http.securityMatcher("/order-api/v1/**");
         http.csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->auth
-                        //.requestMatchers(SECURED_URLS.toArray(String[]::new)).authenticated()
-                        .requestMatchers("${api.prefix}/**").authenticated()
+                        .requestMatchers(SECURED_URLS.toArray(String[]::new)).authenticated()
+                        //.requestMatchers("/order-api/v1/**").authenticated()
                         .anyRequest().permitAll());
         http.authenticationProvider(daoAuthenticationProvider());
         http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -91,13 +92,19 @@ public class ShopConfig {
 
         // Session-based security for non-API routes (Thymeleaf pages, etc.)
         http
-                //.csrf(AbstractHttpConfigurer::enable)
-                .csrf(AbstractHttpConfigurer::disable)
+                //.csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session
+                    .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                    .maximumSessions(1)
+                    .maxSessionsPreventsLogin(false)
+                )
+                .securityMatcher("/**")
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/register", "/css/**", "/js/**").permitAll()  // Public access
+                        .requestMatchers("/", "/auth/**", "/css/**", "/js/**").permitAll()  // Public access
                         .requestMatchers("/admin/**").hasRole("ADMIN")  // Admin only
                         //.requestMatchers("/user/**").hasRole("USER")  // User only
-                        .anyRequest().authenticated()  // Any other request requires authentication
+                        .anyRequest().permitAll()
+                        //.anyRequest().authenticated()  // Any other request requires authentication
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
