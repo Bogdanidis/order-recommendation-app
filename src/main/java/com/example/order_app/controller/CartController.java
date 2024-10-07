@@ -36,7 +36,7 @@ public class CartController {
             BigDecimal totalPrice = cartService.getTotalPrice(cartId);
             model.addAttribute("totalPrice", totalPrice);
             model.addAttribute("cart", cart);
-            return "cart/view-cart"; // This is the Thymeleaf template to display cart items
+            return "cart/view"; // This is the Thymeleaf template to display cart items
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/error";

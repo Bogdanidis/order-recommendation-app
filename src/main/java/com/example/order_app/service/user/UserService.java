@@ -4,6 +4,7 @@ import com.example.order_app.dto.UserDto;
 import com.example.order_app.exception.AlreadyExistsException;
 import com.example.order_app.exception.ResourceNotFoundException;
 import com.example.order_app.model.User;
+import com.example.order_app.repository.RoleRepository;
 import com.example.order_app.repository.UserRepository;
 import com.example.order_app.request.CreateUserRequest;
 import com.example.order_app.request.UpdateUserRequest;
@@ -14,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +24,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService implements IUserService {
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -46,6 +49,8 @@ public class UserService implements IUserService {
                     user.setPassword(passwordEncoder.encode(request.getPassword()));
                     user.setFirstName(request.getFirstName());
                     user.setLastName(request.getLastName());
+                    //create users with the Role of User only. Admin cannot register normally.
+                    user.setRoles(new HashSet<>(roleRepository.findByName("ROLE_USER")));
                     return  userRepository.save(user);
                 }) .orElseThrow(() -> new AlreadyExistsException("Oops!" +request.getEmail() +" already exists!"));
     }
