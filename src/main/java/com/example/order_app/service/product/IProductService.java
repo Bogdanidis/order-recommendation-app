@@ -4,6 +4,8 @@ import com.example.order_app.dto.ProductDto;
 import com.example.order_app.model.Product;
 import com.example.order_app.request.AddProductRequest;
 import com.example.order_app.request.UpdateProductRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -12,7 +14,7 @@ public interface IProductService {
     Product getProductById(Long id);
     void deleteProductById(Long id);
     Product updateProduct(UpdateProductRequest product, Long productId);
-    List<Product> getAllProducts();
+    Page<Product> getAllProducts(Pageable pageable);
     List<Product> getProductsByCategory(String category);
     List<Product> getProductsByBrand(String brand);
     List<Product> getProductsByCategoryAndBrand(String category, String brand);

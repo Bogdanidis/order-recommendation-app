@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Product List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
-<div th:replace="~{layout :: content}">
+<div class="container">
     <h1 class="mb-4">Product List</h1>
     <div class="table-responsive">
         <table class="table table-striped table-hover">
@@ -37,6 +38,32 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation" th:if="${totalPages > 1}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{/products(page=${currentPage - 1})}">&laquo; Previous</a>
+            </li>
+            <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
+                th:classappend="${pageNum == currentPage} ? 'active'">
+                <a class="page-link" th:href="@{/products(page=${pageNum})}" th:text="${pageNum + 1}">1</a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/products(page=${currentPage + 1})}">Next &raquo;</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Pagination Info -->
+    <div class="text-center mt-3">
+        <p>Showing page <span th:text="${currentPage + 1}"></span> of <span th:text="${totalPages}"></span></p>
+        <p>Total items: <span th:text="${totalItems}"></span></p>
+    </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>

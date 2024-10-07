@@ -7,6 +7,8 @@ import com.example.order_app.request.AddProductRequest;
 import com.example.order_app.request.UpdateProductRequest;
 import com.example.order_app.service.product.IProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,11 +25,18 @@ public class ProductController {
     private final IProductService productService;
 
     @GetMapping
-    public String getAllProducts(Model model) {
-        List<Product> products = productService.getAllProducts();
-        List<ProductDto> convertedProducts = productService.getConvertedProducts(products);
+    public String getAllProducts(Model model,
+                                 @RequestParam(defaultValue = "0") int page,
+                                 @RequestParam(defaultValue = "9") int size) {
+        Page<Product> productPage = productService.getAllProducts(PageRequest.of(page, size));
+        List<ProductDto> convertedProducts = productService.getConvertedProducts(productPage.getContent());
+
         model.addAttribute("products", convertedProducts);
-        return "products/list";
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("totalItems", productPage.getTotalElements());
+
+        return "product/list";
     }
 
     @GetMapping("/{productId}")
@@ -36,7 +45,7 @@ public class ProductController {
             Product product = productService.getProductById(productId);
             ProductDto productDto = productService.convertToDto(product);
             model.addAttribute("product", productDto);
-            return "products/details";
+            return "product/details";
         } catch (ResourceNotFoundException e) {
             model.addAttribute("error", e.getMessage());
             return "redirect:/products";
@@ -47,7 +56,7 @@ public class ProductController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String showAddProductForm(Model model) {
         model.addAttribute("product", new AddProductRequest());
-        return "products/add";
+        return "product/add";
     }
 
     @PostMapping("/add")
@@ -69,7 +78,7 @@ public class ProductController {
         try {
             Product product = productService.getProductById(productId);
             model.addAttribute("product", product);
-            return "products/update";
+            return "product/update";
         } catch (ResourceNotFoundException e) {
             model.addAttribute("error", e.getMessage());
             //return "error/404";
@@ -125,7 +134,7 @@ public class ProductController {
         model.addAttribute("brandName", brandName);
         model.addAttribute("productName", productName);
         model.addAttribute("category", category);
-        return "products/search";
+        return "product/search";
     }
 
     @GetMapping("/count")

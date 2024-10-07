@@ -92,28 +92,28 @@ public class ShopConfig {
 
         // Session-based security for non-API routes (Thymeleaf pages, etc.)
         http
+                .authenticationProvider(daoAuthenticationProvider())
                 //.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
                     .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                     .maximumSessions(1)
                     .maxSessionsPreventsLogin(false)
                 )
-                .securityMatcher("/**")
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/auth/**", "/css/**", "/js/**").permitAll()  // Public access
+                        .requestMatchers("/","/home", "/auth/**", "/css/**", "/js/**").permitAll()  // Public access
                         .requestMatchers("/admin/**").hasRole("ADMIN")  // Admin only
                         //.requestMatchers("/user/**").hasRole("USER")  // User only
                         .anyRequest().permitAll()
                         //.anyRequest().authenticated()  // Any other request requires authentication
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")
+                        .loginPage("/auth/login")
                         .successHandler(customLoginSuccessHandler)
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout=true")
+                        .logoutUrl("/auth/logout")
+                        .logoutSuccessUrl("/home?logout=true")
                         .permitAll()
                 );
 

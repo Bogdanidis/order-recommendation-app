@@ -23,12 +23,12 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class ProductRestController {
     private final IProductService productService;
 
-    @GetMapping("/all")
-    public ResponseEntity<ApiResponse> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
-        List<ProductDto> convertedProducts = productService.getConvertedProducts(products);
-        return  ResponseEntity.ok(new ApiResponse("success", convertedProducts));
-    }
+//    @GetMapping("/all")
+//    public ResponseEntity<ApiResponse> getAllProducts() {
+//        List<Product> products = productService.getAllProducts();
+//        List<ProductDto> convertedProducts = productService.getConvertedProducts(products);
+//        return  ResponseEntity.ok(new ApiResponse("success", convertedProducts));
+//    }
 
     @GetMapping("product/{productId}/product")
     public ResponseEntity<ApiResponse> getProductById(@PathVariable Long productId) {

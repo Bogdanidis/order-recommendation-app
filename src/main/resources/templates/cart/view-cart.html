@@ -22,16 +22,33 @@
             <th>Product</th>
             <th>Quantity</th>
             <th>Price</th>
+            <th>Total</th>
             <th>Actions</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="item : ${cart.items}">
             <td th:text="${item.product.name}"></td>
-            <td th:text="${item.quantity}"></td>
-            <td th:text="${item.unitPrice}"></td>
+            <td>
+                <form th:action="@{/cart/{cartId}/item/{itemId}/update(cartId=${cart.id}, itemId=${item.id})}" method="post" class="form-inline">
+                    <input type="hidden" name="_method" value="PUT"/>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <button class="btn btn-outline-secondary" type="submit" name="action" value="decrease">-</button>
+                        </div>
+                        <input type="number" class="form-control text-center" style="width: 60px;" name="quantity" th:value="${item.quantity}" min="1"/>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="submit" name="action" value="increase">+</button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary ml-2" name="action" value="update">Update</button>
+                </form>
+            </td>
+            <td th:text="${#numbers.formatDecimal(item.unitPrice, 1, 2)}"></td>
+            <td th:text="${#numbers.formatDecimal(item.unitPrice * item.quantity, 1, 2)}"></td>
             <td>
                 <form th:action="@{/cart/{cartId}/item/{itemId}/remove(cartId=${cart.id}, itemId=${item.id})}" method="post">
+                    <input type="hidden" name="_method" value="DELETE"/>
                     <button class="btn btn-danger" type="submit">Remove</button>
                 </form>
             </td>
@@ -39,8 +56,13 @@
         </tbody>
     </table>
 
-    <a th:href="@{/cart/{cartId}/cart/total-price(cartId=${cart.id})}" class="btn btn-primary">View Total Price</a>
-    <a th:href="@{/cart/{cartId}/clear(cartId=${cart.id})}" class="btn btn-warning">Clear Cart</a>
+    <div th:if="${totalPrice}">
+        <h2>Total Price: $<span th:text="${totalPrice}"></span></h2>
+    </div>
+    <form th:action="@{/cart/{cartId}/clear(cartId=${cart.id})}" method="post" style="display:inline;">
+        <input type="hidden" name="_method" value="DELETE"/>
+        <button type="submit" class="btn btn-warning">Clear Cart</button>
+    </form>
 </div>
 </body>
 </html>

@@ -20,7 +20,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
         // Assuming roles are prefixed with "ROLE_" (e.g., ROLE_ADMIN, ROLE_USER)
         if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
-            redirectUrl = "/admin/home";  // Redirect to admin home if the user has the role "ADMIN"
+            redirectUrl = "/admin/dashboard";  // Redirect to admin home if the user has the role "ADMIN"
         } else if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_USER"))) {
             redirectUrl = "/home";  // Redirect to user home if the user has the role "USER"
         }

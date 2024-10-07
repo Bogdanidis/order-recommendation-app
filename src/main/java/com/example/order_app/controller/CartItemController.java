@@ -1,6 +1,7 @@
 package com.example.order_app.controller;
 
 import com.example.order_app.exception.ResourceNotFoundException;
+import com.example.order_app.model.Product;
 import com.example.order_app.service.cart.ICartItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -31,7 +32,8 @@ public class CartItemController {
     @DeleteMapping("/{cartId}/item/{itemId}/remove")
     public String removeItemFromCart(@PathVariable Long cartId, @PathVariable Long itemId, RedirectAttributes redirectAttributes) {
         try {
-            cartItemService.removeItemFromCart(cartId, itemId);
+            Product product=cartItemService.getProduct(cartId,itemId);
+            cartItemService.removeItemFromCart(cartId, product.getId());
             redirectAttributes.addFlashAttribute("success", "Item removed from cart!");
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -44,9 +46,23 @@ public class CartItemController {
             @PathVariable Long cartId,
             @PathVariable Long itemId,
             @RequestParam Integer quantity,
+            @RequestParam String action,
             RedirectAttributes redirectAttributes) {
         try {
-            cartItemService.updateItemQuantity(cartId, itemId, quantity);
+            Product product=cartItemService.getProduct(cartId,itemId);
+            switch (action) {
+                case "increase":
+                    cartItemService.updateItemQuantity(cartId, product.getId(), quantity + 1);
+                    break;
+                case "decrease":
+                    if (quantity > 1) {
+                        cartItemService.updateItemQuantity(cartId, product.getId(), quantity - 1);
+                    }
+                    break;
+                case "update":
+                    cartItemService.updateItemQuantity(cartId, product.getId(), quantity);
+                    break;
+            }
             redirectAttributes.addFlashAttribute("success", "Cart updated successfully!");
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());

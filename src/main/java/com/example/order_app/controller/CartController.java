@@ -33,7 +33,8 @@ public class CartController {
                 redirectAttributes.addFlashAttribute("error", "You can only access your own cart.");
                 return "redirect:/error";
             }
-
+            BigDecimal totalPrice = cartService.getTotalPrice(cartId);
+            model.addAttribute("totalPrice", totalPrice);
             model.addAttribute("cart", cart);
             return "cart/view-cart"; // This is the Thymeleaf template to display cart items
         } catch (ResourceNotFoundException e) {
@@ -53,15 +54,5 @@ public class CartController {
         return "redirect:/cart/" + cartId + "/view";
     }
 
-    @GetMapping("/{cartId}/cart/total-price")
-    public String getTotalAmount(@PathVariable Long cartId, Model model, RedirectAttributes redirectAttributes) {
-        try {
-            BigDecimal totalPrice = cartService.getTotalPrice(cartId);
-            model.addAttribute("totalPrice", totalPrice);
-            return "cart/cart-total"; // A Thymeleaf template to display the total cart amount
-        } catch (ResourceNotFoundException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/error";
-        }
-    }
+
 }

@@ -16,7 +16,12 @@ VALUES
     ('Books', 'Printed books and e-books of various genres'),
     ('Furniture', 'Tables, chairs, and other home furniture'),
     ('Clothing', 'Men and women clothing items'),
-    ('Toys', 'Toys for children of all ages');
+    ('Toys', 'Toys for children of all ages'),
+    ('Sports & Outdoors', 'Equipment and gear for various sports and outdoor activities'),
+    ('Beauty & Personal Care', 'Cosmetics, skincare, and personal grooming products'),
+    ('Home & Garden', 'Decor, gardening tools, and home improvement items'),
+    ('Food & Beverages', 'Groceries, snacks, and drinks'),
+    ('Automotive', 'Car parts, accessories, and maintenance products');
 
 INSERT INTO products (name, description, stock, price, brand, category_id)
 VALUES
@@ -29,7 +34,17 @@ VALUES
     ('Harry Potter and the Sorcerer\'s Stone', 'Fantasy novel by J.K. Rowling', 500, 19.99, 'Scholastic', 3),
     ('Office Chair', 'Ergonomic office chair', 200, 129.99, 'Herman Miller', 4),
     ('Men\'s T-shirt', 'Cotton t-shirt', 300, 19.99, 'Nike', 5),
-    ('Toy Car', 'Remote control toy car', 100, 29.99, 'Hot Wheels', 6);
+    ('Toy Car', 'Remote control toy car', 100, 29.99, 'Hot Wheels', 6),
+    ('Tennis Racket', 'Professional grade tennis racket', 50, 199.99, 'Wilson', 7),
+    ('Yoga Mat', 'Non-slip exercise yoga mat', 100, 29.99, 'Lululemon', 7),
+    ('Lipstick', 'Long-lasting matte lipstick', 200, 24.99, 'MAC', 8),
+    ('Electric Shaver', 'Rechargeable electric shaver', 75, 89.99, 'Philips', 8),
+    ('Throw Pillow Set', 'Decorative throw pillow set of 4', 150, 39.99, 'HomeGoods', 9),
+    ('Garden Hose', '50ft expandable garden hose', 80, 34.99, 'Flexzilla', 9),
+    ('Organic Coffee Beans', 'Fair trade organic coffee beans', 300, 14.99, 'Starbucks', 10),
+    ('Protein Bar Variety Pack', 'Assorted flavors protein bars', 500, 19.99, 'KIND', 10),
+    ('Car Phone Mount', 'Universal car phone holder', 200, 19.99, 'iOttie', 11),
+    ('Motor Oil', 'Synthetic blend motor oil', 400, 24.99, 'Mobil 1', 11);
 
 
 INSERT INTO roles (name)
@@ -62,21 +77,21 @@ VALUES
     (1, 19.99, 4, 7), -- 1 Harry Potter book for Order 4
     (1, 1999.99, 5, 3); -- 1 MacBook Pro for Order 5
 
-INSERT INTO carts (total_amount, user_id)
-VALUES
-    (1049.98, 1), -- Cart for John Doe
-    (899.99, 2), -- Cart for Jane Smith
-    (1999.99, 3), -- Cart for Alice Johnson
-    (19.99, 4), -- Cart for Bob Brown
-    (29.99, 5); -- Cart for Charlie Davis
-
-INSERT INTO cart_items (total_price, unit_price, quantity, cart_id, product_id)
-VALUES
-    (999.99, 999.99, 1, 1, 1), -- 1 iPhone 13 in John Doe's cart
-    (49.99, 49.99, 1, 1, 10), -- 1 Toy Car in John Doe's cart
-    (899.99, 899.99, 1, 2, 2), -- 1 Samsung Galaxy S22 in Jane Smith's cart
-    (19.99, 19.99, 1, 3, 7), -- 1 Harry Potter book in Alice Johnson's cart
-    (29.99, 29.99, 1, 5, 10); -- 1 Toy Car in Charlie Davis's cart
+# INSERT INTO carts (total_amount, user_id)
+# VALUES
+#     (1049.98, 1), -- Cart for John Doe
+#     (899.99, 2), -- Cart for Jane Smith
+#     (1999.99, 3), -- Cart for Alice Johnson
+#     (19.99, 4), -- Cart for Bob Brown
+#     (29.99, 5); -- Cart for Charlie Davis
+#
+# INSERT INTO cart_items (total_price, unit_price, quantity, cart_id, product_id)
+# VALUES
+#     (999.99, 999.99, 1, 1, 1), -- 1 iPhone 13 in John Doe's cart
+#     (49.99, 49.99, 1, 1, 10), -- 1 Toy Car in John Doe's cart
+#     (899.99, 899.99, 1, 2, 2), -- 1 Samsung Galaxy S22 in Jane Smith's cart
+#     (19.99, 19.99, 1, 3, 7), -- 1 Harry Potter book in Alice Johnson's cart
+#     (29.99, 29.99, 1, 5, 10); -- 1 Toy Car in Charlie Davis's cart
 #
 # INSERT INTO images (file_name, file_type, image, download_url, product_id)
 # VALUES

@@ -46,7 +46,7 @@ public class AuthController {
     @GetMapping("/logout")
     public String logout() {
         SecurityContextHolder.clearContext();
-        return "redirect:/auth/login?logout=true"; // Redirect to login with a logout message
+        return "redirect:/home?logout=true"; // Redirect to login with a logout message
     }
 
     // New: Registration Form

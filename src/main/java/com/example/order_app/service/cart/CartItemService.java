@@ -84,4 +84,15 @@ public class CartItemService  implements ICartItemService{
                 .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst().orElseThrow(() -> new ResourceNotFoundException("Item not found"));
     }
+
+    @Override
+    public Product getProduct(Long cartId, Long itemId) {
+        Cart cart = cartService.getCart(cartId);
+        CartItem cartItem = cart.getItems()
+                .stream()
+                .filter(item -> item.getId().equals(itemId))  // Filter by cartItemId
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Cart Item not found"));  // Throw exception if not found
+        return cartItem.getProduct();  // Return the associated product
+    }
 }

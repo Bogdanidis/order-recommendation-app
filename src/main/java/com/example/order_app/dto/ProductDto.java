@@ -12,7 +12,7 @@ public class ProductDto {
     private String name;
     private String brand;
     private BigDecimal price;
-    private int inventory;
+    private int stock;
     private String description;
     private Category category;
     private List<ImageDto> images;
