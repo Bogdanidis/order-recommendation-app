@@ -10,6 +10,7 @@ import com.example.order_app.model.Product;
 import com.example.order_app.repository.OrderRepository;
 import com.example.order_app.repository.ProductRepository;
 import com.example.order_app.service.cart.CartService;
+import com.example.order_app.service.cart.ICartService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -25,25 +26,42 @@ import java.util.List;
 public class OrderService implements IOrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
-    private final CartService cartService;
+    private final ICartService cartService;
     private final ModelMapper modelMapper;
 
 
+//    @Transactional
+//    @Override
+//    public Order placeOrder(Long userId) {
+//        Cart cart   = cartService.getCartByUserId(userId);
+//        if (cart == null || cart.getItems().isEmpty()) {
+//            throw new ResourceNotFoundException("Cart is empty or not found");
+//        }
+//        Order order = createOrder(cart);
+//        List<OrderItem> orderItemList = createOrderItems(order, cart);
+//        order.setOrderItems(new HashSet<>(orderItemList));
+//        order.setTotalAmount(calculateTotalAmount(orderItemList));
+//        //Save the order
+//        Order savedOrder = orderRepository.save(order);
+//        //clear the cart
+//        cartService.clearCart(cart.getId());
+//        return savedOrder;
+//    }
     @Transactional
     @Override
     public Order placeOrder(Long userId) {
-        Cart cart   = cartService.getCartByUserId(userId);
+        Cart cart = cartService.getCartByUserId(userId);
+        if (cart == null || cart.getItems().isEmpty()) {
+            throw new ResourceNotFoundException("Cart is empty or not found");
+        }
         Order order = createOrder(cart);
         List<OrderItem> orderItemList = createOrderItems(order, cart);
         order.setOrderItems(new HashSet<>(orderItemList));
         order.setTotalAmount(calculateTotalAmount(orderItemList));
-        //Save the order
         Order savedOrder = orderRepository.save(order);
-        //clear the cart
-        cartService.clearCart(cart.getId());
+        cartService.deleteCart(cart.getId());
         return savedOrder;
     }
-
     private Order createOrder(Cart cart) {
         Order order = new Order();
         order.setUser(cart.getUser());

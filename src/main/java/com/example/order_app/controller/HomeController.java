@@ -1,6 +1,7 @@
 package com.example.order_app.controller;
 
 
+import com.example.order_app.dto.UserDto;
 import com.example.order_app.model.Cart;
 import com.example.order_app.model.Product;
 import com.example.order_app.model.User;
@@ -62,13 +63,11 @@ public class HomeController {
         if (authentication != null && authentication.isAuthenticated()) {
 
             User user= userService.getAuthenticatedUser();
+            UserDto userDto = userService.convertUserToDto(user);
+            model.addAttribute("user", userDto);
+//            Cart cart = cartService.initializeNewCart(user);
+//            model.addAttribute("cart", cart);
 
-            Cart cart = cartService.getCartByUserId(user.getId());
-            if(cart==null){
-                cart=cartService.initializeNewCart(user);
-            }
-            //model.addAttribute("cart", cart);
-           // model.addAttribute("user", user);
         }
 
         return "home";

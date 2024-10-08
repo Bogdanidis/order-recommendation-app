@@ -365,3 +365,50 @@ h1, h2, h3, h4, h5, h6 {
         font-size: 1rem;
     }
 }
+/* User Profile Styles */
+.user-profile-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.user-profile-card .card-title {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.user-profile-card .card-text {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.user-profile-card hr {
+    margin: 1rem 0;
+    opacity: 0.1;
+}
+
+.user-profile-card .row {
+    margin-bottom: 0.5rem;
+}
+
+.user-profile-card .row p {
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+.user-profile-card .row p strong {
+    color: var(--secondary-color);
+}
+
+
+@media (max-width: 576px) {
+    .user-profile-card .row p {
+        text-align: center;
+    }
+
+    .user-profile-card .row div:first-child {
+        margin-bottom: 0.25rem;
+    }
+}

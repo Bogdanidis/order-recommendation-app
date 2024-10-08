@@ -27,7 +27,7 @@ public class OrderController {
     @GetMapping("/create")
     public String showCreateOrderForm(Model model) {
         model.addAttribute("userId", 0);
-        return "orders/create";
+        return "order/create";
     }
 
     @PostMapping("/create")

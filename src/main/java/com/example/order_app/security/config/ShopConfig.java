@@ -4,8 +4,12 @@ package com.example.order_app.security.config;
 import com.example.order_app.security.jwt.AuthTokenFilter;
 import com.example.order_app.security.jwt.JwtAuthEntryPoint;
 import com.example.order_app.security.user.ShopUserDetailsService;
+import com.example.order_app.service.cart.ICartService;
+import com.example.order_app.service.user.IUserService;
+import jakarta.servlet.http.HttpSessionListener;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -47,9 +51,15 @@ public class ShopConfig {
     }
 
     @Bean
+    public ServletListenerRegistrationBean<HttpSessionListener> httpSessionListener() {
+        return new ServletListenerRegistrationBean<>(new CustomSessionListener());
+    }
+
+    @Bean
     public AuthTokenFilter authTokenFilter() {
         return new AuthTokenFilter();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
@@ -113,6 +123,8 @@ public class ShopConfig {
                 .logout(logout -> logout
                         .logoutUrl("/auth/logout")
                         .logoutSuccessUrl("/home?logout=true")
+                        .invalidateHttpSession(true)  // This ensures the session is invalidated
+                        .deleteCookies("JSESSIONID")  // This deletes the session cookie
                         .permitAll()
                 );
 

@@ -1,7 +1,13 @@
 package com.example.order_app.security.config;
 
+import com.example.order_app.model.User;
+import com.example.order_app.security.user.ShopUserDetails;
+import com.example.order_app.service.cart.ICartService;
+import com.example.order_app.service.user.IUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -15,16 +21,29 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
 
-        // Check user roles and redirect accordingly
-        String redirectUrl = request.getContextPath();
+        // Store user details in the session
+        ShopUserDetails userDetails = (ShopUserDetails) authentication.getPrincipal();
+        request.getSession().setAttribute("USER_DETAILS", userDetails);
 
-        // Assuming roles are prefixed with "ROLE_" (e.g., ROLE_ADMIN, ROLE_USER)
-        if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
-            redirectUrl = "/admin/dashboard";  // Redirect to admin home if the user has the role "ADMIN"
-        } else if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_USER"))) {
-            redirectUrl = "/home";  // Redirect to user home if the user has the role "USER"
+        // Determine redirect URL based on user role
+        String redirectUrl = determineTargetUrl(authentication);
+
+        // Redirect the user
+        response.sendRedirect(request.getContextPath() + redirectUrl);
+    }
+
+    private String determineTargetUrl(Authentication authentication) {
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+        boolean isUser = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_USER"));
+
+        if (isAdmin) {
+            return "/admin/dashboard";
+        } else if (isUser) {
+            return "/home";
+        } else {
+            return "/";  // Default redirect if no specific role matched
         }
-
-        response.sendRedirect(redirectUrl);  // Redirect based on the determined URL
     }
 }

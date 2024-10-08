@@ -30,7 +30,7 @@ public class UserController {
                 .map(userService::convertUserToDto)
                 .collect(Collectors.toList());
         model.addAttribute("users", userDtos);
-        return "users/list";
+        return "user/list";
     }
 
     @GetMapping("/{userId}")
@@ -39,7 +39,7 @@ public class UserController {
             User user = userService.getUserById(userId);
             UserDto userDto = userService.convertUserToDto(user);
             model.addAttribute("user", userDto);
-            return "users/details";
+            return "user/details";
         } catch (ResourceNotFoundException e) {
             model.addAttribute("error", e.getMessage());
             return "redirect:/users";
@@ -49,7 +49,7 @@ public class UserController {
     @GetMapping("/add")
     public String showCreateUserForm(Model model) {
         model.addAttribute("user", new CreateUserRequest());
-        return "users/add";
+        return "user/add";
     }
 
     @PostMapping("/add")
@@ -68,11 +68,13 @@ public class UserController {
     public String showUpdateUserForm(@PathVariable Long userId, Model model) {
         try {
             User user = userService.getUserById(userId);
-            UpdateUserRequest updateRequest = new UpdateUserRequest(); // You'll need to implement this
-            // Copy relevant user details to updateRequest
-            model.addAttribute("user", updateRequest);
-            model.addAttribute("userId", userId);
-            return "users/update";
+            UserDto userDto = userService.convertUserToDto(user);
+            UpdateUserRequest updateRequest = new UpdateUserRequest();
+            updateRequest.setFirstName(user.getFirstName());
+            updateRequest.setLastName(user.getLastName());
+            model.addAttribute("updateRequest", updateRequest);
+            model.addAttribute("user", userDto);
+            return "user/update";
         } catch (ResourceNotFoundException e) {
             model.addAttribute("error", e.getMessage());
             return "redirect:/users";
@@ -80,16 +82,17 @@ public class UserController {
     }
 
     @PostMapping("/{userId}/update")
-    public String updateUser(@PathVariable Long userId, @ModelAttribute UpdateUserRequest request, RedirectAttributes redirectAttributes) {
+    public String updateUser(@PathVariable Long userId, @ModelAttribute UpdateUserRequest updateRequest, RedirectAttributes redirectAttributes) {
         try {
-            User user = userService.updateUser(request, userId);
-            redirectAttributes.addFlashAttribute("message", "User updated successfully");
-            return "redirect:/users/" + user.getId();
+            userService.updateUser(updateRequest, userId);
+            redirectAttributes.addFlashAttribute("message", "Profile updated successfully");
+            return "redirect:/users/" + userId;
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/users";
+            return "redirect:/users/" + userId + "/update";
         }
     }
+
 
     @PostMapping("/{userId}/delete")
     public String deleteUser(@PathVariable Long userId, RedirectAttributes redirectAttributes) {
