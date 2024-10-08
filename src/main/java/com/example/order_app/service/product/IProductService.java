@@ -25,4 +25,6 @@ public interface IProductService {
     List<ProductDto> getConvertedProducts(List<Product> products);
 
     ProductDto convertToDto(Product product);
+
+    List<ProductDto> searchProducts(String brandName, String productName, String category);
 }

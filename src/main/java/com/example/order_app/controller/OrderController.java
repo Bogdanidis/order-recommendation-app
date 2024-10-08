@@ -1,9 +1,12 @@
 package com.example.order_app.controller;
 
 import com.example.order_app.dto.OrderDto;
+import com.example.order_app.dto.UserDto;
 import com.example.order_app.exception.ResourceNotFoundException;
 import com.example.order_app.model.Order;
+import com.example.order_app.model.User;
 import com.example.order_app.service.order.IOrderService;
+import com.example.order_app.service.user.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +20,7 @@ import java.util.List;
 @RequestMapping("/orders")
 public class OrderController {
     private final IOrderService orderService;
+    private final IUserService userService;
 
 
 
@@ -43,7 +47,9 @@ public class OrderController {
         try {
             OrderDto order = orderService.getOrder(orderId);
             model.addAttribute("order", order);
-            return "orders/details";
+            UserDto user= userService.convertUserToDto(userService.getAuthenticatedUser());
+            model.addAttribute("user", user);
+            return "order/details";
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/orders/list";
@@ -55,8 +61,7 @@ public class OrderController {
         try {
             List<OrderDto> orders = orderService.getUserOrders(userId);
             model.addAttribute("orders", orders);
-            model.addAttribute("userId", userId);
-            return "orders/user-orders";
+            return "order/user-orders";
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/orders/list";

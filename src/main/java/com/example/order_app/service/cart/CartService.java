@@ -62,4 +62,8 @@ public class CartService implements ICartService{
     public Cart getCartByUserId(Long userId) {
         return cartRepository.findByUserId(userId);
     }
+    @Override
+    public Cart getCartByUserEmail(String email) {
+        return cartRepository.findByUserEmail(email);
+    }
 }

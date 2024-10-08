@@ -1,31 +1,65 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
 <head>
-    <meta charset="UTF-8">
-    <title>Product Details</title>
+    <title>Product Details - Order App</title>
 </head>
 <body>
-<div>
+<main layout:fragment="content">
     <h1 class="mb-4">Product Details</h1>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title" th:text="${product.name}"></h5>
-            <h6 class="card-subtitle mb-2 text-muted" th:text="${product.brand}"></h6>
-            <p class="card-text" th:text="${product.description}"></p>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">Category: <span th:text="${product.category}"></span></li>
-                <li class="list-group-item">Price: <span th:text="${#numbers.formatCurrency(product.price)}"></span></li>
-                <li class="list-group-item">Stock: <span th:text="${product.stock}"></span></li>
-            </ul>
-        </div>
-        <div class="card-footer">
-            <a th:href="@{/products}" class="btn btn-secondary">Back to List</a>
-            <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/products/{id}/update(id=${product.id})}" class="btn btn-warning">Edit</a>
-            <form sec:authorize="hasRole('ROLE_ADMIN')" th:action="@{/products/{id}/delete(id=${product.id})}" method="post" style="display: inline;">
-                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">Delete</button>
-            </form>
+    <div class="container mt-4">
+        <div class="card product-card shadow-sm">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <div th:if="${not #lists.isEmpty(product.images)}" class="product-image-container">
+                        <img th:src="@{'/images/' + ${product.images[0].id}}"
+                             th:alt="${product.name}"
+                             class="img-fluid rounded-start product-image"/>
+                    </div>
+                    <div th:if="${#lists.isEmpty(product.images)}" class="product-image-container bg-light d-flex justify-content-center align-items-center">
+                        <i class="bi bi-image text-secondary" style="font-size: 5rem;"></i>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h2 class="card-title mb-1" th:text="${product.name}"></h2>
+                        <h6 class="card-subtitle mb-3 text-muted" th:text="${product.brand}"></h6>
+                        <p class="card-text mb-4" th:text="${product.description}"></p>
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Category
+                                <span class="badge bg-primary rounded-pill" th:text="${product.category.name}"></span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Price
+                                <span class="badge bg-success rounded-pill" th:text="${#numbers.formatCurrency(product.price)}"></span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Stock
+                                <span class="badge bg-info rounded-pill" th:text="${product.stock}"></span>
+                            </li>
+                        </ul>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a th:href="@{/products}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Back to List
+                            </a>
+                            <div>
+                                <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/products/{id}/update(id=${product.id})}" class="btn btn-warning me-2">
+                                    <i class="bi bi-pencil me-2"></i>Edit
+                                </a>
+                                <form sec:authorize="hasRole('ROLE_ADMIN')" th:action="@{/products/{id}/delete(id=${product.id})}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">
+                                        <i class="bi bi-trash me-2"></i>Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+    </div>
+</main>
 </body>
 </html>

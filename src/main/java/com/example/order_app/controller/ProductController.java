@@ -7,6 +7,7 @@ import com.example.order_app.request.AddProductRequest;
 import com.example.order_app.request.UpdateProductRequest;
 import com.example.order_app.service.product.IProductService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -112,25 +114,19 @@ public class ProductController {
     }
 
     @GetMapping("/search")
-    public String searchProducts(@RequestParam(required = false) String brandName,
-                                 @RequestParam(required = false) String productName,
-                                 @RequestParam(required = false) String category,
-                                 Model model) {
-        List<ProductDto> products = new ArrayList<>();
+    public String searchProducts(
+            @RequestParam(required = false) String brandName,
+            @RequestParam(required = false) String productName,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Boolean searched,
+            Model model) {
 
-        if (brandName != null && productName != null) {
-            products = productService.getConvertedProducts(productService.getProductsByBrandAndName(brandName, productName));
-        } else if (category != null && brandName != null) {
-            products = productService.getConvertedProducts(productService.getProductsByCategoryAndBrand(category, brandName));
-        } else if (productName != null) {
-            products = productService.getConvertedProducts(productService.getProductsByName(productName));
-        } else if (brandName != null) {
-            products = productService.getConvertedProducts(productService.getProductsByBrand(brandName));
-        } else if (category != null) {
-            products = productService.getConvertedProducts(productService.getProductsByCategory(category));
+        if (Boolean.TRUE.equals(searched)) {
+            List<ProductDto> products = productService.searchProducts(brandName, productName, category);
+            model.addAttribute("products", products);
+            model.addAttribute("searched", true);
         }
 
-        model.addAttribute("products", products);
         model.addAttribute("brandName", brandName);
         model.addAttribute("productName", productName);
         model.addAttribute("category", category);

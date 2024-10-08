@@ -10,6 +10,7 @@ import com.example.order_app.request.AddProductRequest;
 import com.example.order_app.request.UpdateProductRequest;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -148,5 +149,23 @@ public class ProductService implements IProductService{
                 .toList();
         productDto.setImages(imageDtos);
         return productDto;
+    }
+
+    @Override
+    public List<ProductDto> searchProducts(String brandName, String productName, String category) {
+        List<ProductDto> products = new ArrayList<>();
+
+        if (!StringUtils.isBlank(brandName) && !StringUtils.isBlank(productName)) {
+            products = getConvertedProducts(getProductsByBrandAndName(brandName, productName));
+        } else if (!StringUtils.isBlank(category) && !StringUtils.isBlank(brandName)) {
+            products = getConvertedProducts(getProductsByCategoryAndBrand(category, brandName));
+        } else if (!StringUtils.isBlank(productName)) {
+            products = getConvertedProducts(getProductsByName(productName));
+        } else if (!StringUtils.isBlank(brandName)) {
+            products = getConvertedProducts(getProductsByBrand(brandName));
+        } else if (!StringUtils.isBlank(category)) {
+            products = getConvertedProducts(getProductsByCategory(category));
+        }
+        return products;
     }
 }

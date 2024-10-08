@@ -67,8 +67,8 @@ public class HomeController {
             if(cart==null){
                 cart=cartService.initializeNewCart(user);
             }
-            model.addAttribute("cart", cart);
-
+            //model.addAttribute("cart", cart);
+           // model.addAttribute("user", user);
         }
 
         return "home";

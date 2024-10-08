@@ -1,94 +1,93 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout :: head(~{::title})}">
-    <title>Search Products</title>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Search Products - Order App</title>
 </head>
 <body>
-<header th:replace="~{layout :: header}"></header>
+<main layout:fragment="content" class="container mt-4">
+    <h1 class="mb-4">Search Products</h1>
 
-<main th:replace="~{layout :: main-content}">
-    <div th:fragment="content">
-        <h1 class="mb-4">Search Products</h1>
-
-        <!-- Search Form -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <form th:action="@{/products/search}" method="get">
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label for="brandName" class="form-label">Brand Name</label>
-                            <input type="text" class="form-control" id="brandName" name="brandName" th:value="${brandName}">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="productName" class="form-label">Product Name</label>
-                            <input type="text" class="form-control" id="productName" name="productName" th:value="${productName}">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="category" class="form-label">Category</label>
-                            <input type="text" class="form-control" id="category" name="category" th:value="${category}">
-                        </div>
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-search me-1"></i>Search
-                            </button>
-                            <a href="/products" class="btn btn-secondary">
-                                <i class="bi bi-x-circle me-1"></i>Clear
-                            </a>
-                        </div>
+    <!-- Search Form -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <form th:action="@{/products/search}" method="get" id="searchForm">
+                <input type="hidden" name="searched" id="searched" value="true">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="brandName" class="form-label">Brand Name</label>
+                        <input type="text" class="form-control" id="brandName" name="brandName" th:value="${brandName}">
                     </div>
-                </form>
-            </div>
+                    <div class="col-md-4">
+                        <label for="productName" class="form-label">Product Name</label>
+                        <input type="text" class="form-control" id="productName" name="productName" th:value="${productName}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="category" class="form-label">Category</label>
+                        <input type="text" class="form-control" id="category" name="category" th:value="${category}">
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search me-1"></i>Search
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="clearButton">
+                            <i class="bi bi-x-circle me-1"></i>Clear
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
+    </div>
 
-        <!-- Search Results -->
-        <div th:if="${products != null and not #lists.isEmpty(products)}" class="mt-4">
-            <h2>Search Results</h2>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead class="table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Brand</th>
-                        <th>Category</th>
-                        <th>Price</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="product : ${products}">
-                        <td th:text="${product.id}"></td>
-                        <td th:text="${product.name}"></td>
-                        <td th:text="${product.brand}"></td>
-                        <td th:text="${product.category}"></td>
-                        <td th:text="${#numbers.formatCurrency(product.price)}"></td>
-                        <td>
-                            <a th:href="@{/products/{id}(id=${product.id})}" class="btn btn-sm btn-info">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                            <a th:href="@{/products/{id}/update(id=${product.id})}" class="btn btn-sm btn-warning">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <form th:action="@{/products/{id}/delete(id=${product.id})}" method="post" style="display: inline;">
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+    <!-- Search Results -->
+    <div th:if="${searched}" class="mt-4">
+        <div th:if="${not #lists.isEmpty(products)}" class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="card-title">Search Results</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Brand</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="product : ${products}">
+                            <td th:text="${product.id}"></td>
+                            <td th:text="${product.name}"></td>
+                            <td th:text="${product.brand}"></td>
+                            <td th:text="${product.category.name}"></td>
+                            <td th:text="${#numbers.formatCurrency(product.price)}"></td>
+                            <td>
+                                <a th:href="@{/products/{id}(id=${product.id})}" class="btn btn-sm btn-info">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a th:href="@{/products/{id}/update(id=${product.id})}" sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN')" class="btn btn-sm btn-warning">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form th:action="@{/products/{id}/delete(id=${product.id})}" sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN')" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
         <!-- No Results Message -->
-        <div th:if="${products != null and #lists.isEmpty(products)}" class="alert alert-info mt-4" role="alert">
+        <div th:if="${#lists.isEmpty(products)}" class="alert alert-info mt-4" role="alert">
             <i class="bi bi-info-circle me-2"></i>No products found matching your search criteria.
         </div>
     </div>
 </main>
-
-<footer th:replace="~{layout :: footer}"></footer>
-<th:block th:replace="~{layout :: scripts}"></th:block>
 </body>
 </html>
