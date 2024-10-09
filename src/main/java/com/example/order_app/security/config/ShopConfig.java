@@ -37,6 +37,7 @@ public class ShopConfig {
     private final JwtAuthEntryPoint authEntryPoint;
     private final CustomLoginSuccessHandler customLoginSuccessHandler;
 
+
     private static final List<String> SECURED_URLS =
             List.of("/order-api/v1/carts/**", "/order-api/v1/cartItems/**");
 
@@ -48,11 +49,6 @@ public class ShopConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public ServletListenerRegistrationBean<HttpSessionListener> httpSessionListener() {
-        return new ServletListenerRegistrationBean<>(new CustomSessionListener());
     }
 
     @Bean

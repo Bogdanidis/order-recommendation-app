@@ -23,13 +23,13 @@ public class CategoryController {
     public String getAllCategories(Model model) {
         List<Category> categories = categoryService.getAllCategories();
         model.addAttribute("categories", categories);
-        return "categories/list";
+        return "category/list";
     }
 
     @GetMapping("/add")
     public String showAddCategoryForm(Model model) {
         model.addAttribute("category", new Category());
-        return "categories/add";
+        return "category/add";
     }
 
     @PostMapping("/add")
@@ -49,7 +49,7 @@ public class CategoryController {
         try {
             Category theCategory = categoryService.getCategoryById(id);
             model.addAttribute("category", theCategory);
-            return "categories/details";
+            return "category/details";
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/categories";
@@ -61,7 +61,7 @@ public class CategoryController {
         try {
             Category theCategory = categoryService.getCategoryByName(name);
             model.addAttribute("category", theCategory);
-            return "categories/details";
+            return "category/details";
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/categories";
@@ -84,7 +84,7 @@ public class CategoryController {
         try {
             Category category = categoryService.getCategoryById(id);
             model.addAttribute("category", category);
-            return "categories/update";
+            return "category/update";
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/categories";

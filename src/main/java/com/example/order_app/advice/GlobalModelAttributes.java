@@ -23,7 +23,7 @@ public class GlobalModelAttributes {
     public Cart getUserCart(@AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails != null) {
             User user = userService.getAuthenticatedUser();
-            return cartService.getCartByUserEmail(user.getEmail());
+            return cartService.initializeNewCart(user);
         }
         return null;
     }

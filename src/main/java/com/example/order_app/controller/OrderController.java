@@ -68,4 +68,15 @@ public class OrderController {
         }
     }
 
+    @PostMapping("/{orderId}/cancel")
+    public String cancelOrder(@PathVariable Long orderId, RedirectAttributes redirectAttributes) {
+        try {
+            User user = userService.getAuthenticatedUser();
+            orderService.cancelOrder(orderId, user.getId());
+            redirectAttributes.addFlashAttribute("message", "Order cancelled successfully");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error cancelling order: " + e.getMessage());
+        }
+        return "redirect:/orders/user/" + userService.getAuthenticatedUser().getId();
+    }
 }

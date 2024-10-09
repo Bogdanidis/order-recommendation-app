@@ -18,66 +18,68 @@
     </div>
 
     <!-- Cart Table -->
-    <table class="table table-borderless align-middle">
-        <thead class="text-uppercase">
-        <tr>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Total</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="item : ${cart.items}">
-            <td class="align-middle" th:text="${item.product.name}"></td>
+    <div class="table-responsive">
 
-            <!-- Quantity with Increment/Decrement -->
-            <td class="align-middle">
-                <form th:action="@{/cart/{cartId}/item/{itemId}/update(cartId=${cart.id}, itemId=${item.id})}" method="post" class="d-flex align-items-center">
-                    <input type="hidden" name="_method" value="PUT"/>
+        <table class="table table-borderless align-middle table-hover">
+            <thead class="text-uppercase">
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${cart.items}">
+                <td class="align-middle" th:text="${item.product.name}"></td>
 
-                    <div class="input-group">
-                        <!-- Decrease Button -->
-                        <button class="btn btn-outline-secondary" type="submit" name="action" value="decrease">
-                            <i class="bi bi-dash"></i>
+                <!-- Quantity with Increment/Decrement -->
+                <td class="align-middle">
+                    <form th:action="@{/cart/{cartId}/item/{itemId}/update(cartId=${cart.id}, itemId=${item.id})}" method="post" class="d-flex align-items-center">
+                        <input type="hidden" name="_method" value="PUT"/>
+
+                        <div class="input-group">
+                            <!-- Decrease Button -->
+                            <button class="btn btn-outline-secondary" type="submit" name="action" value="decrease">
+                                <i class="bi bi-dash"></i>
+                            </button>
+
+                            <!-- Quantity Input Field -->
+                            <input type="number" class="form-control text-center" style="max-width: 70px;" name="quantity" th:value="${item.quantity}" min="1" required/>
+
+                            <!-- Increase Button -->
+                            <button class="btn btn-outline-secondary" type="submit" name="action" value="increase">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </div>
+
+                        <!-- Update Button -->
+                        <button type="submit" class="btn btn-primary ms-3" name="action" value="update">
+                            Update
                         </button>
+                    </form>
+                </td>
 
-                        <!-- Quantity Input Field -->
-                        <input type="number" class="form-control text-center" style="max-width: 70px;" name="quantity" th:value="${item.quantity}" min="1" required/>
+                <!-- Unit Price -->
+                <td class="align-middle" th:text="${#numbers.formatDecimal(item.unitPrice, 1, 2)}"></td>
 
-                        <!-- Increase Button -->
-                        <button class="btn btn-outline-secondary" type="submit" name="action" value="increase">
-                            <i class="bi bi-plus"></i>
+                <!-- Total Price for Item -->
+                <td class="align-middle" th:text="${#numbers.formatDecimal(item.unitPrice * item.quantity, 1, 2)}"></td>
+
+                <!-- Remove Item -->
+                <td class="align-middle">
+                    <form th:action="@{/cart/{cartId}/item/{itemId}/remove(cartId=${cart.id}, itemId=${item.id})}" method="post">
+                        <input type="hidden" name="_method" value="DELETE"/>
+                        <button class="btn btn-danger" type="submit">
+                            <i class="bi bi-trash"></i> Remove
                         </button>
-                    </div>
-
-                    <!-- Update Button -->
-                    <button type="submit" class="btn btn-primary ms-3" name="action" value="update">
-                        Update
-                    </button>
-                </form>
-            </td>
-
-            <!-- Unit Price -->
-            <td class="align-middle" th:text="${#numbers.formatDecimal(item.unitPrice, 1, 2)}"></td>
-
-            <!-- Total Price for Item -->
-            <td class="align-middle" th:text="${#numbers.formatDecimal(item.unitPrice * item.quantity, 1, 2)}"></td>
-
-            <!-- Remove Item -->
-            <td class="align-middle">
-                <form th:action="@{/cart/{cartId}/item/{itemId}/remove(cartId=${cart.id}, itemId=${item.id})}" method="post">
-                    <input type="hidden" name="_method" value="DELETE"/>
-                    <button class="btn btn-danger" type="submit">
-                        <i class="bi bi-trash"></i> Remove
-                    </button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
     <!-- Total Price -->
     <div class="d-flex justify-content-between align-items-center mt-4">
         <div>
@@ -85,10 +87,8 @@
         </div>
         <div>
             <!-- Clear Cart Button -->
-            <form th:action="@{/cart/{cartId}/empty(cartId=${cart.id})}" method="post" style="display:inline;">
-                <button type="submit" class="btn btn-warning">
-                    <i class="bi bi-x-circle"></i> Empty Cart
-                </button>
+            <form th:action="@{/cart/{cartId}/clear(cartId=${cart.id})}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-warning">Clear Cart</button>
             </form>
             <form th:action="@{/orders/create}" method="post" style="display: inline;">
                 <input type="hidden" name="userId" th:value="${user.id}" />

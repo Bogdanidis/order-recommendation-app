@@ -18,4 +18,6 @@ public interface IUserService {
 
     User getAuthenticatedUser();
 
+    Long countUsers();
+
 }

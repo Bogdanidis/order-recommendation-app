@@ -73,6 +73,11 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public Long countUsers() {
+        return userRepository.count();
+    }
+
+    @Override
     public UserDto convertUserToDto(User user) {
         return modelMapper.map(user, UserDto.class);
     }
@@ -83,6 +88,5 @@ public class UserService implements IUserService {
         String email = authentication.getName();
         return userRepository.findByEmail(email);
     }
-
 
 }

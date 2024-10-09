@@ -59,7 +59,7 @@ public class OrderService implements IOrderService {
         order.setOrderItems(new HashSet<>(orderItemList));
         order.setTotalAmount(calculateTotalAmount(orderItemList));
         Order savedOrder = orderRepository.save(order);
-        cartService.deleteCart(cart.getId());
+        cartService.clearCart(cart.getId());
         return savedOrder;
     }
     private Order createOrder(Cart cart) {
@@ -103,6 +103,46 @@ public class OrderService implements IOrderService {
     public List<OrderDto> getUserOrders(Long userId) {
         List<Order> orders = orderRepository.findByUserId(userId);
         return  orders.stream().map(this :: convertToDto).toList();
+    }
+
+
+    @Transactional
+    @Override
+    public void cancelOrder(Long orderId, Long userId) {
+        Order order = orderRepository.findByIdAndUserId(orderId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found or does not belong to the user"));
+
+        if (order.getOrderStatus() != OrderStatus.PENDING) {
+            throw new IllegalStateException("Only pending orders can be cancelled");
+        }
+
+        order.setOrderStatus(OrderStatus.CANCELLED);
+        orderRepository.save(order);
+
+
+        // Return items to inventory
+        order.getOrderItems().forEach(orderItem -> {
+            Product product = orderItem.getProduct();
+            product.setStock(product.getStock() + orderItem.getQuantity());
+            productRepository.save(product);
+        });
+
+        // refund payment would be here.
+    }
+
+    @Override
+    public Long countTodaysOrders() {
+        LocalDate today = LocalDate.now();
+        return orderRepository.countByOrderDateAndOrderStatusNot(today, OrderStatus.CANCELLED);
+    }
+
+    @Override
+    public BigDecimal getTodaysRevenue() {
+        LocalDate today = LocalDate.now();
+        List<Order> todayOrders = orderRepository.findByOrderDateAndOrderStatusNot(today, OrderStatus.CANCELLED);
+        return todayOrders.stream()
+                .map(Order::getTotalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private OrderDto convertToDto(Order order) {

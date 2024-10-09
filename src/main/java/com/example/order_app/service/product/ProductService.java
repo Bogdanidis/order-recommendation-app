@@ -129,7 +129,10 @@ public class ProductService implements IProductService{
     public List<Product> getProductsByBrandAndName(String brand, String name) {
         return productRepository.findByBrandAndName(brand, name);
     }
-
+    @Override
+    public Long countProducts() {
+        return productRepository.count();
+    }
     @Override
     public Long countProductsByBrandAndName(String brand, String name) {
         return productRepository.countByBrandAndName(brand, name);

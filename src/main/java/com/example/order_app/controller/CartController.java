@@ -34,7 +34,7 @@ public class CartController {
             }
             BigDecimal totalPrice = cartService.getTotalPrice(cartId);
             model.addAttribute("totalPrice", totalPrice);
-           // model.addAttribute("cart", cart);
+            model.addAttribute("cart", cart);
             model.addAttribute("user", userDto);
             return "cart/view"; // This is the Thymeleaf template to display cart items
         } catch (ResourceNotFoundException e) {
@@ -43,12 +43,14 @@ public class CartController {
         }
     }
 
-    @PostMapping("/{cartId}/empty")
+    @PostMapping("/{cartId}/clear")
     public String clearCart(@PathVariable Long cartId, RedirectAttributes redirectAttributes) {
         try {
-            cartService.emptyCart(cartId);
+            cartService.clearCart(cartId);
             redirectAttributes.addFlashAttribute("success", "Cart cleared successfully!");
         } catch (ResourceNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/cart/" + cartId + "/view";
