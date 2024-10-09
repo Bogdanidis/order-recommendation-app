@@ -5,27 +5,38 @@
     <title>Update Profile - Order App</title>
 </head>
 <body>
-<main layout:fragment="content" class="container mt-5">
+<main layout:fragment="content" class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <h1 class="mb-4 text-center">Update Profile</h1>
-
-            <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
-
-            <div class="card">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h1 class="mb-0 text-center">Update Profile</h1>
+                </div>
                 <div class="card-body">
+                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <span th:text="${error}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
                     <form th:action="@{/users/{id}/update(id=${user.id})}" th:object="${updateRequest}" method="post">
                         <div class="mb-3">
                             <label for="firstName" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="firstName" th:field="*{firstName}" required>
+                            <input type="text" class="form-control" id="firstName" th:field="*{firstName}" >
                         </div>
                         <div class="mb-3">
                             <label for="lastName" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="lastName" th:field="*{lastName}" required>
+                            <input type="text" class="form-control" id="lastName" th:field="*{lastName}" >
                         </div>
-                        <div class="d-grid gap-2">
+
+                        <div class="mb-3" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                            <label for="roles" class="form-label">Roles</label>
+                            <select multiple class="form-select" id="roles" th:field="*{roles}">
+                                <option th:each="role : ${availableRoles}" th:value="${role.id}" th:text="${role.name}"></option>
+                            </select>
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a th:href="@{/users/{id}(id=${user.id})}" class="btn btn-secondary me-md-2">Cancel</a>
                             <button type="submit" class="btn btn-primary">Update Profile</button>
-                            <a th:href="@{/users/{id}(id=${user.id})}" class="btn btn-secondary">Cancel</a>
                         </div>
                     </form>
                 </div>

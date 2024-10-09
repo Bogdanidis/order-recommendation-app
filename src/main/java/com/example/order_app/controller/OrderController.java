@@ -8,6 +8,7 @@ import com.example.order_app.model.User;
 import com.example.order_app.service.order.IOrderService;
 import com.example.order_app.service.user.IUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +24,6 @@ public class OrderController {
     private final IUserService userService;
 
 
-
-    @GetMapping("/create")
-    public String showCreateOrderForm(Model model) {
-        model.addAttribute("userId", 0);
-        return "order/create";
-    }
-
     @PostMapping("/create")
     public String createOrder(@RequestParam Long userId, RedirectAttributes redirectAttributes) {
         try {
@@ -38,7 +32,8 @@ public class OrderController {
             return "redirect:/orders/" + order.getId();
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error occurred: " + e.getMessage());
-            return "redirect:/orders/create";
+            User user = userService.getAuthenticatedUser();
+            return "redirect:/cart/" + user.getCart().getId() + "/view";
         }
     }
 
@@ -60,7 +55,9 @@ public class OrderController {
     public String getUserOrders(@PathVariable Long userId, Model model, RedirectAttributes redirectAttributes) {
         try {
             List<OrderDto> orders = orderService.getUserOrders(userId);
+            User user = userService.getUserById(userId);
             model.addAttribute("orders", orders);
+            model.addAttribute("user", user);
             return "order/user-orders";
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());

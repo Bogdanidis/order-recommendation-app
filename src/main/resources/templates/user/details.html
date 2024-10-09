@@ -1,48 +1,83 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" layout:decorate="~{layout}">
 <head>
-    <title>Profile - Order App</title>
+    <title th:text="${user.firstName + ' ' + user.lastName + ' - Profile'}">User Profile - Order App</title>
 </head>
 <body>
-<main layout:fragment="content" class="container mt-5">
+<main layout:fragment="content" class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <h1 class="mb-4 text-center">User Profile</h1>
-
-            <div class="card user-profile-card">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h1 class="card-title mb-0 text-center">User Profile</h1>
+                </div>
                 <div class="card-body">
-                    <h2 class="card-title text-center" th:text="${user.firstName + ' ' + user.lastName}"></h2>
-                    <p class="card-text text-center text-muted" th:text="${user.email}"></p>
-                    <hr>
-                    <div class="row">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-person-circle" style="font-size: 5rem;"></i>
+                        <h2 class="mt-2" th:text="${user.firstName + ' ' + user.lastName}"></h2>
+                        <p class="text-muted" th:text="${user.email}"></p>
+                    </div>
+                    <div class="row mb-3">
                         <div class="col-sm-4">
-                            <p class="mb-0"><strong>User Email:</strong></p>
+                            <p class="mb-0"><strong>Email:</strong></p>
                         </div>
                         <div class="col-sm-8">
                             <p class="text-muted mb-0" th:text="${user.email}"></p>
                         </div>
                     </div>
-                    <hr>
-                    <div class="row">
+                    <div class="row mb-3">
                         <div class="col-sm-4">
                             <p class="mb-0"><strong>Roles:</strong></p>
                         </div>
                         <div class="col-sm-8">
-                            <p class="text-muted mb-0">
-                                <span th:each="role, iterStat : ${user.roles}" th:text="${role.name + (iterStat.last ? '' : ', ')}"></span>
+                            <p class="mb-0">
+                                <span th:each="role, iterStat : ${user.roles}" class="badge bg-secondary me-1" th:text="${role.name}"></span>
                             </p>
                         </div>
                     </div>
+                    <div class="row mb-3" sec:authorize="hasRole('ROLE_ADMIN')">
+                        <div class="col-sm-4">
+                            <p class="mb-0"><strong>User ID:</strong></p>
+                        </div>
+                        <div class="col-sm-8">
+                            <p class="text-muted mb-0" th:text="${user.id}"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-light">
+                    <div class="d-flex justify-content-center">
+                        <a th:href="@{/users/{userId}/update(userId=${user.id})}" class="btn btn-primary me-2">
+                            <i class="bi bi-pencil-square me-1"></i>Edit Profile
+                        </a>
+                        <a th:href="@{/orders/user/{userId}(userId=${user.id})}" class="btn btn-info me-2">
+                            <i class="bi bi-bag me-1"></i>View Orders
+                        </a>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal" sec:authorize="hasRole('ROLE_ADMIN')">
+                            <i class="bi bi-trash me-1"></i>Delete User
+                        </button>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="mt-4 text-center">
-                <a th:href="@{/users/{userId}/update(userId=${user.id})}" class="btn btn-primary">Edit Profile</a>
-                <a th:href="@{/orders/user/{userId}(userId=${user.id})}" class="btn btn-info"  sec:authorize="hasRole('ROLE_ADMIN')">View Orders</a>
-                <form th:action="@{/users/{userId}/delete(userId=${user.id})}" method="post" style="display: inline;" sec:authorize="hasRole('ROLE_ADMIN')">
-                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this user?')">Delete User</button>
-                </form>
+    <!-- Delete User Modal -->
+    <div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true" sec:authorize="hasRole('ROLE_ADMIN')">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteUserModalLabel">Confirm User Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this user? This action cannot be undone.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form th:action="@{/users/{userId}/delete(userId=${user.id})}" method="post">
+                        <button type="submit" class="btn btn-danger">Delete User</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

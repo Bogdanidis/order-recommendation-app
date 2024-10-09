@@ -1,6 +1,8 @@
 package com.example.order_app.controller;
 
+import com.example.order_app.repository.RoleRepository;
 import com.example.order_app.request.CreateUserRequest;
+import com.example.order_app.service.role.IRoleService;
 import com.example.order_app.service.user.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,12 +15,16 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashSet;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final IUserService userService;
+    private final IRoleService roleService;
+
 
     @GetMapping("/login")
     public String showLoginPage(@RequestParam(value = "error", required = false) String error, Model model) {
@@ -61,6 +67,7 @@ public class AuthController {
     public String register(@ModelAttribute("user") CreateUserRequest registerRequest,
                            RedirectAttributes redirectAttributes) {
         try {
+            registerRequest.setRoles(new HashSet<>(roleService.findByName("ROLE_USER")));
             userService.createUser(registerRequest);
             redirectAttributes.addFlashAttribute("success", "Registration successful! Please log in.");
             return "redirect:/auth/login";

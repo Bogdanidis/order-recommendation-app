@@ -10,6 +10,8 @@ import com.example.order_app.request.CreateUserRequest;
 import com.example.order_app.request.UpdateUserRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,6 +36,17 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public Page<UserDto> findAllPaginated(Pageable pageable, String search) {
+        Page<User> userPage;
+        if (search != null && !search.isEmpty()) {
+            userPage = userRepository.findByFirstNameContainingOrLastNameContainingOrEmailContaining(search, search, search, pageable);
+        } else {
+            userPage = userRepository.findAll(pageable);
+        }
+        return userPage.map(this::convertUserToDto);
+    }
+
+    @Override
     public User getUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found!"));
@@ -49,8 +62,7 @@ public class UserService implements IUserService {
                     user.setPassword(passwordEncoder.encode(request.getPassword()));
                     user.setFirstName(request.getFirstName());
                     user.setLastName(request.getLastName());
-                    //create users with the Role of User only. Admin cannot register normally.
-                    user.setRoles(new HashSet<>(roleRepository.findByName("ROLE_USER")));
+                    user.setRoles(request.getRoles());
                     return  userRepository.save(user);
                 }) .orElseThrow(() -> new AlreadyExistsException("Oops!" +request.getEmail() +" already exists!"));
     }
@@ -60,6 +72,7 @@ public class UserService implements IUserService {
         return  userRepository.findById(userId).map(existingUser ->{
             existingUser.setFirstName(request.getFirstName());
             existingUser.setLastName(request.getLastName());
+            existingUser.setRoles(request.getRoles());
             return userRepository.save(existingUser);
         }).orElseThrow(() -> new ResourceNotFoundException("User not found!"));
 

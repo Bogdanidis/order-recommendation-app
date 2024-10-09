@@ -6,7 +6,7 @@
 </head>
 <body>
 <main layout:fragment="content" class="container mt-5">
-    <h1 class="mb-4">Your Orders</h1>
+    <h1 class="mb-4" th:text="${user.firstName + ' ' + user.lastName +'\'s'+ ' Orders'}"></h1>
 
     <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
     <div class="table-responsive">
