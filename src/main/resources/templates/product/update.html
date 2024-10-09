@@ -1,64 +1,66 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 <head>
-    <meta charset="UTF-8">
-    <title>Update Product</title>
+    <title>Update Product - Order App</title>
 </head>
 <body>
-<div th:replace="~{layout :: content}">
-    <h1 class="mb-4">Update Product</h1>
-    <form th:action="@{/products/{id}/update(id=${product.id})}" th:object="${product}" method="post" class="needs-validation" novalidate>
-        <input type="hidden" th:field="*{id}">
-        <div class="mb-3">
-            <label for="name" class="form-label">Name</label>
-            <input type="text" class="form-control" id="name" th:field="*{name}" required>
-            <div class="invalid-feedback">Please provide a product name.</div>
-        </div>
-        <div class="mb-3">
-            <label for="brand" class="form-label">Brand</label>
-            <input type="text" class="form-control" id="brand" th:field="*{brand}" required>
-            <div class="invalid-feedback">Please provide a brand name.</div>
-        </div>
-        <div class="mb-3">
-            <label for="category" class="form-label">Category</label>
-            <input type="text" class="form-control" id="category" th:field="*{category}" required>
-            <div class="invalid-feedback">Please provide a category.</div>
-        </div>
-        <div class="mb-3">
-            <label for="price" class="form-label">Price</label>
-            <input type="number" class="form-control" id="price" th:field="*{price}" step="0.01" required>
-            <div class="invalid-feedback">Please provide a valid price.</div>
-        </div>
-        <div class="mb-3">
-            <label for="stock" class="form-label">Stock</label>
-            <input type="number" class="form-control" id="stock" th:field="*{stock}" required>
-            <div class="invalid-feedback">Please provide a stock quantity.</div>
-        </div>
-        <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <textarea class="form-control" id="description" th:field="*{description}" rows="3"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Update Product</button>
-        <a th:href="@{/products/{id}(id=${product.id})}" class="btn btn-secondary">Cancel</a>
-    </form>
-</div>
+<main layout:fragment="content" class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="card-title mb-0">Update Product</h1>
+                </div>
 
-<script>
-    // Bootstrap form validation
-    (function () {
-        'use strict'
-        var forms = document.querySelectorAll('.needs-validation')
-        Array.prototype.slice.call(forms)
-            .forEach(function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (!form.checkValidity()) {
-                        event.preventDefault()
-                        event.stopPropagation()
-                    }
-                    form.classList.add('was-validated')
-                }, false)
-            })
-    })()
-</script>
+                <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}"></div>
+                <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+
+                <div class="card-body">
+                    <form th:action="@{/products/{productId}/update(productId=${product.id})}" th:object="${product}" method="post">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                            <div class="invalid-feedback">Please provide a product name.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="brand" class="form-label">Brand</label>
+                            <input type="text" class="form-control" id="brand" th:field="*{brand}" required>
+                            <div class="invalid-feedback">Please provide a brand name.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-select" id="category" th:field="*{category}" required>
+                                <option value="">Select a category</option>
+                                <option th:each="cat : ${categories}"
+                                        th:value="${cat.id}"
+                                        th:text="${cat.name}">
+                                </option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Price</label>
+                            <input type="number" class="form-control" id="price" th:field="*{price}" step="0.01" min="0" required>
+                            <div class="invalid-feedback">Please provide a valid price.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="stock" class="form-label">Stock</label>
+                            <input type="number" class="form-control" id="stock" th:field="*{stock}" min="0" required>
+                            <div class="invalid-feedback">Please provide a stock quantity.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" th:field="*{description}" rows="3"></textarea>
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a th:href="@{/products/{id}(id=${product.id})}" class="btn btn-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Update Product</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
 </body>
 </html>

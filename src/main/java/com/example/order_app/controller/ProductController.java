@@ -2,10 +2,13 @@ package com.example.order_app.controller;
 
 import com.example.order_app.dto.ProductDto;
 import com.example.order_app.exception.ResourceNotFoundException;
+import com.example.order_app.model.Category;
 import com.example.order_app.model.Product;
 import com.example.order_app.request.AddProductRequest;
 import com.example.order_app.request.UpdateProductRequest;
+import com.example.order_app.service.category.ICategoryService;
 import com.example.order_app.service.product.IProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -13,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -25,6 +29,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/products")
 public class ProductController {
     private final IProductService productService;
+    private final ICategoryService categoryService;
 
     @GetMapping
     public String getAllProducts(Model model,
@@ -54,16 +59,25 @@ public class ProductController {
         }
     }
 
+
     @GetMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String showAddProductForm(Model model) {
         model.addAttribute("product", new AddProductRequest());
+        model.addAttribute("categories", categoryService.getAllCategories());
         return "product/add";
     }
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String addProduct(@ModelAttribute AddProductRequest product, RedirectAttributes redirectAttributes) {
+    public String addProduct(@Valid @ModelAttribute("product") AddProductRequest product,
+                             BindingResult bindingResult,
+                             Model model,
+                             RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("categories", categoryService.getAllCategories());
+            return "product/add";
+        }
         try {
             Product theProduct = productService.addProduct(product);
             redirectAttributes.addFlashAttribute("message", "Product added successfully");
@@ -74,24 +88,48 @@ public class ProductController {
         }
     }
 
+
+
+
     @GetMapping("/{productId}/update")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String showUpdateProductForm(@PathVariable Long productId, Model model) {
         try {
             Product product = productService.getProductById(productId);
-            model.addAttribute("product", product);
+            ProductDto productDto = productService.convertToDto(product);
+            UpdateProductRequest updateRequest = new UpdateProductRequest();
+            // Map ProductDto to UpdateProductRequest
+            updateRequest.setId(productDto.getId());
+            updateRequest.setName(productDto.getName());
+            updateRequest.setDescription(productDto.getDescription());
+            updateRequest.setStock(productDto.getStock());
+            updateRequest.setPrice(productDto.getPrice());
+            updateRequest.setBrand(productDto.getBrand());
+            updateRequest.setCategory(productDto.getCategory());
+
+            model.addAttribute("product", updateRequest);
+            model.addAttribute("categories", categoryService.getAllCategories());
             return "product/update";
         } catch (ResourceNotFoundException e) {
             model.addAttribute("error", e.getMessage());
-            //return "error/404";
             return "redirect:/products";
         }
     }
 
     @PostMapping("/{productId}/update")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String updateProduct(@PathVariable Long productId, @ModelAttribute UpdateProductRequest request, RedirectAttributes redirectAttributes) {
+    public String updateProduct(@PathVariable Long productId,
+                                @Valid @ModelAttribute("product") UpdateProductRequest request,
+                                BindingResult bindingResult,
+                                Model model,
+                                RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("categories", categoryService.getAllCategories());
+            return "product/update";
+        }
         try {
+            //Category category = categoryService.getCategoryById(categoryId);
+            //request.setCategory(category);
             Product theProduct = productService.updateProduct(request, productId);
             redirectAttributes.addFlashAttribute("message", "Product updated successfully");
             return "redirect:/products/" + theProduct.getId();
@@ -133,17 +171,4 @@ public class ProductController {
         return "product/search";
     }
 
-    @GetMapping("/count")
-    public String countProducts(@RequestParam String brand, @RequestParam String name, Model model) {
-        try {
-            long productCount = productService.countProductsByBrandAndName(brand, name);
-            model.addAttribute("productCount", productCount);
-            model.addAttribute("brand", brand);
-            model.addAttribute("name", name);
-            return "products/count";
-        } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            return "redirect:/products";
-        }
-    }
 }

@@ -25,10 +25,8 @@ public class Category {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @OneToMany(mappedBy = "category",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-                    CascadeType.DETACH, CascadeType.REFRESH})
     @JsonIgnore
+    @OneToMany(mappedBy = "category")
     private List<Product> products ;
 
     public Category(String name, String description) {

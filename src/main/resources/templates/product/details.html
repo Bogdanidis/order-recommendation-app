@@ -6,8 +6,12 @@
 </head>
 <body>
 <main layout:fragment="content">
-    <h1 class="mb-4">Product Details</h1>
     <div class="container mt-4">
+        <h1 class="mb-4">Product Details</h1>
+
+        <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}"></div>
+        <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+
         <div class="card product-card shadow-sm">
             <div class="row g-0">
                 <div class="col-md-4">
@@ -45,18 +49,13 @@
                             </a>
                             <!-- Flex container for all action buttons -->
                             <div class="d-flex align-items-center">
-                                <!-- View Details -->
-                                <a th:href="@{/products/{id}(id=${product.id})}" class="btn btn-sm btn-info me-2">
-                                    <i class="bi bi-eye-fill white"></i>
-                                </a>
-
                                 <!-- Update Product (Admin only) -->
-                                <a th:href="@{/products/{id}/update(id=${product.id})}" sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN')" class="btn btn-sm btn-warning me-2">
+                                <a th:href="@{/products/{productId}/update(productId=${product.id})}" sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN')" class="btn btn-sm btn-warning me-2">
                                     <i class="bi bi-pencil-fill white"></i>
                                 </a>
 
                                 <!-- Delete Product (Admin only) -->
-                                <form th:action="@{/products/{id}/delete(id=${product.id})}" sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN')" method="post" class="me-2">
+                                <form th:action="@{/products/{productId}/delete(productId=${product.id})}" sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN')" method="post" class="me-2">
                                     <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">
                                         <i class="bi bi-trash-fill white"></i>
                                     </button>

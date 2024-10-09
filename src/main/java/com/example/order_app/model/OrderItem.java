@@ -21,17 +21,11 @@ public class OrderItem {
     private Long id;
 
     @JoinColumn(name = "product_id", nullable = false)
-    @ManyToOne(fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-                    CascadeType.DETACH, CascadeType.REFRESH})
-    @JsonBackReference
+    @ManyToOne
     private Product product;
 
     @JoinColumn(name = "order_id", nullable = false)
-    @ManyToOne(fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-                    CascadeType.DETACH, CascadeType.REFRESH})
-    @JsonBackReference
+    @ManyToOne
     private Order order;
 
     @Column(name = "quantity", nullable = false)

@@ -23,7 +23,14 @@ public class GlobalModelAttributes {
     public Cart getUserCart(@AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails != null) {
             User user = userService.getAuthenticatedUser();
-            return cartService.initializeNewCart(user);
+            boolean isAdmin =
+                    user.getRoles().stream().anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
+
+            if (isAdmin){
+                return null;
+            }else{
+                return cartService.initializeNewCart(user);
+            }
         }
         return null;
     }

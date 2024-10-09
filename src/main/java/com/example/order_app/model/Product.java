@@ -43,7 +43,7 @@ public class Product {
             cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="category_id")
     private Category category ;
 
