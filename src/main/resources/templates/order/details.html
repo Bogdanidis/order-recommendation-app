@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout}">
 <head>
     <title>Order Details - Order App</title>
@@ -9,26 +9,23 @@
     <h1 class="mb-4">Order Details</h1>
 
     <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}"></div>
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
 
     <div class="card shadow-sm">
         <div class="card-body">
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <h5 class="card-title">
-                        <i class="fas fa-receipt"></i> Order #<span th:text="${order.id}"></span>
-                    </h5>
+                    <h5 class="card-title">Order #<span th:text="${order.id}"></span></h5>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <p class="card-text text-muted">
-                        <i class="fas fa-calendar-alt"></i> Date: <span th:text="${order.orderDate}">></span>
-                    </p>
+                    <p>Date: <span th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd')}"></span></p>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-6">
                     <p><strong>Total Amount:</strong> <span th:text="${#numbers.formatCurrency(order.totalAmount)}"></span></p>
-                    <p><strong>Status:</strong> <span class="badge" th:text="${order.orderStatus}"></span></p>
+                    <p><strong>Status:</strong> <span class="badge bg-primary" th:text="${order.orderStatus}"></span></p>
                 </div>
                 <div class="col-md-6">
                     <p><strong>User:</strong> <span th:text="${user.email}"></span></p>
@@ -36,23 +33,30 @@
             </div>
 
             <h6 class="mt-4">Order Items:</h6>
-            <ul class="list-group mt-3">
-                <li class="list-group-item d-flex justify-content-between align-items-center" th:each="item : ${order.orderItems}">
-                    <div>
-                        <strong th:text="${item.productName}"></strong>
-                        <small class="text-muted"> x <span th:text="${item.quantity}"></span></small>
-                    </div>
-                    <span class="badge bg-primary" th:text="${#numbers.formatCurrency(item.price)}"></span>
+            <ul class="list-group">
+                <li class="list-group-item" th:each="item : ${order.orderItems}">
+                    <span th:text="${item.productName}"></span> x
+                    <span th:text="${item.quantity}"></span>
+                    <span class="badge bg-primary float-end" th:text="${#numbers.formatCurrency(item.price)}"></span>
                 </li>
             </ul>
+
+            <div class="mt-4">
+                <a sec:authorize="isAuthenticated() and hasRole('ROLE_USER')" th:href="@{/orders/user/{userId}(userId=${user.id})}" class="btn btn-secondary me-2">Back to Your Orders</a>
+                <a sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN')" th:href="@{/orders}" class="btn btn-secondary me-2">Back to Orders</a>
+                <form th:if="${order.orderStatus == 'PENDING' or order.orderStatus == 'PROCESSING'}"
+                      th:action="@{/orders/{id}/cancel(id=${order.id})}"
+                      method="post"
+                      style="display: inline;">
+                    <button type="submit"
+                            class="btn btn-danger btn-sm"
+                            onclick="return confirm('Are you sure you want to cancel this order?')">
+                        <i class="bi bi-trash-fill white"></i>
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
-
-    <div class="d-flex justify-content-between mt-4">
-        <a th:href="@{/orders/user/{userId}(userId=${order.userId})}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Orders</a>
-        <button class="btn btn-primary"><i class="fas fa-print"></i> Print Order</button>
-    </div>
 </main>
-
 </body>
 </html>

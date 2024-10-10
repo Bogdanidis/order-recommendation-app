@@ -13,6 +13,8 @@ import com.example.order_app.service.cart.CartService;
 import com.example.order_app.service.cart.ICartService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +32,13 @@ public class OrderService implements IOrderService {
     private final ModelMapper modelMapper;
 
 
-//    @Transactional
+    @Override
+    public Page<OrderDto> getAllOrders(Pageable pageable) {
+        Page<Order> orderPage = orderRepository.findAll(pageable);
+        return orderPage.map(this::convertToDto);
+    }
+
+    //    @Transactional
 //    @Override
 //    public Order placeOrder(Long userId) {
 //        Cart cart   = cartService.getCartByUserId(userId);
@@ -105,6 +113,12 @@ public class OrderService implements IOrderService {
         return  orders.stream().map(this :: convertToDto).toList();
     }
 
+    @Override
+    public Page<OrderDto> getUserOrdersPaginated(Long userId, Pageable pageable) {
+        Page<Order> orderPage = orderRepository.findByUserId(userId, pageable);
+        return orderPage.map(this::convertToDto);
+    }
+
 
     @Transactional
     @Override
@@ -112,8 +126,32 @@ public class OrderService implements IOrderService {
         Order order = orderRepository.findByIdAndUserId(orderId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found or does not belong to the user"));
 
-        if (order.getOrderStatus() != OrderStatus.PENDING) {
-            throw new IllegalStateException("Only pending orders can be cancelled");
+        if ((order.getOrderStatus() != OrderStatus.PENDING) && (order.getOrderStatus() != OrderStatus.PROCESSING) ) {
+            throw new IllegalStateException("Only pending or processing orders can be cancelled");
+        }
+
+        order.setOrderStatus(OrderStatus.CANCELLED);
+        orderRepository.save(order);
+
+
+        // Return items to inventory
+        order.getOrderItems().forEach(orderItem -> {
+            Product product = orderItem.getProduct();
+            product.setStock(product.getStock() + orderItem.getQuantity());
+            productRepository.save(product);
+        });
+
+        // refund payment would be here.
+    }
+
+    @Transactional
+    @Override
+    public void cancelOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+
+        if ((order.getOrderStatus() != OrderStatus.PENDING) && (order.getOrderStatus() != OrderStatus.PROCESSING) ) {
+            throw new IllegalStateException("Only pending or processing orders can be cancelled");
         }
 
         order.setOrderStatus(OrderStatus.CANCELLED);

@@ -41,7 +41,7 @@
                     </li>
                     <li class="nav-item" sec:authorize="isAuthenticated() and hasRole('ROLE_USER')">
                         <a class="nav-link" th:href="@{/orders/user/{userId}(userId=${#authentication.principal.id})}">
-                            <i class="bi bi-bag me-1"></i>Orders
+                            <i class="bi bi-clipboard-check me-1"></i>Orders
                         </a>
                     </li>
                     <li class="nav-item">

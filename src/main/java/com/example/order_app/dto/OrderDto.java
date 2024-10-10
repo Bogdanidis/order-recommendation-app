@@ -9,9 +9,10 @@ import java.util.List;
 @Data
 public class OrderDto {
     private Long id;
-    private Long userId;
     private LocalDate orderDate;
     private BigDecimal totalAmount;
     private String orderStatus;
     private List<OrderItemDto> orderItems;
+    private Long userId;
+
 }

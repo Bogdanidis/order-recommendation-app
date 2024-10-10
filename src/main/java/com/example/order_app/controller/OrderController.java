@@ -8,6 +8,9 @@ import com.example.order_app.model.User;
 import com.example.order_app.service.order.IOrderService;
 import com.example.order_app.service.user.IUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,11 +26,79 @@ public class OrderController {
     private final IOrderService orderService;
     private final IUserService userService;
 
+    @GetMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String getAllOrders(@RequestParam(defaultValue = "0") int page,
+                               @RequestParam(defaultValue = "10") int size,
+                               Model model) {
+        Page<OrderDto> orderPage = orderService.getAllOrders(PageRequest.of(page, size));
+        model.addAttribute("orders", orderPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", orderPage.getTotalPages());
+        model.addAttribute("totalItems", orderPage.getTotalElements());
+        return "order/list";
+    }
+
+    @GetMapping("/{orderId}")
+    public String getOrderById(@PathVariable Long orderId, Model model, RedirectAttributes redirectAttributes, Authentication authentication) {
+        try {
+            OrderDto order = orderService.getOrder(orderId);
+            UserDto user = userService.convertUserToDto(userService.getUserById(order.getUserId()));
+
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            boolean isOwner = authentication.getName().equals(user.getEmail());
+
+            if (!isAdmin && !isOwner) {
+                redirectAttributes.addFlashAttribute("error", "You don't have permission to view this order.");
+                return "redirect:/orders/user/" + userService.getAuthenticatedUser().getId();
+            }
+
+            model.addAttribute("order", order);
+            model.addAttribute("user", user);
+            return "order/details";
+        } catch (ResourceNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/orders";
+        }
+    }
+
+    @GetMapping("/user/{userId}")
+    public String getUserOrders(@PathVariable Long userId,
+                                @RequestParam(defaultValue = "0") int page,
+                                @RequestParam(defaultValue = "10") int size,
+                                Model model,
+                                RedirectAttributes redirectAttributes,
+                                Authentication authentication) {
+        try {
+            User currentUser = userService.getAuthenticatedUser();
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+            if (!isAdmin && !currentUser.getId().equals(userId)) {
+                redirectAttributes.addFlashAttribute("error", "You don't have permission to view these orders.");
+                return "redirect:/orders/user/" + currentUser.getId();
+            }
+
+            Page<OrderDto> orderPage = orderService.getUserOrdersPaginated(userId, PageRequest.of(page, size));
+            User user = userService.getUserById(userId);
+            model.addAttribute("orders", orderPage.getContent());
+            model.addAttribute("user", user);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", orderPage.getTotalPages());
+            model.addAttribute("totalItems", orderPage.getTotalElements());
+            return "order/user-orders";
+        } catch (ResourceNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/orders";
+        }
+    }
 
     @PostMapping("/create")
-    public String createOrder(@RequestParam Long userId, RedirectAttributes redirectAttributes) {
+    public String createOrder(RedirectAttributes redirectAttributes) {
         try {
-            Order order = orderService.placeOrder(userId);
+            User user = userService.getAuthenticatedUser();
+            Order order = orderService.placeOrder(user.getId());
             redirectAttributes.addFlashAttribute("message", "Order placed successfully");
             return "redirect:/orders/" + order.getId();
         } catch (Exception e) {
@@ -37,43 +108,23 @@ public class OrderController {
         }
     }
 
-    @GetMapping("/{orderId}")
-    public String getOrderById(@PathVariable Long orderId, Model model, RedirectAttributes redirectAttributes) {
-        try {
-            OrderDto order = orderService.getOrder(orderId);
-            model.addAttribute("order", order);
-            UserDto user= userService.convertUserToDto(userService.getAuthenticatedUser());
-            model.addAttribute("user", user);
-            return "order/details";
-        } catch (ResourceNotFoundException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/orders/list";
-        }
-    }
-
-    @GetMapping("/user/{userId}")
-    public String getUserOrders(@PathVariable Long userId, Model model, RedirectAttributes redirectAttributes) {
-        try {
-            List<OrderDto> orders = orderService.getUserOrders(userId);
-            User user = userService.getUserById(userId);
-            model.addAttribute("orders", orders);
-            model.addAttribute("user", user);
-            return "order/user-orders";
-        } catch (ResourceNotFoundException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/orders/list";
-        }
-    }
-
     @PostMapping("/{orderId}/cancel")
     public String cancelOrder(@PathVariable Long orderId, RedirectAttributes redirectAttributes) {
         try {
-            User user = userService.getAuthenticatedUser();
-            orderService.cancelOrder(orderId, user.getId());
-            redirectAttributes.addFlashAttribute("message", "Order cancelled successfully");
+            User currentUser = userService.getAuthenticatedUser();
+            boolean isAdmin = currentUser.getRoles().stream()
+                    .anyMatch(a -> a.getName().equals("ROLE_ADMIN"));
+            if (isAdmin) {
+                orderService.cancelOrder(orderId);
+                redirectAttributes.addFlashAttribute("message", "Order cancelled successfully");
+            }else{
+                orderService.cancelOrder(orderId, currentUser.getId());
+                redirectAttributes.addFlashAttribute("message", "Order cancelled successfully");
+            }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error cancelling order: " + e.getMessage());
         }
-        return "redirect:/orders/user/" + userService.getAuthenticatedUser().getId();
+        return "redirect:/orders/" + orderId;
     }
 }
+

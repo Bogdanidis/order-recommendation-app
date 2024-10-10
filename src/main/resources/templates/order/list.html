@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
-    <title>List Orders - Order App</title>
+    <title>All Orders - Order App</title>
 </head>
 <body>
 <main layout:fragment="content" class="container mt-5">
@@ -11,33 +11,62 @@
     <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}"></div>
     <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
 
-    <a href="/orders/create" class="btn btn-primary mb-3">Create New Order</a>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>User ID</th>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.id}"></td>
+                <td th:text="${order.userId}"></td>
+                <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd')}"></td>
+                <td th:text="${#numbers.formatCurrency(order.totalAmount)}"></td>
+                <td th:text="${order.orderStatus}"></td>
+                <td>
+                    <!-- Flex container for all action buttons -->
+                    <div class="d-flex align-items-center">
+                        <a th:href="@{/orders/user/{userId}(userId=${order.userId})}" class="btn btn-secondary btn-sm me-2">User Orders</a>
+                        <a th:href="@{/orders/{id}(id=${order.id})}" class="btn btn-info btn-sm me-2">
+                            <i class="bi bi-eye-fill white"></i>
+                        </a>
+                        <form th:if="${order.orderStatus == 'PENDING' or order.orderStatus == 'PROCESSING'}"
+                              th:action="@{/orders/{id}/cancel(id=${order.id})}"
+                              method="post"
+                              style="display: inline;">
+                            <button type="submit"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Are you sure you want to cancel this order?')">
+                                <i class="bi bi-trash-fill white"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>Order ID</th>
-            <th>User ID</th>
-            <th>Date</th>
-            <th>Total</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="order : ${orders}">
-            <td th:text="${order.id}"></td>
-            <td th:text="${order.userId}"></td>
-            <td th:text="${order.orderDate}"></td>
-            <td th:text="${order.totalAmount}"></td>
-            <td th:text="${order.orderStatus}"></td>
-            <td>
-                <a th:href="@{/orders/{id}(id=${order.id})}" class="btn btn-info btn-sm">View Details</a>
-                <a th:href="@{/orders/user/{userId}(userId=${order.userId})}" class="btn btn-secondary btn-sm">User Orders</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    <nav aria-label="Page navigation" th:if="${totalPages > 1}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{/orders(page=${currentPage - 1})}">&laquo;</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${currentPage == i} ? 'active'">
+                <a class="page-link" th:href="@{/orders(page=${i})}" th:text="${i + 1}"></a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/orders(page=${currentPage + 1})}">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
 </main>
 </body>
 </html>
