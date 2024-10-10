@@ -55,20 +55,20 @@ public class CategoryController {
             return "redirect:/categories";
         }
     }
+//
+//    @GetMapping("/name/{name}")
+//    public String getCategoryByName(@PathVariable String name, Model model, RedirectAttributes redirectAttributes) {
+//        try {
+//            Category theCategory = categoryService.getCategoryByName(name);
+//            model.addAttribute("category", theCategory);
+//            return "category/details";
+//        } catch (ResourceNotFoundException e) {
+//            redirectAttributes.addFlashAttribute("error", e.getMessage());
+//            return "redirect:/categories";
+//        }
+//    }
 
-    @GetMapping("/name/{name}")
-    public String getCategoryByName(@PathVariable String name, Model model, RedirectAttributes redirectAttributes) {
-        try {
-            Category theCategory = categoryService.getCategoryByName(name);
-            model.addAttribute("category", theCategory);
-            return "category/details";
-        } catch (ResourceNotFoundException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/categories";
-        }
-    }
-
-    @GetMapping("/{id}/delete")
+    @PostMapping("/{id}/delete")
     public String deleteCategory(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             categoryService.deleteCategoryById(id);
