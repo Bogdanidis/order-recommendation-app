@@ -125,6 +125,17 @@ h1, h2, h3, h4, h5, h6 {
     padding: 1.5rem;
 }
 
+/* No Animation Card Styles */
+.card.no-animation {
+    transition: none;
+}
+
+.card.no-animation:hover {
+    transform: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* This should match the non-hover state */
+}
+
+
 /* Forms */
 .form-control {
     border-radius: 5px;
