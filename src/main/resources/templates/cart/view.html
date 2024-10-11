@@ -1,21 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 <head>
-    <title>Cart - Order App</title>
+    <title>Cart</title>
 </head>
 <body>
 <main layout:fragment="content" class="container mt-5">
     <h1 class="mb-4">Your Cart</h1>
 
     <!-- Success and Error Alerts -->
-    <div th:if="${error}" class="alert alert-danger" role="alert">
-        <span th:text="${error}"></span>
-    </div>
-
-    <div th:if="${success}" class="alert alert-success" role="alert">
-        <span th:text="${success}"></span>
-    </div>
+    <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
 
     <!-- Cart Table -->
     <div class="table-responsive">
@@ -88,6 +82,7 @@
         <div>
             <!-- Clear Cart Button -->
             <form th:action="@{/cart/{cartId}/clear(cartId=${cart.id})}" method="post" style="display:inline;">
+                <input type="hidden" name="_method" value="PUT"/>
                 <button type="submit" class="btn btn-warning">Clear Cart</button>
             </form>
             <!-- Create Order Button -->

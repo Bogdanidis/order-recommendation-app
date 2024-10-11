@@ -6,6 +6,8 @@
 </head>
 <body>
 <main layout:fragment="content" class="container mt-4">
+    <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
     <h1 class="mb-4">Search Products</h1>
 
     <!-- Search Form -->
@@ -78,6 +80,7 @@
 
                                     <!-- Delete Product (Admin only) -->
                                     <form th:action="@{/products/{id}/delete(id=${product.id})}" sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN')" method="post" class="me-2">
+                                        <input type="hidden" name="_method" value="DELETE"/>
                                         <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">
                                             <i class="bi bi-trash-fill white"></i>
                                         </button>

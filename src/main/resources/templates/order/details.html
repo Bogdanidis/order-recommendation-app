@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      layout:decorate="~{layout}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" layout:decorate="~{layout}">
 <head>
-    <title>Order Details - Order App</title>
+    <title>Order Details</title>
 </head>
 <body>
 <main layout:fragment="content" class="container mt-5">
     <h1 class="mb-4">Order Details</h1>
 
-    <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}"></div>
+    <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
     <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
 
     <div class="card shadow-sm">
@@ -48,6 +47,7 @@
                       th:action="@{/orders/{id}/cancel(id=${order.id})}"
                       method="post"
                       style="display: inline;">
+                    <input type="hidden" name="_method" value="PUT"/>
                     <button type="submit"
                             class="btn btn-danger btn-sm"
                             onclick="return confirm('Are you sure you want to cancel this order?')">

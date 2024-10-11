@@ -59,7 +59,7 @@ public class CartController {
      * @param redirectAttributes RedirectAttributes for flash messages
      * @return Redirect URL
      */
-    @PostMapping("/{cartId}/clear")
+    @PutMapping("/{cartId}/clear")
     public String clearCart(@PathVariable Long cartId, RedirectAttributes redirectAttributes) {
         try {
             User user = userService.getAuthenticatedUser();

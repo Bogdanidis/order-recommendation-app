@@ -84,7 +84,7 @@ public class ProductController {
     @GetMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String showAddProductForm(Model model) {
-        model.addAttribute("product", new AddProductRequest());
+        model.addAttribute("addProductRequest", new AddProductRequest());
         model.addAttribute("categories", categoryService.getAllCategories());
         return "product/add";
     }

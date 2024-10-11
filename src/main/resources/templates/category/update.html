@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 <head>
-    <title>Update Category - Order App</title>
+    <title>Update Category</title>
 </head>
 <body>
 <main layout:fragment="content" class="container mt-4">
+    <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow-sm no-animation">
@@ -14,6 +15,7 @@
                 </div>
                 <div class="card-body">
                     <form th:action="@{/categories/{id}/update(id=${category.id})}" th:object="${category}" method="post">
+                        <input type="hidden" name="_method" value="PUT"/>
                         <div class="mb-3">
                             <label for="name" class="form-label">Category Name</label>
                             <input type="text" class="form-control" id="name" th:field="*{name}" required>

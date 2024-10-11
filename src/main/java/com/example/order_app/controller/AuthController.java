@@ -83,7 +83,7 @@ public class AuthController {
      */
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
-        model.addAttribute("user", new CreateUserRequest());
+        model.addAttribute("createUserRequest", new CreateUserRequest());
         return "auth/register";
     }
 

@@ -5,18 +5,16 @@
 </head>
 <body>
 <main layout:fragment="content" class="container mt-4">
+    <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow-sm no-animation">
                 <div class="card-header">
                     <h1 class="card-title mb-0">Add New Product</h1>
                 </div>
-
-                <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}"></div>
-                <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
-
                 <div class="card-body">
-                    <form th:action="@{/products/add}" th:object="${product}" method="post">
+                    <form th:action="@{/products/add}" th:object="${addProductRequest}" method="post">
                         <div class="mb-3">
                             <label for="name" class="form-label">Name</label>
                             <input type="text" class="form-control" id="name" th:field="*{name}" required>

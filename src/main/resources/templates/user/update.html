@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 <head>
-    <title>Update Profile - Order App</title>
+    <title>Update User Profile</title>
 </head>
 <body>
 <main layout:fragment="content" class="container mt-4">
+    <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow-sm no-animation">
                 <div class="card-header">
-                    <h1 class="mb-0 text-center">Update Profile</h1>
+                    <h1 class="mb-0 text-center">Update User Profile</h1>
                 </div>
                 <div class="card-body">
                     <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -19,6 +20,7 @@
                     </div>
 
                     <form th:action="@{/users/{id}/update(id=${user.id})}" th:object="${updateRequest}" method="post">
+                        <input type="hidden" name="_method" value="PUT"/>
                         <div class="mb-3">
                             <label for="firstName" class="form-label">First Name</label>
                             <input type="text" class="form-control" id="firstName" th:field="*{firstName}" >
