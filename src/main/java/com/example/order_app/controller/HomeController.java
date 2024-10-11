@@ -12,6 +12,7 @@ import com.example.order_app.service.user.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,13 +28,26 @@ public class HomeController {
     private final ICategoryService categoryService;
     private final IOrderService orderService;
     private final IUserService userService;
-    //private final RecommendationService recommendationService;
 
+    /**
+     * Redirects the root URL to the home page.
+     *
+     * @return Redirect URL to the home page
+     */
     @GetMapping("/")
     public String redirectToHome() {
-            return "redirect:/home";
+        return "redirect:/home";
     }
 
+    /**
+     * Displays the home page with featured products, categories, and user-specific content.
+     *
+     * @param authentication Spring Security Authentication object
+     * @param model Spring MVC Model
+     * @param page Page number for pagination
+     * @param size Number of items per page
+     * @return The name of the home view
+     */
     @GetMapping("/home")
     public String home(Authentication authentication, Model model,
                        @RequestParam(defaultValue = "0") int page,
@@ -45,18 +59,17 @@ public class HomeController {
 
         // Load paginated products for the main section
         Page<Product> productPage = productService.getAllProducts(PageRequest.of(page, size));
-        model.addAttribute("featuredProducts", productPage.getContent());
+        model.addAttribute("products", productService.getConvertedProducts(productPage.getContent()));
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", productPage.getTotalPages());
         model.addAttribute("totalItems", productPage.getTotalElements());
 
-        // Load paginated products for the main section
+        // Load categories
         model.addAttribute("categories", categoryService.getAllCategories());
 
-        // Add user to model and recommended products if the user is logged in
+        // Add user to model if authenticated
         if (authentication != null && authentication.isAuthenticated()) {
-
-            User user= userService.getAuthenticatedUser();
+            User user = userService.getAuthenticatedUser();
             UserDto userDto = userService.convertUserToDto(user);
             model.addAttribute("user", userDto);
         }
@@ -64,9 +77,15 @@ public class HomeController {
         return "home";
     }
 
+    /**
+     * Displays the admin dashboard with key metrics.
+     *
+     * @param model Spring MVC Model
+     * @return The name of the dashboard view
+     */
     @GetMapping("/admin/dashboard")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String adminDashboard(Model model) {
-         //Add any necessary data for the admin dashboard
         model.addAttribute("totalUsers", userService.countUsers());
         model.addAttribute("totalProducts", productService.countProducts());
         model.addAttribute("todayOrders", orderService.countTodaysOrders());

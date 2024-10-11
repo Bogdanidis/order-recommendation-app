@@ -11,6 +11,7 @@ import com.example.order_app.service.product.IProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,6 +32,14 @@ public class ProductController {
     private final IProductService productService;
     private final ICategoryService categoryService;
 
+    /**
+     * Displays a list of all products.
+     *
+     * @param model Spring MVC Model
+     * @param page Page number
+     * @param size Number of items per page
+     * @return The name of the product list view
+     */
     @GetMapping
     public String getAllProducts(Model model,
                                  @RequestParam(defaultValue = "0") int page,
@@ -46,6 +55,13 @@ public class ProductController {
         return "product/list";
     }
 
+    /**
+     * Displays details of a specific product.
+     *
+     * @param productId ID of the product
+     * @param model Spring MVC Model
+     * @return The name of the product details view or a redirect URL
+     */
     @GetMapping("/{productId}")
     public String getProductById(@PathVariable Long productId, Model model) {
         try {
@@ -59,7 +75,12 @@ public class ProductController {
         }
     }
 
-
+    /**
+     * Displays the form to add a new product.
+     *
+     * @param model Spring MVC Model
+     * @return The name of the add product view
+     */
     @GetMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String showAddProductForm(Model model) {
@@ -68,6 +89,15 @@ public class ProductController {
         return "product/add";
     }
 
+    /**
+     * Handles the submission of a new product.
+     *
+     * @param product The product to be added
+     * @param bindingResult BindingResult for form validation
+     * @param model Spring MVC Model
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @return Redirect URL
+     */
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String addProduct(@Valid @ModelAttribute("product") AddProductRequest product,
@@ -80,7 +110,7 @@ public class ProductController {
         }
         try {
             Product theProduct = productService.addProduct(product);
-            redirectAttributes.addFlashAttribute("message", "Product added successfully");
+            redirectAttributes.addFlashAttribute("success", "Product added successfully");
             return "redirect:/products/" + theProduct.getId();
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -89,8 +119,13 @@ public class ProductController {
     }
 
 
-
-
+    /**
+     * Displays the form to update an existing product.
+     *
+     * @param productId ID of the product to update
+     * @param model Spring MVC Model
+     * @return The name of the update product view or a redirect URL
+     */
     @GetMapping("/{productId}/update")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String showUpdateProductForm(@PathVariable Long productId, Model model) {
@@ -99,13 +134,7 @@ public class ProductController {
             ProductDto productDto = productService.convertToDto(product);
             UpdateProductRequest updateRequest = new UpdateProductRequest();
             // Map ProductDto to UpdateProductRequest
-            updateRequest.setId(productDto.getId());
-            updateRequest.setName(productDto.getName());
-            updateRequest.setDescription(productDto.getDescription());
-            updateRequest.setStock(productDto.getStock());
-            updateRequest.setPrice(productDto.getPrice());
-            updateRequest.setBrand(productDto.getBrand());
-            updateRequest.setCategory(productDto.getCategory());
+            BeanUtils.copyProperties(productDto, updateRequest);
 
             model.addAttribute("product", updateRequest);
             model.addAttribute("categories", categoryService.getAllCategories());
@@ -116,7 +145,17 @@ public class ProductController {
         }
     }
 
-    @PostMapping("/{productId}/update")
+    /**
+     * Handles the submission of an updated product.
+     *
+     * @param productId ID of the product to update
+     * @param request The updated product data
+     * @param bindingResult BindingResult for form validation
+     * @param model Spring MVC Model
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @return Redirect URL
+     */
+    @PutMapping("/{productId}/update")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String updateProduct(@PathVariable Long productId,
                                 @Valid @ModelAttribute("product") UpdateProductRequest request,
@@ -128,10 +167,8 @@ public class ProductController {
             return "product/update";
         }
         try {
-            //Category category = categoryService.getCategoryById(categoryId);
-            //request.setCategory(category);
             Product theProduct = productService.updateProduct(request, productId);
-            redirectAttributes.addFlashAttribute("message", "Product updated successfully");
+            redirectAttributes.addFlashAttribute("success", "Product updated successfully");
             return "redirect:/products/" + theProduct.getId();
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -139,18 +176,35 @@ public class ProductController {
         }
     }
 
-    @PostMapping("/{productId}/delete")
+    /**
+     * Handles the deletion of a product.
+     *
+     * @param productId ID of the product to delete
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @return Redirect URL
+     */
+    @DeleteMapping("/{productId}/delete")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String deleteProduct(@PathVariable Long productId, RedirectAttributes redirectAttributes) {
         try {
             productService.deleteProductById(productId);
-            redirectAttributes.addFlashAttribute("message", "Product deleted successfully");
+            redirectAttributes.addFlashAttribute("success", "Product deleted successfully");
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/products";
     }
 
+    /**
+     * Handles product search functionality.
+     *
+     * @param brandName Brand name to search for
+     * @param productName Product name to search for
+     * @param category Category to search in
+     * @param searched Whether a search has been performed
+     * @param model Spring MVC Model
+     * @return The name of the search results view
+     */
     @GetMapping("/search")
     public String searchProducts(
             @RequestParam(required = false) String brandName,

@@ -20,6 +20,12 @@ public class CategoryController {
     private final ICategoryService categoryService;
 
 
+    /**
+     * Displays a list of all categories.
+     *
+     * @param model Spring MVC Model
+     * @return The name of the category list view
+     */
     @GetMapping
     public String getAllCategories(Model model) {
         List<Category> categories = categoryService.getAllCategories();
@@ -28,6 +34,14 @@ public class CategoryController {
     }
 
 
+    /**
+     * Displays details of a specific category.
+     *
+     * @param id ID of the category
+     * @param model Spring MVC Model
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @return The name of the category details view or a redirect URL
+     */
     @GetMapping("/{id}")
     public String getCategoryById(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
@@ -40,6 +54,12 @@ public class CategoryController {
         }
     }
 
+    /**
+     * Displays the form to add a new category.
+     *
+     * @param model Spring MVC Model
+     * @return The name of the add category view
+     */
     @GetMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String showAddCategoryForm(Model model) {
@@ -47,19 +67,34 @@ public class CategoryController {
         return "category/add";
     }
 
+    /**
+     * Handles the submission of a new category.
+     *
+     * @param category The category to be added
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @return Redirect URL
+     */
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String addCategory(@ModelAttribute Category category, RedirectAttributes redirectAttributes) {
         try {
             Category theCategory = categoryService.addCategory(category);
-            redirectAttributes.addFlashAttribute("message", "Category added successfully");
-            return "redirect:/categories";
+            redirectAttributes.addFlashAttribute("success", "Category added successfully");
+            return "redirect:/categories/" + theCategory.getId();
         } catch (AlreadyExistsException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/categories/add";
         }
     }
 
+    /**
+     * Displays the form to update an existing category.
+     *
+     * @param id ID of the category to update
+     * @param model Spring MVC Model
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @return The name of the update category view or a redirect URL
+     */
     @GetMapping("/{id}/update")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String showUpdateCategoryForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
@@ -73,25 +108,41 @@ public class CategoryController {
         }
     }
 
-    @PostMapping("/{id}/update")
+
+    /**
+     * Handles the submission of an updated category.
+     *
+     * @param id ID of the category to update
+     * @param category The updated category data
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @return Redirect URL
+     */
+    @PutMapping("/{id}/update")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String updateCategory(@PathVariable Long id, @ModelAttribute Category category, RedirectAttributes redirectAttributes) {
         try {
             Category updatedCategory = categoryService.updateCategory(category, id);
-            redirectAttributes.addFlashAttribute("message", "Category updated successfully");
-            return "redirect:/categories";
+            redirectAttributes.addFlashAttribute("success", "Category updated successfully");
+            return "redirect:/categories/" + updatedCategory.getId();
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/categories/" + id + "/update";
         }
     }
 
-    @PostMapping("/{id}/delete")
+    /**
+     * Handles the deletion of a category.
+     *
+     * @param id ID of the category to delete
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @return Redirect URL
+     */
+    @DeleteMapping("/{id}/delete")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String deleteCategory(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             categoryService.deleteCategoryById(id);
-            redirectAttributes.addFlashAttribute("message", "Category deleted successfully");
+            redirectAttributes.addFlashAttribute("success", "Category deleted successfully");
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }

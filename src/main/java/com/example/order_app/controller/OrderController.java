@@ -26,6 +26,14 @@ public class OrderController {
     private final IOrderService orderService;
     private final IUserService userService;
 
+    /**
+     * Displays a list of all orders (admin only).
+     *
+     * @param page Page number
+     * @param size Number of items per page
+     * @param model Spring MVC Model
+     * @return The name of the order list view
+     */
     @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String getAllOrders(@RequestParam(defaultValue = "0") int page,
@@ -39,6 +47,16 @@ public class OrderController {
         return "order/list";
     }
 
+
+    /**
+     * Displays details of a specific order.
+     *
+     * @param orderId ID of the order
+     * @param model Spring MVC Model
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @param authentication Spring Security Authentication object
+     * @return The name of the order details view or a redirect URL
+     */
     @GetMapping("/{orderId}")
     public String getOrderById(@PathVariable Long orderId, Model model, RedirectAttributes redirectAttributes, Authentication authentication) {
         try {
@@ -63,6 +81,17 @@ public class OrderController {
         }
     }
 
+    /**
+     * Displays orders for a specific user.
+     *
+     * @param userId ID of the user
+     * @param page Page number
+     * @param size Number of items per page
+     * @param model Spring MVC Model
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @param authentication Spring Security Authentication object
+     * @return The name of the user orders view or a redirect URL
+     */
     @GetMapping("/user/{userId}")
     public String getUserOrders(@PathVariable Long userId,
                                 @RequestParam(defaultValue = "0") int page,
@@ -90,16 +119,22 @@ public class OrderController {
             return "order/user-orders";
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/orders";
+            return "redirect:/home";
         }
     }
 
+    /**
+     * Handles order creation.
+     *
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @return Redirect URL
+     */
     @PostMapping("/create")
     public String createOrder(RedirectAttributes redirectAttributes) {
         try {
             User user = userService.getAuthenticatedUser();
             Order order = orderService.placeOrder(user.getId());
-            redirectAttributes.addFlashAttribute("message", "Order placed successfully");
+            redirectAttributes.addFlashAttribute("success", "Order placed successfully");
             return "redirect:/orders/" + order.getId();
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error occurred: " + e.getMessage());
@@ -108,7 +143,14 @@ public class OrderController {
         }
     }
 
-    @PostMapping("/{orderId}/cancel")
+    /**
+     * Handles order cancellation.
+     *
+     * @param orderId ID of the order to cancel
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @return Redirect URL
+     */
+    @PutMapping("/{orderId}/cancel")
     public String cancelOrder(@PathVariable Long orderId, RedirectAttributes redirectAttributes) {
         try {
             User currentUser = userService.getAuthenticatedUser();
@@ -116,11 +158,10 @@ public class OrderController {
                     .anyMatch(a -> a.getName().equals("ROLE_ADMIN"));
             if (isAdmin) {
                 orderService.cancelOrder(orderId);
-                redirectAttributes.addFlashAttribute("message", "Order cancelled successfully");
-            }else{
+            } else {
                 orderService.cancelOrder(orderId, currentUser.getId());
-                redirectAttributes.addFlashAttribute("message", "Order cancelled successfully");
             }
+            redirectAttributes.addFlashAttribute("success", "Order cancelled successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error cancelling order: " + e.getMessage());
         }

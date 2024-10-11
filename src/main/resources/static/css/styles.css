@@ -286,18 +286,27 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Error Page Styles */
 .error-page {
-    text-align: center;
-    padding: 4rem 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: #f8f9fa;
 }
-
 .error-page h1 {
-    font-size: 6rem;
-    color: var(--primary-color);
+    font-size: 100px;
+    font-weight: bold;
 }
-
 .error-page h2 {
-    font-size: 2rem;
-    margin-bottom: 2rem;
+    font-size: 30px;
+}
+.error-page p {
+    font-size: 18px;
+}
+.error-page a {
+    margin-top: 20px;
+    font-size: 16px;
+    text-decoration: none;
 }
 
 /* Category Styles */

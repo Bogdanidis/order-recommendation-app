@@ -31,7 +31,15 @@ public class UserController {
     private final IUserService userService;
     private final IRoleService roleService;
 
-
+    /**
+     * Displays a list of all users (admin only).
+     *
+     * @param page Page number
+     * @param size Number of items per page
+     * @param search Search term
+     * @param model Spring MVC Model
+     * @return The name of the user list view
+     */
     @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String listUsers(
@@ -48,26 +56,50 @@ public class UserController {
         return "user/list";
     }
 
+    /**
+     * Displays details of a specific user.
+     *
+     * @param userId ID of the user
+     * @param model Spring MVC Model
+     * @param authentication Spring Security Authentication object
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @return The name of the user details view or a redirect URL
+     */
     @GetMapping("/{userId}")
-    public String getUserDetails(@PathVariable Long userId, Model model, Authentication authentication) {
-        User user = userService.getUserById(userId);
+    public String getUserDetails(@PathVariable Long userId,
+                                 Model model,
+                                 Authentication authentication,
+                                 RedirectAttributes redirectAttributes) {
+        try {
+            User user = userService.getUserById(userId);
 
-        // Check if the logged-in user is viewing their own profile or if they're an admin
-        boolean isOwnProfile = authentication != null &&
-                authentication.getName().equals(user.getEmail());
-        boolean isAdmin = authentication != null &&
-                authentication.getAuthorities().stream()
-                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            boolean isOwnProfile = authentication != null &&
+                    authentication.getName().equals(user.getEmail());
+            boolean isAdmin = authentication != null &&
+                    authentication.getAuthorities().stream()
+                            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
-        if (!isOwnProfile && !isAdmin) {
-            return "redirect:/error";
+            if (!isOwnProfile && !isAdmin) {
+                redirectAttributes.addFlashAttribute("error",
+                        "You don't have permission to view this user profile.");
+                return "redirect:/home";
+            }
+
+            model.addAttribute("user", user);
+            model.addAttribute("isOwnProfile", isOwnProfile);
+            return "user/details";
+        } catch (ResourceNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", "User not found.");
+            return "redirect:/home";
         }
-
-        model.addAttribute("user", user);
-        model.addAttribute("isOwnProfile", isOwnProfile);
-        return "user/details";
     }
 
+    /**
+     * Displays the form to add a new user (admin only).
+     *
+     * @param model Spring MVC Model
+     * @return The name of the add user view
+     */
     @GetMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String showCreateUserForm(Model model) {
@@ -77,6 +109,15 @@ public class UserController {
         return "user/add";
     }
 
+    /**
+     * Handles the submission of a new user (admin only).
+     *
+     * @param createUserRequest User creation data
+     * @param bindingResult BindingResult for form validation
+     * @param model Spring MVC Model
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @return Redirect URL
+     */
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String createUser(@Valid @ModelAttribute CreateUserRequest createUserRequest,
@@ -91,7 +132,7 @@ public class UserController {
 
         try {
             User createdUser = userService.createUser(createUserRequest);
-            redirectAttributes.addFlashAttribute("message", "User created successfully");
+            redirectAttributes.addFlashAttribute("success", "User created successfully");
             return "redirect:/users/" + createdUser.getId();
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -99,34 +140,64 @@ public class UserController {
         }
     }
 
+    /**
+     * Displays the form to update an existing user.
+     *
+     * @param userId ID of the user to update
+     * @param model Spring MVC Model
+     * @param authentication Spring Security Authentication object
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @return The name of the update user view or a redirect URL
+     */
     @GetMapping("/{userId}/update")
-    public String showUpdateUserForm(@PathVariable Long userId, Model model, Authentication authentication) {
-        User user = userService.getUserById(userId);
-        boolean isOwnProfile = authentication.getName().equals(user.getEmail());
-        boolean isAdmin = authentication.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+    public String showUpdateUserForm(@PathVariable Long userId,
+                                     Model model,
+                                     Authentication authentication,
+                                     RedirectAttributes redirectAttributes) {
+        try {
+            User user = userService.getUserById(userId);
+            boolean isOwnProfile = authentication.getName().equals(user.getEmail());
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
-        if (!isOwnProfile && !isAdmin) {
-            return "redirect:/error";
+            if (!isOwnProfile && !isAdmin) {
+                redirectAttributes.addFlashAttribute("error",
+                        "You don't have permission to edit this user profile.");
+                return "redirect:/home";
+            }
+
+            UpdateUserRequest updateRequest = new UpdateUserRequest();
+            updateRequest.setFirstName(user.getFirstName());
+            updateRequest.setLastName(user.getLastName());
+            updateRequest.setRoles(user.getRoles());
+
+            model.addAttribute("user", user);
+            model.addAttribute("updateRequest", updateRequest);
+
+            if (isAdmin) {
+                List<Role> availableRoles = roleService.getAllRoles();
+                model.addAttribute("availableRoles", availableRoles);
+            }
+
+            return "user/update";
+        } catch (ResourceNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", "User not found.");
+            return "redirect:/home";
         }
-
-        UpdateUserRequest updateRequest = new UpdateUserRequest();
-        updateRequest.setFirstName(user.getFirstName());
-        updateRequest.setLastName(user.getLastName());
-        updateRequest.setRoles(user.getRoles());
-
-        model.addAttribute("user", user);
-        model.addAttribute("updateRequest", updateRequest);
-
-        if (isAdmin) {
-            List<Role> availableRoles = roleService.getAllRoles();
-            model.addAttribute("availableRoles", availableRoles);
-        }
-
-        return "user/update";
     }
 
-    @PostMapping("/{userId}/update")
+    /**
+     * Handles the submission of an updated user.
+     *
+     * @param userId ID of the user to update
+     * @param updateRequest The updated user data
+     * @param bindingResult BindingResult for form validation
+     * @param model Spring MVC Model
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @param authentication Spring Security Authentication object
+     * @return Redirect URL
+     */
+    @PutMapping("/{userId}/update")
     public String updateUser(@PathVariable Long userId,
                              @ModelAttribute UpdateUserRequest updateRequest,
                              BindingResult bindingResult,
@@ -143,7 +214,7 @@ public class UserController {
 
         try {
             User updatedUser = userService.updateUser(updateRequest, userId);
-            redirectAttributes.addFlashAttribute("message", "User updated successfully");
+            redirectAttributes.addFlashAttribute("success", "User updated successfully");
             return "redirect:/users/" + updatedUser.getId();
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -151,12 +222,19 @@ public class UserController {
         }
     }
 
-    @PostMapping("/{userId}/delete")
+    /**
+     * Handles the deletion of a user (admin only).
+     *
+     * @param userId ID of the user to delete
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @return Redirect URL
+     */
+    @DeleteMapping("/{userId}/delete")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String deleteUser(@PathVariable Long userId, RedirectAttributes redirectAttributes) {
         try {
             userService.deleteUser(userId);
-            redirectAttributes.addFlashAttribute("message", "User deleted successfully");
+            redirectAttributes.addFlashAttribute("success", "User deleted successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error deleting user: " + e.getMessage());
         }

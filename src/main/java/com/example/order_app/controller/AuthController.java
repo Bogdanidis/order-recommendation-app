@@ -26,14 +26,29 @@ public class AuthController {
     private final IRoleService roleService;
 
 
+    /**
+     * Displays the login page.
+     *
+     * @param error Optional error message
+     * @param model Spring MVC Model
+     * @return The name of the login view
+     */
     @GetMapping("/login")
     public String showLoginPage(@RequestParam(value = "error", required = false) String error, Model model) {
         if (error != null) {
             model.addAttribute("error", "Invalid email or password. Please try again.");
         }
-        return "auth/login"; // Returns the login.html page
+        return "auth/login";
     }
 
+    /**
+     * Handles user login.
+     *
+     * @param email User's email
+     * @param password User's password
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @return Redirect URL
+     */
     @PostMapping("/login")
     public String login(@RequestParam("email") String email,
                         @RequestParam("password") String password,
@@ -42,27 +57,44 @@ public class AuthController {
             Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(email, password));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            return "redirect:/home"; // Redirect to home page on successful login
+            return "redirect:/home";
         } catch (AuthenticationException e) {
-            redirectAttributes.addAttribute("error", "Invalid credentials");
-            return "redirect:/auth/login?error=true"; // Redirect back to login with an error
+            redirectAttributes.addFlashAttribute("error", "Invalid credentials");
+            return "redirect:/auth/login?error=true";
         }
     }
 
+    /**
+     * Handles user logout.
+     *
+     * @return Redirect URL
+     */
     @GetMapping("/logout")
     public String logout() {
         SecurityContextHolder.clearContext();
-        return "redirect:/home?logout=true"; // Redirect to login with a logout message
+        return "redirect:/home?logout=true";
     }
 
-    // New: Registration Form
+    /**
+     * Displays the registration page.
+     *
+     * @param model Spring MVC Model
+     * @return The name of the registration view
+     */
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
         model.addAttribute("user", new CreateUserRequest());
         return "auth/register";
     }
 
-    // New: Handle Registration Form Submission
+
+    /**
+     * Handles user registration.
+     *
+     * @param registerRequest User registration data
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @return Redirect URL
+     */
     @PostMapping("/register")
     public String register(@ModelAttribute("user") CreateUserRequest registerRequest,
                            RedirectAttributes redirectAttributes) {

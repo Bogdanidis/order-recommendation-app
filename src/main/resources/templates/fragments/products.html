@@ -1,7 +1,7 @@
 <div th:fragment="products" class="container mb-5">
     <h2 class="mb-4">Featured Products</h2>
     <div class="row row-cols-1 row-cols-md-3 g-4">
-        <div class="col" th:each="product : ${featuredProducts}">
+        <div class="col" th:each="product : ${products}">
             <div class="card h-100 product-card">
                 <div th:if="${not #lists.isEmpty(product.images)}" class="product-image-container">
                     <img th:src="@{'/images/' + ${product.images[0].id}}"

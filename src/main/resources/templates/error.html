@@ -1,36 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .error-page {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            background-color: #f8f9fa;
-        }
-        .error-page h1 {
-            font-size: 100px;
-            font-weight: bold;
-        }
-        .error-page h2 {
-            font-size: 30px;
-        }
-        .error-page p {
-            font-size: 18px;
-        }
-        .error-page a {
-            margin-top: 20px;
-            font-size: 16px;
-            text-decoration: none;
-        }
-    </style>
+    <title>Error page</title>
 </head>
 <body>
 <div class="error-page text-center">
@@ -40,12 +12,8 @@
 
     <!-- Home Button -->
     <a th:href="@{/home}" class="btn btn-primary">Back to Home</a>
-
     <!-- Contact Support -->
     <a th:href="@{/contact}" class="btn btn-secondary ms-2">Contact Support</a>
 </div>
-
-<!-- Bootstrap JS Bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

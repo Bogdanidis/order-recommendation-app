@@ -77,6 +77,13 @@ public class CartItemService  implements ICartItemService{
     }
 
     @Override
+    public boolean isCartOwnedByUser(Long cartId, Long userId) {
+        return cartRepository.findById(cartId)
+                .map(cart -> cart.getUser().getId().equals(userId))
+                .orElse(false);
+    }
+
+    @Override
     public CartItem getCartItem(Long cartId, Long productId) {
         Cart cart = cartService.getCart(cartId);
         return  cart.getItems()
