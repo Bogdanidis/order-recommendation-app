@@ -14,20 +14,17 @@
                     <h1 class="mb-0 text-center">Update User Profile</h1>
                 </div>
                 <div class="card-body">
-                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <span th:text="${error}"></span>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-
                     <form th:action="@{/users/{id}/update(id=${user.id})}" th:object="${updateRequest}" method="post">
                         <input type="hidden" name="_method" value="PUT"/>
                         <div class="mb-3">
                             <label for="firstName" class="form-label">First Name</label>
                             <input type="text" class="form-control" id="firstName" th:field="*{firstName}" >
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
                         </div>
                         <div class="mb-3">
                             <label for="lastName" class="form-label">Last Name</label>
                             <input type="text" class="form-control" id="lastName" th:field="*{lastName}" >
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
                         </div>
 
                         <div class="mb-3" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
@@ -35,6 +32,7 @@
                             <select multiple class="form-select" id="roles" th:field="*{roles}">
                                 <option th:each="role : ${availableRoles}" th:value="${role.id}" th:text="${role.name}"></option>
                             </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}"></div>
                         </div>
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <a th:href="@{/users/{id}(id=${user.id})}" class="btn btn-secondary me-md-2">Cancel</a>

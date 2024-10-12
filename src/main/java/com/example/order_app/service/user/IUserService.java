@@ -2,7 +2,7 @@ package com.example.order_app.service.user;
 
 import com.example.order_app.dto.UserDto;
 import com.example.order_app.model.User;
-import com.example.order_app.request.CreateUserRequest;
+import com.example.order_app.request.AddUserRequest;
 import com.example.order_app.request.UpdateUserRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +14,7 @@ public interface IUserService {
     Page<UserDto> findAllPaginated(Pageable pageable, String search);
 
     User getUserById(Long userId);
-    User createUser(CreateUserRequest request);
+    User addUser(AddUserRequest request);
     User updateUser(UpdateUserRequest request, Long userId);
     void deleteUser(Long userId);
 

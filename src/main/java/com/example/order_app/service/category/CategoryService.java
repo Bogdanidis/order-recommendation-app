@@ -4,7 +4,11 @@ import com.example.order_app.exception.AlreadyExistsException;
 import com.example.order_app.exception.ResourceNotFoundException;
 import com.example.order_app.model.Category;
 import com.example.order_app.repository.CategoryRepository;
+import com.example.order_app.request.AddCategoryRequest;
+import com.example.order_app.request.UpdateCategoryRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,18 +36,28 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public Category addCategory(Category category) {
-        return Optional.of(category).filter(c->!categoryRepository.existsByName(c.getName()))
-                .map(categoryRepository::save)
-                .orElseThrow(()-> new AlreadyExistsException(category.getName()+" already exists!"));
+    public Page<Category> getAllCategoriesPaginated(Pageable pageable) {
+        return categoryRepository.findAll(pageable);
     }
 
     @Override
-    public Category updateCategory(Category category,Long id) {
+    public Category addCategory(AddCategoryRequest request) {
+        return Optional.of(request)
+                .filter(c->!categoryRepository.existsByName(c.getName()))
+                .map(req -> {
+                    Category category = new Category();
+                    category.setName(req.getName());
+                    category.setDescription(req.getDescription());
+                    return categoryRepository.save(category);
+                }).orElseThrow(()-> new AlreadyExistsException(request.getName()+" already exists!"));
+    }
+
+    @Override
+    public Category updateCategory(UpdateCategoryRequest request, Long id) {
         return Optional.ofNullable(getCategoryById(id))
                 .map(oldCategory->{
-                    oldCategory.setName(category.getName());
-                    oldCategory.setDescription(category.getDescription());
+                    oldCategory.setName(request.getName());
+                    oldCategory.setDescription(request.getDescription());
                     return categoryRepository.save(oldCategory);
                 }).orElseThrow(()-> new ResourceNotFoundException("Category not found!"));
     }

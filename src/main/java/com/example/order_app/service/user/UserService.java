@@ -6,7 +6,7 @@ import com.example.order_app.exception.ResourceNotFoundException;
 import com.example.order_app.model.User;
 import com.example.order_app.repository.RoleRepository;
 import com.example.order_app.repository.UserRepository;
-import com.example.order_app.request.CreateUserRequest;
+import com.example.order_app.request.AddUserRequest;
 import com.example.order_app.request.UpdateUserRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -17,7 +17,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,7 +52,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User createUser(CreateUserRequest request) {
+    public User addUser(AddUserRequest request) {
         return  Optional.of(request)
                 .filter(user -> !userRepository.existsByEmail(request.getEmail()))
                 .map(req -> {

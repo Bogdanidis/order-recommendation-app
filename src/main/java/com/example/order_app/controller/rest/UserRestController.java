@@ -4,7 +4,7 @@ import com.example.order_app.dto.UserDto;
 import com.example.order_app.exception.AlreadyExistsException;
 import com.example.order_app.exception.ResourceNotFoundException;
 import com.example.order_app.model.User;
-import com.example.order_app.request.CreateUserRequest;
+import com.example.order_app.request.AddUserRequest;
 import com.example.order_app.request.UpdateUserRequest;
 import com.example.order_app.response.ApiResponse;
 import com.example.order_app.service.role.IRoleService;
@@ -37,10 +37,10 @@ public class UserRestController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<ApiResponse> createUser(@RequestBody CreateUserRequest request) {
+    public ResponseEntity<ApiResponse> addUser(@RequestBody AddUserRequest request) {
         try {
             request.setRoles(new HashSet<>(roleService.findByName("ROLE_USER")));
-            User user = userService.createUser(request);
+            User user = userService.addUser(request);
             UserDto userDto = userService.convertUserToDto(user);
             return ResponseEntity.ok(new ApiResponse("Create User Success!", userDto));
         } catch (AlreadyExistsException e) {

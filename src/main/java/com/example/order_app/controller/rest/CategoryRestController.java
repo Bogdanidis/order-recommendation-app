@@ -3,6 +3,8 @@ package com.example.order_app.controller.rest;
 import com.example.order_app.exception.AlreadyExistsException;
 import com.example.order_app.exception.ResourceNotFoundException;
 import com.example.order_app.model.Category;
+import com.example.order_app.request.AddCategoryRequest;
+import com.example.order_app.request.UpdateCategoryRequest;
 import com.example.order_app.response.ApiResponse;
 import com.example.order_app.service.category.ICategoryService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +32,7 @@ public class CategoryRestController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<ApiResponse>  addCategory(@RequestBody Category category) {
+    public ResponseEntity<ApiResponse>  addCategory(@RequestBody AddCategoryRequest category) {
         try {
             Category theCategory = categoryService.addCategory(category);
             return ResponseEntity.ok(new ApiResponse("Success", theCategory));
@@ -72,7 +74,7 @@ public class CategoryRestController {
     }
 
     @PutMapping("/category/{id}/update")
-    public ResponseEntity<ApiResponse> updateCategory(@PathVariable Long id, @RequestBody Category category) {
+    public ResponseEntity<ApiResponse> updateCategory(@PathVariable Long id, @RequestBody UpdateCategoryRequest category) {
         try {
             Category updatedCategory = categoryService.updateCategory(category, id);
             return ResponseEntity.ok(new ApiResponse("Update success!", updatedCategory));

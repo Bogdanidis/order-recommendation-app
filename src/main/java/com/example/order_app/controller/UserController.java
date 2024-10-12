@@ -1,11 +1,10 @@
 package com.example.order_app.controller;
 
 import com.example.order_app.dto.UserDto;
-import com.example.order_app.exception.AlreadyExistsException;
 import com.example.order_app.exception.ResourceNotFoundException;
 import com.example.order_app.model.Role;
 import com.example.order_app.model.User;
-import com.example.order_app.request.CreateUserRequest;
+import com.example.order_app.request.AddUserRequest;
 import com.example.order_app.request.UpdateUserRequest;
 import com.example.order_app.service.role.IRoleService;
 import com.example.order_app.service.user.IUserService;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -102,8 +100,8 @@ public class UserController {
      */
     @GetMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String showCreateUserForm(Model model) {
-        model.addAttribute("createUserRequest", new CreateUserRequest());
+    public String showAddUserForm(Model model) {
+        model.addAttribute("addUserRequest", new AddUserRequest());
         List<Role> availableRoles = roleService.getAllRoles();
         model.addAttribute("availableRoles", availableRoles);
         return "user/add";
@@ -112,7 +110,7 @@ public class UserController {
     /**
      * Handles the submission of a new user (admin only).
      *
-     * @param createUserRequest User creation data
+     * @param addUserRequest User creation data
      * @param bindingResult BindingResult for form validation
      * @param model Spring MVC Model
      * @param redirectAttributes RedirectAttributes for flash messages
@@ -120,7 +118,7 @@ public class UserController {
      */
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String createUser(@Valid @ModelAttribute CreateUserRequest createUserRequest,
+    public String addUser(@Valid @ModelAttribute AddUserRequest addUserRequest,
                              BindingResult bindingResult,
                              Model model,
                              RedirectAttributes redirectAttributes) {
@@ -131,7 +129,7 @@ public class UserController {
         }
 
         try {
-            User createdUser = userService.createUser(createUserRequest);
+            User createdUser = userService.addUser(addUserRequest);
             redirectAttributes.addFlashAttribute("success", "User created successfully");
             return "redirect:/users/" + createdUser.getId();
         } catch (Exception e) {

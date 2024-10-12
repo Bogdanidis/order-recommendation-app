@@ -63,6 +63,25 @@
             </tbody>
         </table>
     </div>
+    <!-- Pagination -->
+    <nav th:if="${totalPages > 1}" aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{/categories(page=${currentPage - 1})}" tabindex="-1">Previous</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${currentPage == i} ? 'active'">
+                <a class="page-link" th:href="@{/categories(page=${i})}" th:text="${i + 1}"></a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/categories(page=${currentPage + 1})}">Next</a>
+            </li>
+        </ul>
+    </nav>
+    <!-- Pagination Info -->
+    <div class="text-center mt-3">
+        <p>Showing page <span th:text="${currentPage + 1}"></span> of <span th:text="${totalPages}"></span></p>
+        <p>Total items: <span th:text="${totalItems}"></span></p>
+    </div>
 </main>
 </body>
 </html>

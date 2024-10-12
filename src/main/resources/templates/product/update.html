@@ -19,12 +19,12 @@
                         <div class="mb-3">
                             <label for="name" class="form-label">Name</label>
                             <input type="text" class="form-control" id="name" th:field="*{name}" required>
-                            <div class="invalid-feedback">Please provide a product name.</div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
                         </div>
                         <div class="mb-3">
                             <label for="brand" class="form-label">Brand</label>
                             <input type="text" class="form-control" id="brand" th:field="*{brand}" required>
-                            <div class="invalid-feedback">Please provide a brand name.</div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}"></div>
                         </div>
                         <div class="mb-3">
                             <label for="category" class="form-label">Category</label>
@@ -40,16 +40,17 @@
                         <div class="mb-3">
                             <label for="price" class="form-label">Price</label>
                             <input type="number" class="form-control" id="price" th:field="*{price}" step="0.01" min="0" required>
-                            <div class="invalid-feedback">Please provide a valid price.</div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
                         </div>
                         <div class="mb-3">
                             <label for="stock" class="form-label">Stock</label>
                             <input type="number" class="form-control" id="stock" th:field="*{stock}" min="0" required>
-                            <div class="invalid-feedback">Please provide a stock quantity.</div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></div>
                         </div>
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
                             <textarea class="form-control" id="description" th:field="*{description}" rows="3"></textarea>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
                         </div>
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <a th:href="@{/products/{id}(id=${product.id})}" class="btn btn-secondary me-md-2">Cancel</a>

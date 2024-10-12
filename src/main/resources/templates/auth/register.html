@@ -15,7 +15,7 @@
                     <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
                     <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
 
-                    <form th:action="@{/auth/register}" th:object="${createUserRequest}" method="post">
+                    <form th:action="@{/auth/register}" th:object="${addUserRequest}" method="post">
                         <div class="form-group mb-3">
                             <label for="firstName" class="form-label">First Name</label>
                             <input type="text" class="form-control" id="firstName" th:field="*{firstName}" placeholder="Enter your first name" required>
