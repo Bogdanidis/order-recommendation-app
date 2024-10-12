@@ -27,5 +27,7 @@ public interface IProductService {
 
     ProductDto convertToDto(Product product);
 
-    List<ProductDto> searchProducts(String brandName, String productName, String category);
+//    List<ProductDto> searchProducts(String brandName, String productName, String category);
+    Page<ProductDto> searchProducts(Pageable pageable, String brand, String name, String category);
+
 }

@@ -27,10 +27,11 @@ public class CategoryController {
 
 
     /**
-     * Displays a paginated list of all categories.
+     * Displays a paginated list of all categories with optional search functionality.
      *
      * @param page Page number (default: 0)
      * @param size Number of items per page (default: 10)
+     * @param name Optional category name to filter categories
      * @param model Spring MVC Model
      * @return The name of the category list view
      */
@@ -38,12 +39,14 @@ public class CategoryController {
     public String getAllCategories(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String name,
             Model model) {
-        Page<Category> categoryPage = categoryService.getAllCategoriesPaginated(PageRequest.of(page, size));
+        Page<Category> categoryPage = categoryService.searchCategories(PageRequest.of(page, size), name);
         model.addAttribute("categories", categoryPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", categoryPage.getTotalPages());
         model.addAttribute("totalItems", categoryPage.getTotalElements());
+        model.addAttribute("name", name);
         return "category/list";
     }
     /**

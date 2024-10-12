@@ -14,23 +14,32 @@
         <div class="container mt-4">
             <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
             <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
-            <div>
-                <!-- Hero Section -->
-                <div class="py-5 mb-5">
-                    <div class="container">
-                        <h1 class="display-4">Welcome to Our Store</h1>
-                        <p class="lead">Discover amazing products at great prices!</p>
-                        <form th:action="@{/products/search}" method="get" class="mt-4">
-                            <input type="hidden" name="searched" id="searched" value="true">
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" placeholder="Search by name..."
-                                       name="productName">
-                                <button class="btn btn-primary" type="submit">
-                                    <i class="bi bi-search"></i> Search
+            <!-- Hero Section -->
+            <div class="py-5 mb-5 bg-light">
+                <div class="container">
+                    <h1 class="display-4">Welcome to Our Store</h1>
+                    <p class="lead">Discover amazing products at great prices!</p>
+                    <form th:action="@{/products}" method="get" class="mt-4">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="brandName" name="brandName" placeholder="Brand name">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="productName" name="productName" placeholder="Product name">
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="category" name="category">
+                                    <option value="">Select category</option>
+                                    <option th:each="cat : ${categories}" th:value="${cat.name}" th:text="${cat.name}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bi bi-search"></i>
                                 </button>
                             </div>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

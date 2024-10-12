@@ -8,12 +8,14 @@ import com.example.order_app.model.*;
 import com.example.order_app.repository.*;
 import com.example.order_app.request.AddProductRequest;
 import com.example.order_app.request.UpdateProductRequest;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -154,21 +156,37 @@ public class ProductService implements IProductService{
         return productDto;
     }
 
-    @Override
-    public List<ProductDto> searchProducts(String brandName, String productName, String category) {
-        List<ProductDto> products = new ArrayList<>();
+//    @Override
+//    public List<ProductDto> searchProducts(String brandName, String productName, String category) {
+//        List<ProductDto> products = new ArrayList<>();
+//
+//        if (!StringUtils.isBlank(brandName) && !StringUtils.isBlank(productName)) {
+//            products = getConvertedProducts(getProductsByBrandAndName(brandName, productName));
+//        } else if (!StringUtils.isBlank(category) && !StringUtils.isBlank(brandName)) {
+//            products = getConvertedProducts(getProductsByCategoryAndBrand(category, brandName));
+//        } else if (!StringUtils.isBlank(productName)) {
+//            products = getConvertedProducts(getProductsByName(productName));
+//        } else if (!StringUtils.isBlank(brandName)) {
+//            products = getConvertedProducts(getProductsByBrand(brandName));
+//        } else if (!StringUtils.isBlank(category)) {
+//            products = getConvertedProducts(getProductsByCategory(category));
+//        }
+//        return products;
+//    }
 
-        if (!StringUtils.isBlank(brandName) && !StringUtils.isBlank(productName)) {
-            products = getConvertedProducts(getProductsByBrandAndName(brandName, productName));
-        } else if (!StringUtils.isBlank(category) && !StringUtils.isBlank(brandName)) {
-            products = getConvertedProducts(getProductsByCategoryAndBrand(category, brandName));
-        } else if (!StringUtils.isBlank(productName)) {
-            products = getConvertedProducts(getProductsByName(productName));
-        } else if (!StringUtils.isBlank(brandName)) {
-            products = getConvertedProducts(getProductsByBrand(brandName));
-        } else if (!StringUtils.isBlank(category)) {
-            products = getConvertedProducts(getProductsByCategory(category));
+    @Override
+    public Page<ProductDto> searchProducts(Pageable pageable, String brand, String name, String category) {
+        if ((brand != null && !brand.isEmpty()) ||
+                (name != null && !name.isEmpty()) ||
+                (category != null && !category.isEmpty())) {
+            return productRepository.findByBrandContainingIgnoreCaseAndNameContainingIgnoreCaseAndCategoryNameContainingIgnoreCase(
+                    brand != null ? brand : "",
+                    name != null ? name : "",
+                    category != null ? category : "",
+                    pageable
+            ).map(this::convertToDto);
+        } else {
+            return productRepository.findAll(pageable).map(this::convertToDto);
         }
-        return products;
     }
 }

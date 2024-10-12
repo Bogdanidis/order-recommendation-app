@@ -33,27 +33,44 @@ public class ProductController {
     private final ICategoryService categoryService;
 
     /**
-     * Displays a list of all products.
+     * Displays a list of all products with optional search functionality.
      *
+     * @param page The page number (default: 0)
+     * @param size The number of items per page (default: 9)
+     * @param brandName Optional brand name to filter products
+     * @param productName Optional product name to filter products
+     * @param category Optional category name to filter products
      * @param model Spring MVC Model
-     * @param page Page number
-     * @param size Number of items per page
      * @return The name of the product list view
      */
     @GetMapping
-    public String getAllProducts(Model model,
-                                 @RequestParam(defaultValue = "0") int page,
-                                 @RequestParam(defaultValue = "9") int size) {
-        Page<Product> productPage = productService.getAllProducts(PageRequest.of(page, size));
-        List<ProductDto> convertedProducts = productService.getConvertedProducts(productPage.getContent());
+    public String getAllProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "9") int size,
+            @RequestParam(required = false) String brandName,
+            @RequestParam(required = false) String productName,
+            @RequestParam(required = false) String category,
+            Model model) {
 
-        model.addAttribute("products", convertedProducts);
+        Page<ProductDto> productPage = productService.searchProducts(
+                PageRequest.of(page, size), brandName, productName, category);
+
+        model.addAttribute("products", productPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", productPage.getTotalPages());
         model.addAttribute("totalItems", productPage.getTotalElements());
 
+        // Add search parameters to the model for form persistence
+        model.addAttribute("brandName", brandName);
+        model.addAttribute("productName", productName);
+        model.addAttribute("category", category);
+
+        // Add categories for the dropdown
+        model.addAttribute("categories", categoryService.getAllCategories());
+
         return "product/list";
     }
+
 
     /**
      * Displays details of a specific product.
@@ -195,34 +212,34 @@ public class ProductController {
         return "redirect:/products";
     }
 
-    /**
-     * Handles product search functionality.
-     *
-     * @param brandName Brand name to search for
-     * @param productName Product name to search for
-     * @param category Category to search in
-     * @param searched Whether a search has been performed
-     * @param model Spring MVC Model
-     * @return The name of the search results view
-     */
-    @GetMapping("/search")
-    public String searchProducts(
-            @RequestParam(required = false) String brandName,
-            @RequestParam(required = false) String productName,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) Boolean searched,
-            Model model) {
-
-        if (Boolean.TRUE.equals(searched)) {
-            List<ProductDto> products = productService.searchProducts(brandName, productName, category);
-            model.addAttribute("products", products);
-            model.addAttribute("searched", true);
-        }
-
-        model.addAttribute("brandName", brandName);
-        model.addAttribute("productName", productName);
-        model.addAttribute("category", category);
-        return "product/search";
-    }
+//    /**
+//     * Handles product search functionality.
+//     *
+//     * @param brandName Brand name to search for
+//     * @param productName Product name to search for
+//     * @param category Category to search in
+//     * @param searched Whether a search has been performed
+//     * @param model Spring MVC Model
+//     * @return The name of the search results view
+//     */
+//    @GetMapping("/search")
+//    public String searchProducts(
+//            @RequestParam(required = false) String brandName,
+//            @RequestParam(required = false) String productName,
+//            @RequestParam(required = false) String category,
+//            @RequestParam(required = false) Boolean searched,
+//            Model model) {
+//
+//        if (Boolean.TRUE.equals(searched)) {
+//            List<ProductDto> products = productService.searchProducts(brandName, productName, category);
+//            model.addAttribute("products", products);
+//            model.addAttribute("searched", true);
+//        }
+//
+//        model.addAttribute("brandName", brandName);
+//        model.addAttribute("productName", productName);
+//        model.addAttribute("category", category);
+//        return "product/search";
+//    }
 
 }

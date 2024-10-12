@@ -18,4 +18,5 @@ public interface ICategoryService {
     Category updateCategory(UpdateCategoryRequest request, Long id);
     void deleteCategoryById(Long id);
 
+    Page<Category> searchCategories(Pageable pageable, String name);
 }

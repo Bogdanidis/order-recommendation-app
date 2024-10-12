@@ -44,11 +44,6 @@
                             <i class="bi bi-clipboard-check me-1"></i>Orders
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/products/search}">
-                            <i class="bi bi-search me-1"></i>Search
-                        </a>
-                    </li>
                     <li class="nav-item" sec:authorize="isAuthenticated() and hasRole('ROLE_USER')" th:if="${cart != null}">
                         <a class="nav-link" th:href="@{/cart/{cartId}/view(cartId=${cart.id})}">
                             <i class="bi bi-cart me-1"></i>Cart

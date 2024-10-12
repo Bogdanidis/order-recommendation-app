@@ -3,18 +3,30 @@
 
     <!-- Category Cards -->
     <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
-        <div class="col" th:each="category : ${categories}">
-            <form th:action="@{/products/search}" method="get" class="category-form">
-                <input type="hidden" name="searched" value="true">
-                <input type="hidden" name="category" th:value="${category.name}">
-                <button type="submit" class="category-card">
-                    <div class="card h-100 text-center border-0 shadow-sm">
-                        <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                            <h5 class="card-title" th:text="${category.name}">Category Name</h5>
-                        </div>
+        <div class="col" th:each="category : ${categories.content}">
+            <a th:href="@{/products(category=${category.name})}" class="category-card text-decoration-none">
+                <div class="card h-100 text-center border-0 shadow-sm">
+                    <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                        <h5 class="card-title" th:text="${category.name}">Category Name</h5>
                     </div>
-                </button>
-            </form>
+                </div>
+            </a>
         </div>
     </div>
+
+    <!-- Pagination -->
+    <nav th:if="${categories.totalPages > 1}" aria-label="Category pages" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${categories.number == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{/home(categoryPage=${categories.number - 1}, productPage=${currentProductPage})}" tabindex="-1">Previous</a>
+            </li>
+            <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, categories.totalPages - 1)}"
+                th:classappend="${pageNumber == categories.number} ? 'active'">
+                <a class="page-link" th:href="@{/home(categoryPage=${pageNumber}, productPage=${currentProductPage})}" th:text="${pageNumber + 1}"></a>
+            </li>
+            <li class="page-item" th:classappend="${categories.number + 1 == categories.totalPages} ? 'disabled'">
+                <a class="page-link" th:href="@{/home(categoryPage=${categories.number + 1}, productPage=${currentProductPage})}">Next</a>
+            </li>
+        </ul>
+    </nav>
 </div>

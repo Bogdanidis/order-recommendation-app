@@ -2,6 +2,7 @@ package com.example.order_app.controller;
 
 
 import com.example.order_app.dto.UserDto;
+import com.example.order_app.model.Category;
 import com.example.order_app.model.Product;
 import com.example.order_app.model.User;
 import com.example.order_app.service.cart.ICartService;
@@ -40,17 +41,19 @@ public class HomeController {
     }
 
     /**
-     * Displays the home page with featured products, categories, and user-specific content.
+     * Displays the home page with products, categories, and user-specific content.
      *
      * @param authentication Spring Security Authentication object
      * @param model Spring MVC Model
-     * @param page Page number for pagination
+     * @param productPage Page number for product pagination
+     * @param categoryPage Page number for category pagination
      * @param size Number of items per page
      * @return The name of the home view
      */
     @GetMapping("/home")
     public String home(Authentication authentication, Model model,
-                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "0") int productPage,
+                       @RequestParam(defaultValue = "0") int categoryPage,
                        @RequestParam(defaultValue = "6") int size) {
         if (authentication != null && authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
@@ -58,14 +61,16 @@ public class HomeController {
         }
 
         // Load paginated products for the main section
-        Page<Product> productPage = productService.getAllProducts(PageRequest.of(page, size));
-        model.addAttribute("products", productService.getConvertedProducts(productPage.getContent()));
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", productPage.getTotalPages());
-        model.addAttribute("totalItems", productPage.getTotalElements());
+        Page<Product> productPageResult = productService.getAllProducts(PageRequest.of(productPage, size));
+        model.addAttribute("products", productService.getConvertedProducts(productPageResult.getContent()));
+        model.addAttribute("currentProductPage", productPage);
+        model.addAttribute("totalProductPages", productPageResult.getTotalPages());
+        model.addAttribute("totalProductItems", productPageResult.getTotalElements());
 
-        // Load categories
-        model.addAttribute("categories", categoryService.getAllCategories());
+        // Load paginated categories
+        Page<Category> categoryPageResult = categoryService.getAllCategoriesPaginated(PageRequest.of(categoryPage, 8)); // 8 categories per page
+        model.addAttribute("categories", categoryPageResult);
+        model.addAttribute("currentCategoryPage", categoryPage);
 
         // Add user to model if authenticated
         if (authentication != null && authentication.isAuthenticated()) {

@@ -1,85 +1,91 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" layout:decorate="~{layout}">
 <head>
     <title>User List</title>
 </head>
 <body>
-<main layout:fragment="content">
-    <div class="container mt-4">
-        <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
-        <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>User List</h1>
-            <a th:href="@{/users/add}" class="btn btn-primary">
-                <i class="bi bi-person-plus-fill me-2"></i>Add New User
+<main layout:fragment="content" class="container mt-5">
+    <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6">
+            <h1 class="mb-0">User List</h1>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <a sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN')" th:href="@{/users/add}" class="btn btn-primary">
+                <i class="bi bi-person-plus-fill me-2"></i> Add User
             </a>
-            <form class="d-flex" th:action="@{/users}" method="get">
-                <div class="input-group">
-                    <input class="form-control" type="search" placeholder="Search users" name="search">
-                    <button class="btn btn-primary" type="submit">
-                        <i class="bi bi-search me-1"></i> Search Users
-                    </button>
-                </div>
-            </form>
         </div>
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="user : ${users}">
-                    <td th:text="${user.id}"></td>
-                    <td th:text="${user.firstName + ' ' + user.lastName}"></td>
-                    <td th:text="${user.email}"></td>
-                    <td>
-                        <span th:each="role : ${user.roles}" class="badge bg-secondary me-1" th:text="${role.name}"></span>
-                    </td>
-                    <td>
-                        <!-- Flex container for all action buttons -->
-                        <div class="d-flex align-items-center">
-                            <!-- View Details -->
-                            <a th:href="@{/users/{id}(id=${user.id})}" class="btn btn-sm btn-info me-2">
-                                <i class="bi bi-eye-fill white"></i>
-                            </a>
-                            <!-- Delete User (Admin only) -->
-                            <form th:action="@{/users/{userId}/delete(userId=${user.id})}" sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN')" method="post" class="me-2">
-                                <input type="hidden" name="_method" value="DELETE"/>
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this user?')">
-                                    <i class="bi bi-trash-fill white"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+    </div>
+    <form th:action="@{/users}" method="get" class="mb-4">
+        <div class="row g-3">
+            <div class="col-md-9">
+                <input type="text" class="form-control" id="search" name="search" th:value="${search}" placeholder="Search users...">
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search me-2"></i> Search
+                </button>
+            </div>
         </div>
-        <!-- Pagination -->
-        <nav aria-label="Page navigation" class="mt-4" th:if="${totalPages > 1}">
-            <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                    <a class="page-link" th:href="@{/users(page=${currentPage - 1})}">&laquo;</a>
-                </li>
-                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${currentPage == i} ? 'active'">
-                    <a class="page-link" th:href="@{/users(page=${i})}" th:text="${i + 1}"></a>
-                </li>
-                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-                    <a class="page-link" th:href="@{/users(page=${currentPage + 1})}">&raquo;</a>
-                </li>
-            </ul>
-        </nav>
-        <!-- Pagination Info -->
-        <div class="text-center mt-3">
-            <p>Showing page <span th:text="${currentPage + 1}"></span> of <span th:text="${totalPages}"></span></p>
-            <p>Total items: <span th:text="${totalItems}"></span></p>
-        </div>
+    </form>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.firstName + ' ' + user.lastName}"></td>
+                <td th:text="${user.email}"></td>
+                <td>
+                    <span th:each="role : ${user.roles}" class="badge bg-secondary me-1" th:text="${role.name}"></span>
+                </td>
+                <td>
+                    <!-- Flex container for all action buttons -->
+                    <div class="d-flex align-items-center">
+                        <!-- View Details -->
+                        <a th:href="@{/users/{id}(id=${user.id})}" class="btn btn-sm btn-info me-2">
+                            <i class="bi bi-eye-fill white"></i>
+                        </a>
+                        <!-- Delete User (Admin only) -->
+                        <form th:action="@{/users/{userId}/delete(userId=${user.id})}" sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN')" method="post" class="me-2">
+                            <input type="hidden" name="_method" value="DELETE"/>
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this user?')">
+                                <i class="bi bi-trash-fill white"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- Pagination -->
+    <nav th:if="${totalPages > 1}" aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{/users(page=${currentPage - 1}, size=${size}, search=${search})}" tabindex="-1">Previous</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${currentPage == i} ? 'active'">
+                <a class="page-link" th:href="@{/users(page=${i}, size=${size}, search=${search})}" th:text="${i + 1}"></a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/users(page=${currentPage + 1}, size=${size}, search=${search})}">Next</a>
+            </li>
+        </ul>
+    </nav>
+    <!-- Pagination Info -->
+    <div class="text-center mt-3">
+        <p>Showing page <span th:text="${currentPage + 1}"></span> of <span th:text="${totalPages}"></span></p>
+        <p>Total items: <span th:text="${totalItems}"></span></p>
     </div>
 </main>
 </body>

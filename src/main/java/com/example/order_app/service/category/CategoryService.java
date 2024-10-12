@@ -41,6 +41,14 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
+    public Page<Category> searchCategories(Pageable pageable, String name) {
+        if (name != null && !name.isEmpty()) {
+            return categoryRepository.findByNameContainingIgnoreCase(name, pageable);
+        } else {
+            return categoryRepository.findAll(pageable);
+        }
+    }
+    @Override
     public Category addCategory(AddCategoryRequest request) {
         return Optional.of(request)
                 .filter(c->!categoryRepository.existsByName(c.getName()))
