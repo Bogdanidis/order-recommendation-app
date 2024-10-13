@@ -105,9 +105,9 @@ public class ShopConfig {
                     .maxSessionsPreventsLogin(false)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/home", "/auth/**", "/css/**", "/js/**").permitAll()  // Public access
+                        .requestMatchers("/","/home", "/auth/**","/error").permitAll()  // Public access
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()  // Allow static resources
                         .requestMatchers("/admin/**").hasRole("ADMIN")  // Admin only
-                        //.requestMatchers("/user/**").hasRole("USER")  // User only
                         .anyRequest().permitAll()
                         //.anyRequest().authenticated()  // Any other request requires authentication
                 )
