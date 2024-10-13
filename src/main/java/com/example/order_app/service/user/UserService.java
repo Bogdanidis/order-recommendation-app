@@ -3,6 +3,7 @@ package com.example.order_app.service.user;
 import com.example.order_app.dto.UserDto;
 import com.example.order_app.exception.AlreadyExistsException;
 import com.example.order_app.exception.ResourceNotFoundException;
+import com.example.order_app.exception.UnauthorizedOperationException;
 import com.example.order_app.model.User;
 import com.example.order_app.repository.RoleRepository;
 import com.example.order_app.repository.UserRepository;
@@ -79,9 +80,22 @@ public class UserService implements IUserService {
 
     @Override
     public void deleteUser(Long userId) {
-        userRepository.findById(userId).ifPresentOrElse(userRepository :: delete, () ->{
-            throw new ResourceNotFoundException("User not found!");
-        });
+        User currentUser = getAuthenticatedUser();
+        User userToDelete = getUserById(userId);
+
+        // Check if the user to be deleted is an admin
+        boolean isUserToDeleteAdmin = userToDelete.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
+
+
+        // Check if an admin is trying to delete another admin
+        if (isUserToDeleteAdmin) {
+            throw new UnauthorizedOperationException("Admins cannot delete other admin accounts.");
+        }else{
+            userRepository.findById(userId).ifPresentOrElse(userRepository :: delete, () ->{
+                throw new ResourceNotFoundException("User not found!");
+            });
+        }
     }
 
     @Override

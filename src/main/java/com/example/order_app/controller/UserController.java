@@ -2,6 +2,7 @@ package com.example.order_app.controller;
 
 import com.example.order_app.dto.UserDto;
 import com.example.order_app.exception.ResourceNotFoundException;
+import com.example.order_app.exception.UnauthorizedOperationException;
 import com.example.order_app.model.Role;
 import com.example.order_app.model.User;
 import com.example.order_app.request.AddUserRequest;
@@ -233,8 +234,8 @@ public class UserController {
         try {
             userService.deleteUser(userId);
             redirectAttributes.addFlashAttribute("success", "User deleted successfully");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error deleting user: " + e.getMessage());
+        } catch (ResourceNotFoundException | UnauthorizedOperationException e) {
+            redirectAttributes.addFlashAttribute("error",  e.getMessage());
         }
         return "redirect:/users";
     }
