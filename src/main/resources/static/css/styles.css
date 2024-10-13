@@ -183,12 +183,12 @@ h1, h2, h3, h4, h5, h6 {
 .product-image {
     object-fit: contain;
     width: 100%;
-    height: 200px;
+    height: 250px;
     border-radius: 5px;
 }
 
 .product-image-container {
-    height: 250px;
+    height: 280px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -196,6 +196,13 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 5px;
 }
 
+.single-image-container, .no-image-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 /* Pagination */
 .pagination {
     justify-content: center;
@@ -434,4 +441,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 .white{
     color: white;
+}
+
+.carousel-control-prev-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z'/%3e%3c/svg%3e");
+}
+
+.carousel-control-next-icon{
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
 }

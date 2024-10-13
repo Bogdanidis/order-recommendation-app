@@ -212,34 +212,4 @@ public class ProductController {
         return "redirect:/products";
     }
 
-//    /**
-//     * Handles product search functionality.
-//     *
-//     * @param brandName Brand name to search for
-//     * @param productName Product name to search for
-//     * @param category Category to search in
-//     * @param searched Whether a search has been performed
-//     * @param model Spring MVC Model
-//     * @return The name of the search results view
-//     */
-//    @GetMapping("/search")
-//    public String searchProducts(
-//            @RequestParam(required = false) String brandName,
-//            @RequestParam(required = false) String productName,
-//            @RequestParam(required = false) String category,
-//            @RequestParam(required = false) Boolean searched,
-//            Model model) {
-//
-//        if (Boolean.TRUE.equals(searched)) {
-//            List<ProductDto> products = productService.searchProducts(brandName, productName, category);
-//            model.addAttribute("products", products);
-//            model.addAttribute("searched", true);
-//        }
-//
-//        model.addAttribute("brandName", brandName);
-//        model.addAttribute("productName", productName);
-//        model.addAttribute("category", category);
-//        return "product/search";
-//    }
-
 }

@@ -1,6 +1,7 @@
 package com.example.order_app.service.image;
 
 import com.example.order_app.dto.ImageDto;
+import com.example.order_app.exception.InvalidImageException;
 import com.example.order_app.exception.ResourceNotFoundException;
 import com.example.order_app.model.Image;
 import com.example.order_app.model.Product;
@@ -14,6 +15,7 @@ import javax.sql.rowset.serial.SerialBlob;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -21,6 +23,9 @@ import java.util.List;
 public class ImageService implements IImageService {
     private final ImageRepository imageRepository;
     private final IProductService productService;
+
+    private static final List<String> ALLOWED_CONTENT_TYPES = Arrays.asList("image/jpeg", "image/png", "image/gif");
+    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
     @Override
     public Image getImageById(Long id) {
@@ -40,6 +45,7 @@ public class ImageService implements IImageService {
         List<ImageDto> savedImageDto = new ArrayList<>();
         for (MultipartFile file : files) {
             try{
+                validateImage(file);
                 Image image = new Image();
                 image.setFileName(file.getOriginalFilename());
                 image.setFileType(file.getContentType());
@@ -68,6 +74,18 @@ public class ImageService implements IImageService {
             }
         }
         return savedImageDto;
+    }
+
+    private void validateImage(MultipartFile file) throws InvalidImageException {
+        if (file.isEmpty()) {
+            throw new InvalidImageException("Uploaded file is empty");
+        }
+        if (!ALLOWED_CONTENT_TYPES.contains(file.getContentType())) {
+            throw new InvalidImageException("Invalid file type. Allowed types are JPEG, PNG, and GIF");
+        }
+        if (file.getSize() > MAX_FILE_SIZE) {
+            throw new InvalidImageException("File size exceeds the maximum limit of 5MB");
+        }
     }
 
     @Override
