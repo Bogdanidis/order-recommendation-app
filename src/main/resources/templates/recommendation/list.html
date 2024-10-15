@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout}">
+<head>
+    <title>Recommendations</title>
+</head>
+<body>
+<div class="container mt-5" role="main" layout:fragment="content">
+    <div class="alert alert-success" th:if="${success}" role="alert" th:text="${success}"></div>
+    <div class="alert alert-danger" th:if="${error}" role="alert" th:text="${error}"></div>
+
+    <div class="container mt-4">
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-6">
+                <h1 class="mb-0">Recommended Products</h1>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col" th:each="product : ${recommendations}">
+                <div class="card h-100 product-card">
+                    <div class="product-image-container">
+                        <div class="single-image-container" th:if="${#lists.size(product.images) == 1}">
+                            <img th:src="@{'/images/' + ${product.images[0].id}}" class="card-img-top" alt="Product Image">
+                        </div>
+                        <div id="productImageCarousel" class="carousel slide" th:if="${#lists.size(product.images) > 1}" data-bs-ride="carousel">
+                            <!-- Carousel implementation similar to your products fragment -->
+                        </div>
+                        <div class="no-image-container bg-light" th:if="${#lists.isEmpty(product.images)}">
+                            No Image Available
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${product.name}">Product Name</h5>
+                        <p class="card-text" th:text="${product.description}">Product Description</p>
+                        <p class="card-text">Price: $<span th:text="${#numbers.formatDecimal(product.price, 1, 2)}">0.00</span></p>
+                        <div class="d-flex align-items-center">
+                            <div class="form-group me-2" sec:authorize="isAuthenticated() and hasRole('ROLE_USER')">
+                                <input type="number" class="form-control form-control-sm" value="1" min="1">
+                            </div>
+                            <button class="btn btn-sm btn-primary" sec:authorize="isAuthenticated() and hasRole('ROLE_USER')">
+                                Add to Cart
+                            </button>
+                        </div>
+                        <div class="mt-3">
+                            <a class="btn btn-primary w-100" th:href="@{/products/{id}(id=${product.id})}">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

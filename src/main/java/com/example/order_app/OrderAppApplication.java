@@ -4,6 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
+//@EnableCaching
+//@EnableScheduling
 public class OrderAppApplication{
 
 	public static void main(String[] args) {
