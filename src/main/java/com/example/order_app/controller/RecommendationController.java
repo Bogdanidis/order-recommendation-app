@@ -30,7 +30,7 @@ public class RecommendationController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public String getRecommendations(Model model) {
         User user = userService.getAuthenticatedUser();
-        List<ProductDto> recommendations = recommendationService.getRecommendationsForUser(user, 5);
+        List<ProductDto> recommendations = recommendationService.getRecommendationsForUser(user, 6);
         model.addAttribute("recommendations", recommendations);
         return "recommendation/list";
     }

@@ -1,6 +1,7 @@
 package com.example.order_app.controller;
 
 
+import com.example.order_app.dto.ProductDto;
 import com.example.order_app.dto.UserDto;
 import com.example.order_app.model.Category;
 import com.example.order_app.model.Product;
@@ -9,8 +10,11 @@ import com.example.order_app.service.cart.ICartService;
 import com.example.order_app.service.category.ICategoryService;
 import com.example.order_app.service.order.IOrderService;
 import com.example.order_app.service.product.IProductService;
+import com.example.order_app.service.recommendation.IRecommendationService;
 import com.example.order_app.service.user.IUserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +23,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Controller
@@ -29,6 +36,10 @@ public class HomeController {
     private final ICategoryService categoryService;
     private final IOrderService orderService;
     private final IUserService userService;
+    private final IRecommendationService recommendationService;
+    private final ApplicationContext applicationContext;
+
+
 
     /**
      * Redirects the root URL to the home page.
@@ -72,11 +83,23 @@ public class HomeController {
         model.addAttribute("categories", categoryPageResult);
         model.addAttribute("currentCategoryPage", categoryPage);
 
-        // Add user to model if authenticated
+
+        // Add user/recommendations to model if authenticated
         if (authentication != null && authentication.isAuthenticated()) {
             User user = userService.getAuthenticatedUser();
             UserDto userDto = userService.convertUserToDto(user);
             model.addAttribute("user", userDto);
+
+
+            List<ProductDto> recommendations = recommendationService.getRecommendationsForUser(user, 6);
+            // Group the recommendations into lists of three for displaying in the fragment
+            List<List<ProductDto>> groupedRecommendations = new ArrayList<>();
+            int batchSize = 3;
+            for (int i = 0; i < recommendations.size(); i += batchSize) {
+                groupedRecommendations.add(recommendations.subList(i, Math.min(i + batchSize, recommendations.size())));
+            }
+            model.addAttribute("groupedRecommendations", groupedRecommendations);
+           // model.addAttribute("recommendations", recommendations);
         }
 
         return "home";

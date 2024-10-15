@@ -66,6 +66,9 @@ public class ImageService implements IImageService {
                 ImageDto imageDto = new ImageDto();
                 imageDto.setId(savedImage.getId());
                 imageDto.setFileName(savedImage.getFileName());
+                //added 15/10
+                imageDto.setFileType(savedImage.getFileType());
+                //
                 imageDto.setDownloadUrl(savedImage.getDownloadUrl());
                 savedImageDto.add(imageDto);
 
