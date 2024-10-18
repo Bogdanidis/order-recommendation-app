@@ -19,4 +19,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Long countByOrderDateAndOrderStatusNot(LocalDate today, OrderStatus orderStatus);
     List<Order> findByOrderDateAndOrderStatusNot(LocalDate date, OrderStatus status);
+
+    long countByUserId(Long userId);
 }
