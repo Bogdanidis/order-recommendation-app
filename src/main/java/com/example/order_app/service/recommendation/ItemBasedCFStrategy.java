@@ -24,20 +24,37 @@ public class ItemBasedCFStrategy implements RecommendationStrategy {
 
     @Override
     public List<ProductDto> getRecommendations(User user, int numRecommendations) {
-        // Get products the user has ordered
         Set<Product> userProducts = getUserProducts(user);
-        // Calculate similarities between user's products and other products
-        Map<Product, Double> productSimilarities = calculateProductSimilarities(userProducts);
+        return getRecommendationsForProducts(userProducts, numRecommendations);
+    }
+
+    /**
+     * Get recommendations based on items in the cart.
+     *
+     * @param cartItems List of products in the cart
+     * @param numRecommendations Number of recommendations to return
+     * @return List of recommended ProductDto objects
+     */
+    public List<ProductDto> getCartBasedRecommendations(List<Product> cartItems, int numRecommendations) {
+        Set<Product> cartItemSet = new HashSet<>(cartItems);
+        return getRecommendationsForProducts(cartItemSet, numRecommendations);
+    }
+
+    /**
+     * Get recommendations based on a set of products.
+     *
+     * @param products Set of products to base recommendations on
+     * @param numRecommendations Number of recommendations to return
+     * @return List of recommended ProductDto objects
+     */
+    private List<ProductDto> getRecommendationsForProducts(Set<Product> products, int numRecommendations) {
+        Map<Product, Double> productSimilarities = calculateProductSimilarities(products);
 
         // Sort products by similarity and select top recommendations
-        List<Product> recommendedProducts = productSimilarities.entrySet().stream()
+        return productSimilarities.entrySet().stream()
                 .sorted(Map.Entry.<Product, Double>comparingByValue().reversed())
                 .limit(numRecommendations)
                 .map(Map.Entry::getKey)
-                .toList();
-
-        // Convert to DTOs
-        return recommendedProducts.stream()
                 .map(productService::convertToDto)
                 .collect(Collectors.toList());
     }
@@ -98,5 +115,4 @@ public class ItemBasedCFStrategy implements RecommendationStrategy {
                 .collect(Collectors.toSet());
     }
 
-    
 }

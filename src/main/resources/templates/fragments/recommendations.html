@@ -1,6 +1,6 @@
 <!-- Product Recommendations Carousel Fragment -->
 <div th:fragment="recommendations" class="container mb-5" th:if="${not #lists.isEmpty(groupedRecommendations)}" sec:authorize="isAuthenticated() and hasRole('ROLE_USER')">
-    <h2 class="mb-4">Recommended Products</h2>
+    <h2 class="section-title text-center mb-4">Recommended Products</h2>
     <div id="recommendationsCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
             <!-- Carousel Items -->

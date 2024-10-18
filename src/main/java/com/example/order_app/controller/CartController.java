@@ -1,10 +1,13 @@
 package com.example.order_app.controller;
 
+import com.example.order_app.dto.ProductDto;
 import com.example.order_app.dto.UserDto;
 import com.example.order_app.exception.ResourceNotFoundException;
 import com.example.order_app.model.Cart;
+import com.example.order_app.model.CartItem;
 import com.example.order_app.model.User;
 import com.example.order_app.service.cart.ICartService;
+import com.example.order_app.service.recommendation.ItemBasedCFStrategy;
 import com.example.order_app.service.user.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -13,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,6 +26,7 @@ import java.math.BigDecimal;
 public class CartController {
     private final ICartService cartService;
     private final IUserService userService;
+    private final ItemBasedCFStrategy itemBasedCFStrategy;
 
     /**
      * Displays the cart view for a specific user.
@@ -45,6 +52,20 @@ public class CartController {
             model.addAttribute("totalPrice", totalPrice);
             model.addAttribute("cart", cart);
             model.addAttribute("user", userDto);
+
+            // Get item-based recommendations
+            List<ProductDto> cartRecommendations = itemBasedCFStrategy.getCartBasedRecommendations(
+                    cart.getItems().stream().map(CartItem::getProduct).collect(Collectors.toList()),
+                    6 // Number of recommendations
+            );
+            // Group the recommendations into lists of three for displaying in the fragment
+            List<List<ProductDto>> groupedRecommendations = new ArrayList<>();
+            int batchSize = 3;
+            for (int i = 0; i < cartRecommendations.size(); i += batchSize) {
+                groupedRecommendations.add(cartRecommendations.subList(i, Math.min(i + batchSize, cartRecommendations.size())));
+            }
+            model.addAttribute("groupedRecommendations", groupedRecommendations);
+
             return "cart/view";
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
