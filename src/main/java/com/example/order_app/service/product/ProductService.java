@@ -31,6 +31,7 @@ public class ProductService implements IProductService{
     private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
     private final ImageRepository imageRepository;
+    private final OrderRepository orderRepository;
 
     @Override
     public Product addProduct(AddProductRequest request) {
@@ -138,6 +139,11 @@ public class ProductService implements IProductService{
     @Override
     public Long countProductsByBrandAndName(String brand, String name) {
         return productRepository.countByBrandAndName(brand, name);
+    }
+
+    @Override
+    public boolean hasUserPurchasedProduct(Long userId, Long productId) {
+        return orderRepository.existsByUserIdAndOrderItemsProductId(userId, productId);
     }
 
     @Override

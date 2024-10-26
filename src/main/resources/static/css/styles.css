@@ -495,3 +495,69 @@ h1, h2, h3, h4, h5, h6 {
         font-size: 1rem;
     }
 }
+/* Rating Styles */
+
+.rating-container {
+    display: inline-block;
+}
+
+.stars {
+    color: #ddd;
+    font-size: 1.2rem;
+}
+
+.stars .star {
+    cursor: pointer;
+    padding: 0 2px;
+}
+
+.stars .star.active {
+    color: #ffd700;
+}
+
+.stars .star.filled {
+    color: #ffd700;
+}
+
+.rating-count {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.rating-form .stars {
+    font-size: 2rem;
+    cursor: pointer;
+    display: flex;
+    gap: 0.5rem;
+}
+.rating-form .star, .rating-display .star {
+    color: #ddd;
+    transition: color 0.2s ease-in-out;
+}
+.rating-form .star:hover,
+.rating-form .star.active,
+.rating-display .star.filled {
+    color: #ffd700;
+}
+.rating-summary {
+    margin-bottom: 2rem;
+}
+.rating-bar {
+    width: 200px;
+    height: 10px;
+    background-color: #eee;
+    margin: 5px 10px;
+    border-radius: 5px;
+}
+.rating-fill {
+    height: 100%;
+    background-color: #ffd700;
+    border-radius: 5px;
+}
+
+.user-review {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}

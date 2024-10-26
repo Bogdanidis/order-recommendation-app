@@ -3,7 +3,7 @@ DROP SCHEMA IF EXISTS order_app;
 CREATE SCHEMA order_app;
 
 USE
-order_app;
+    order_app;
 
 
 CREATE TABLE users
@@ -21,10 +21,10 @@ CREATE TABLE users
 CREATE TABLE orders
 (
     id           BIGINT PRIMARY KEY AUTO_INCREMENT,
-    order_date   DATE           NOT NULL,
-    total_amount DECIMAL(38, 2) NOT NULL,
-    order_status ENUM('PENDING','PROCESSING','SHIPPED','DELIVERED','CANCELLED')    NOT NULL,
-    user_id      BIGINT         NOT NULL,
+    order_date   DATE                                                            NOT NULL,
+    total_amount DECIMAL(38, 2)                                                  NOT NULL,
+    order_status ENUM ('PENDING','PROCESSING','SHIPPED','DELIVERED','CANCELLED') NOT NULL,
+    user_id      BIGINT                                                          NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
@@ -37,14 +37,29 @@ CREATE TABLE categories
 
 CREATE TABLE products
 (
-    id          BIGINT PRIMARY KEY AUTO_INCREMENT,
-    name        VARCHAR(255)   NOT NULL,
-    description VARCHAR(255)   NOT NULL,
-    stock       INTEGER        NOT NULL,
-    price       DECIMAL(38, 2) NOT NULL,
-    brand       VARCHAR(255)   NOT NULL,
-    category_id BIGINT         NOT NULL,
+    id             BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name           VARCHAR(255)   NOT NULL,
+    description    VARCHAR(255)   NOT NULL,
+    stock          INTEGER        NOT NULL,
+    price          DECIMAL(38, 2) NOT NULL,
+    brand          VARCHAR(255)   NOT NULL,
+    average_rating DECIMAL(3, 2) DEFAULT 0.00,
+    rating_count   BIGINT        DEFAULT 0,
+    category_id    BIGINT         NOT NULL,
     FOREIGN KEY (category_id) REFERENCES categories (id)
+);
+
+CREATE TABLE product_ratings
+(
+    id         BIGINT PRIMARY KEY AUTO_INCREMENT,
+    rating     INTEGER   NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    comment    TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    product_id BIGINT    NOT NULL,
+    user_id    BIGINT    NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES products (id),
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    UNIQUE KEY unique_user_product_rating (user_id, product_id)
 );
 
 CREATE TABLE order_items
@@ -100,7 +115,7 @@ CREATE TABLE images
     id           BIGINT PRIMARY KEY AUTO_INCREMENT,
     file_name    VARCHAR(255) NOT NULL,
     file_type    VARCHAR(255) NOT NULL,
-    image        MEDIUMBLOB  ,
+    image        MEDIUMBLOB,
     download_url VARCHAR(255) NOT NULL,
     product_id   BIGINT       NOT NULL,
     FOREIGN KEY (product_id) REFERENCES products (id)

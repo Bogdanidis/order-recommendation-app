@@ -23,6 +23,8 @@ public interface IProductService {
     Long countProducts();
     Long countProductsByBrandAndName(String brand, String name);
 
+    boolean hasUserPurchasedProduct(Long userId, Long productId);
+
     List<ProductDto> getConvertedProducts(List<Product> products);
 
     ProductDto convertToDto(Product product);

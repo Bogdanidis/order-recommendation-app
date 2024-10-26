@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
@@ -46,6 +47,17 @@ public class Product {
     @ManyToOne
     @JoinColumn(name="category_id")
     private Category category ;
+
+    @OneToMany(mappedBy = "product",
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductRating> ratings = new ArrayList<>();
+
+
+    @Column(name = "average_rating")
+    private Double averageRating = 0.0;
+
+    @Column(name = "rating_count")
+    private Long ratingCount = 0L;
 
 
     public Product(String name, String description, Integer stock, BigDecimal price,String brand, Category category) {

@@ -1,0 +1,185 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org"-->
+<!--      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"-->
+<!--      layout:decorate="~{layout}">-->
+<!--<head>-->
+<!--    <title>Rate Product</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div layout:fragment="content">-->
+<!--    <div class="container mt-4">-->
+<!--        <div class="row">-->
+<!--            <div class="col-md-8 offset-md-2">-->
+<!--                &lt;!&ndash; Alert Messages &ndash;&gt;-->
+<!--                <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>-->
+<!--                <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>-->
+
+<!--                &lt;!&ndash; Product Info &ndash;&gt;-->
+<!--                <div class="card mb-4 no-animation">-->
+<!--                    <div class="card-body">-->
+<!--                        <div class="d-flex">-->
+<!--                            <div class="product-image me-3" th:if="${not #lists.isEmpty(product.images)}">-->
+<!--                                <img th:src="@{'/images/' + ${product.images[0].id}}"-->
+<!--                                     alt="Product Image"-->
+<!--                                     style="width: 100px; height: 100px; object-fit: cover;">-->
+<!--                            </div>-->
+<!--                            <div>-->
+<!--                                <h4 class="card-title" th:text="${product.name}">Product Name</h4>-->
+<!--                                <div class="rating-container mb-2">-->
+<!--                                    <span class="me-2">Average Rating:</span>-->
+<!--                                    <span class="stars">-->
+<!--                                            <span th:each="i : ${#numbers.sequence(1, 5)}"-->
+<!--                                                  class="star"-->
+<!--                                                  th:classappend="${product.averageRating != null && i <= product.averageRating} ? 'filled' : ''"-->
+<!--                                                  th:text="'★'">-->
+<!--                                            </span>-->
+<!--                                        </span>-->
+<!--                                    <span class="rating-count ms-2" th:if="${product.ratingCount > 0}">-->
+<!--                                            (<span th:text="${product.ratingCount}">0</span> ratings)-->
+<!--                                        </span>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Rating Form &ndash;&gt;-->
+<!--                <div class="card mb-4 no-animation">-->
+<!--                    <div class="card-body">-->
+<!--                        <h5 class="card-title mb-3">Write Your Review</h5>-->
+<!--                        <form class="rating-form" th:action="@{/products/{id}/rate(id=${product.id})}"-->
+<!--                              method="POST" th:object="${productRatingDto}">-->
+<!--                            <input type="hidden" id="ratingInput" th:field="*{rating}"/>-->
+<!--                            <div class="mb-3">-->
+<!--                                <label class="form-label">Your Rating</label>-->
+<!--                                <div class="stars" id="ratingStars">-->
+<!--                                    <span class="star" data-rating="1">★</span>-->
+<!--                                    <span class="star" data-rating="2">★</span>-->
+<!--                                    <span class="star" data-rating="3">★</span>-->
+<!--                                    <span class="star" data-rating="4">★</span>-->
+<!--                                    <span class="star" data-rating="5">★</span>-->
+<!--                                </div>-->
+<!--                                <div class="text-danger" th:if="${#fields.hasErrors('rating')}"-->
+<!--                                     th:errors="*{rating}"></div>-->
+<!--                            </div>-->
+<!--                            <div class="mb-3">-->
+<!--                                <label class="form-label">Your Review</label>-->
+<!--                                <textarea class="form-control" th:field="*{comment}"-->
+<!--                                          rows="4" placeholder="Share your experience with this product"></textarea>-->
+<!--                                <div class="text-danger" th:if="${#fields.hasErrors('comment')}"-->
+<!--                                     th:errors="*{comment}"></div>-->
+<!--                            </div>-->
+<!--                            <button type="submit" class="btn btn-primary">Submit Review</button>-->
+<!--                        </form>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Existing Reviews &ndash;&gt;-->
+<!--                <div class="card no-animation">-->
+<!--                    <div class="card-body">-->
+<!--                        <h5 class="card-title mb-4">Customer Reviews</h5>-->
+
+<!--                        &lt;!&ndash; Rating Summary &ndash;&gt;-->
+<!--                        <div class="rating-summary">-->
+<!--                            <div class="d-flex align-items-center mb-2"-->
+<!--                                 th:each="i : ${#numbers.sequence(5, 1, -1)}">-->
+<!--                                <span th:text="${i} + ' stars'"></span>-->
+<!--                                <div class="rating-bar mx-2">-->
+<!--                                    <div class="rating-fill"-->
+<!--                                         th:style="'width: ' + ${ratingStats.getRatingPercentage(i)} + '%'"></div>-->
+<!--                                </div>-->
+<!--                                <span th:text="${ratingStats.getRatingCount(i)} + ' (' + ${#numbers.formatDecimal(ratingStats.getRatingPercentage(i), 1, 1)} + '%)'"></span>-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+<!--                        &lt;!&ndash; Individual Reviews &ndash;&gt;-->
+<!--                        <div class="reviews">-->
+<!--                            <div class="review mb-4" th:each="rating : ${ratingStats.content.content}">-->
+<!--                                <div class="d-flex justify-content-between align-items-start">-->
+<!--                                    <div>-->
+<!--                                            <span class="stars">-->
+<!--                                                <span th:each="i : ${#numbers.sequence(1, 5)}"-->
+<!--                                                      class="star"-->
+<!--                                                      th:classappend="${i <= rating.rating} ? 'filled' : ''"-->
+<!--                                                      th:text="'★'">-->
+<!--                                                </span>-->
+<!--                                            </span>-->
+<!--                                        <span class="ms-2" th:text="${rating.userFullName}"></span>-->
+<!--                                    </div>-->
+<!--                                    <small class="text-muted" th:text="${rating.formattedDate}"></small>-->
+<!--                                </div>-->
+<!--                                <p class="mt-2 mb-0" th:text="${rating.comment}"></p>-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+<!--                        &lt;!&ndash; Pagination &ndash;&gt;-->
+<!--                        <nav th:if="${ratingStats.content.totalPages > 1}">-->
+<!--                            <ul class="pagination justify-content-center">-->
+<!--                                <li class="page-item" th:classappend="${ratingStats.content.first} ? 'disabled'">-->
+<!--                                    <a class="page-link"-->
+<!--                                       th:href="@{/products/{id}/rate(id=${product.id}, page=${ratingStats.content.number - 1})}">-->
+<!--                                        Previous-->
+<!--                                    </a>-->
+<!--                                </li>-->
+<!--                                <li class="page-item"-->
+<!--                                    th:each="pageNum : ${#numbers.sequence(0, ratingStats.content.totalPages - 1)}"-->
+<!--                                    th:classappend="${pageNum == ratingStats.content.number} ? 'active'">-->
+<!--                                    <a class="page-link"-->
+<!--                                       th:href="@{/products/{id}/rate(id=${product.id}, page=${pageNum})}"-->
+<!--                                       th:text="${pageNum + 1}"></a>-->
+<!--                                </li>-->
+<!--                                <li class="page-item" th:classappend="${ratingStats.content.last} ? 'disabled'">-->
+<!--                                    <a class="page-link"-->
+<!--                                       th:href="@{/products/{id}/rate(id=${product.id}, page=${ratingStats.content.number + 1})}">-->
+<!--                                        Next-->
+<!--                                    </a>-->
+<!--                                </li>-->
+<!--                            </ul>-->
+<!--                        </nav>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Rating JavaScript &ndash;&gt;-->
+<!--    <script th:inline="javascript">-->
+<!--        document.addEventListener('DOMContentLoaded', function() {-->
+<!--            const stars = document.querySelectorAll('#ratingStars .star');-->
+<!--            const ratingInput = document.getElementById('ratingInput');-->
+
+<!--            stars.forEach(star => {-->
+<!--                star.addEventListener('click', () => {-->
+<!--                    const rating = parseInt(star.getAttribute('data-rating'));-->
+<!--                    ratingInput.value = rating;-->
+
+<!--                    // Update star display-->
+<!--                    stars.forEach(s => {-->
+<!--                        const sRating = parseInt(s.getAttribute('data-rating'));-->
+<!--                        if (sRating <= rating) {-->
+<!--                            s.classList.add('active');-->
+<!--                        } else {-->
+<!--                            s.classList.remove('active');-->
+<!--                        }-->
+<!--                    });-->
+<!--                });-->
+
+<!--                star.addEventListener('mouseover', () => {-->
+<!--                    const rating = parseInt(star.getAttribute('data-rating'));-->
+<!--                    stars.forEach(s => {-->
+<!--                        const sRating = parseInt(s.getAttribute('data-rating'));-->
+<!--                        if (sRating <= rating) {-->
+<!--                            s.classList.add('hover');-->
+<!--                        }-->
+<!--                    });-->
+<!--                });-->
+
+<!--                star.addEventListener('mouseout', () => {-->
+<!--                    stars.forEach(s => s.classList.remove('hover'));-->
+<!--                });-->
+<!--            });-->
+<!--        });-->
+<!--    </script>-->
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->

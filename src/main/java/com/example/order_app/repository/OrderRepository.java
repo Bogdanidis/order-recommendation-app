@@ -5,6 +5,8 @@ import com.example.order_app.model.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,4 +23,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByOrderDateAndOrderStatusNot(LocalDate date, OrderStatus status);
 
     long countByUserId(Long userId);
+
+
+    @Query("SELECT CASE WHEN COUNT(o) > 0 THEN true ELSE false END " +
+            "FROM Order o JOIN o.orderItems oi " +
+            "WHERE o.user.id = :userId " +
+            "AND oi.product.id = :productId " +
+            "AND o.orderStatus = 'DELIVERED'")
+    boolean existsByUserIdAndOrderItemsProductId(@Param("userId") Long userId, @Param("productId") Long productId);
 }

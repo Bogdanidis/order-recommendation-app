@@ -1,172 +1,218 @@
 -- Insert data into users table
 -- passwords are emails BCrypt encrypted
 INSERT INTO users (first_name, last_name, email, password)
-VALUES
-    ('John', 'Doe', 'john.doe@example.com', '$2a$10$4Wakl4/.5RsO6PGcw23KGeXADkmrumtOeGpZfQEB7t8IBJiqjgpVy'),
-    ('Jane', 'Smith', 'jane.smith@example.com', '$2a$10$BR7R3fSpZme8DgNeKHdTbubh.oQMSAnVUisEDrFxKvYo3kqGhDkWW/uRJA65eyl9uKzFr39ZV8tmWbqJxz9Heq'),
-    ('Alice', 'Johnson', 'alice.johnson@example.com', '$2a$10$ASLSCzlHpfnwHNM0ga1Q4OuazaRwr8xjjkAibTQfJRjeukXUuslk2'),
-    ('Bob', 'Brown', 'bob.brown@example.com', '$2a$10$hg0nFbYCwiXpNCv9aQPl/OnWkG5EYj.RTXZWbTVejMWNEJj/K99TG'),
-    ('Charlie', 'Davis', 'charlie.davis@example.com', '$2a$10$eD2k0KYD4pY4OMS0T7CkpeZESOf4q4hKfYnUNUAbHVT7rJU1ripTm'),
-    ('Emily', 'Evans', 'emily.evans@example.com', '$2a$10$dPMv5VeaePI.LxZTkJU0DOV7Mqbjtq62NuN/UIPvZAkBz2cv2myum'),
-    ('David', 'Wilson', 'david.wilson@example.com', '$2a$10$ZODLnPlao4PV0qh0oNBQpe4xEXLoD0da63vAHmvyQ3O8s5wXdtYuC'),
-    ('Sarah', 'Taylor', 'sarah.taylor@example.com', '$2a$10$W4zw4R2sMFeSnL1LH2fIhOgLa00JupwnegFiBwMBnUH3a6io4qjQi'),
-    ('Michael', 'Anderson', 'michael.anderson@example.com', '$2a$10$b9eWYf9s330qx6UpBuuFqO/EEaLcmuEL2omyj8wYfqZBlYUn2sK1O'),
-    ('Emma', 'Thomas', 'emma.thomas@example.com', '$2a$10$O74DpwW5B6xcGJbFUQiQrO6xPOoHB4F/GjjZt9Fk0MuaTdb273nja'),
-    ('Christopher', 'Roberts', 'christopher.roberts@example.com', '$2a$10$fBuv1f7W507stI9xkYxp/OSgyoESn/sxxJ4N2LvHnUM.C3CAyFJaa'),
-    ('Olivia', 'Walker', 'olivia.walker@example.com', '$2a$10$dLqEwoSC3Fg4a9l9WF87Xe6vB7YL34ofbGL1tKCM82D0wCr.1ui/a'),
-    ('Daniel', 'White', 'daniel.white@example.com', '$2a$10$wZuKWK9a3Y4L1UCpdDTQtOwusyXddu8WqvrFLRgwe08YaHnNyhO4a'),
-    ('Sophia', 'Harris', 'sophia.harris@example.com', '$2a$10$O.OA1fxxuqIKbel2XiNldeCtJDSKLp8vB7erFihcYQlh/GrbqNoaq'),
-    ('Matthew', 'Clark', 'matthew.clark@example.com', '$2a$10$YeZMF82l2kX0urxbyRlsveDTmHN4vrC5j9V97AMhh6.SNxfntfnBG');
+VALUES ('John', 'Doe', 'john.doe@example.com', '$2a$10$4Wakl4/.5RsO6PGcw23KGeXADkmrumtOeGpZfQEB7t8IBJiqjgpVy'),
+       ('Jane', 'Smith', 'jane.smith@example.com',
+        '$2a$10$BR7R3fSpZme8DgNeKHdTbubh.oQMSAnVUisEDrFxKvYo3kqGhDkWW/uRJA65eyl9uKzFr39ZV8tmWbqJxz9Heq'),
+       ('Alice', 'Johnson', 'alice.johnson@example.com',
+        '$2a$10$ASLSCzlHpfnwHNM0ga1Q4OuazaRwr8xjjkAibTQfJRjeukXUuslk2'),
+       ('Bob', 'Brown', 'bob.brown@example.com', '$2a$10$hg0nFbYCwiXpNCv9aQPl/OnWkG5EYj.RTXZWbTVejMWNEJj/K99TG'),
+       ('Charlie', 'Davis', 'charlie.davis@example.com',
+        '$2a$10$eD2k0KYD4pY4OMS0T7CkpeZESOf4q4hKfYnUNUAbHVT7rJU1ripTm'),
+       ('Emily', 'Evans', 'emily.evans@example.com', '$2a$10$dPMv5VeaePI.LxZTkJU0DOV7Mqbjtq62NuN/UIPvZAkBz2cv2myum'),
+       ('David', 'Wilson', 'david.wilson@example.com', '$2a$10$ZODLnPlao4PV0qh0oNBQpe4xEXLoD0da63vAHmvyQ3O8s5wXdtYuC'),
+       ('Sarah', 'Taylor', 'sarah.taylor@example.com', '$2a$10$W4zw4R2sMFeSnL1LH2fIhOgLa00JupwnegFiBwMBnUH3a6io4qjQi'),
+       ('Michael', 'Anderson', 'michael.anderson@example.com',
+        '$2a$10$b9eWYf9s330qx6UpBuuFqO/EEaLcmuEL2omyj8wYfqZBlYUn2sK1O'),
+       ('Emma', 'Thomas', 'emma.thomas@example.com', '$2a$10$O74DpwW5B6xcGJbFUQiQrO6xPOoHB4F/GjjZt9Fk0MuaTdb273nja'),
+       ('Christopher', 'Roberts', 'christopher.roberts@example.com',
+        '$2a$10$fBuv1f7W507stI9xkYxp/OSgyoESn/sxxJ4N2LvHnUM.C3CAyFJaa'),
+       ('Olivia', 'Walker', 'olivia.walker@example.com',
+        '$2a$10$dLqEwoSC3Fg4a9l9WF87Xe6vB7YL34ofbGL1tKCM82D0wCr.1ui/a'),
+       ('Daniel', 'White', 'daniel.white@example.com', '$2a$10$wZuKWK9a3Y4L1UCpdDTQtOwusyXddu8WqvrFLRgwe08YaHnNyhO4a'),
+       ('Sophia', 'Harris', 'sophia.harris@example.com',
+        '$2a$10$O.OA1fxxuqIKbel2XiNldeCtJDSKLp8vB7erFihcYQlh/GrbqNoaq'),
+       ('Matthew', 'Clark', 'matthew.clark@example.com',
+        '$2a$10$YeZMF82l2kX0urxbyRlsveDTmHN4vrC5j9V97AMhh6.SNxfntfnBG');
 
 INSERT INTO categories (name, description)
-VALUES
-    ('Electronics', 'Devices such as phones, computers, and TVs'),
-    ('Appliances', 'Home appliances like washing machines, refrigerators'),
-    ('Books', 'Printed books and e-books of various genres'),
-    ('Furniture', 'Tables, chairs, and other home furniture'),
-    ('Clothing', 'Men and women clothing items'),
-    ('Toys', 'Toys for children of all ages'),
-    ('Sports & Outdoors', 'Equipment and gear for various sports and outdoor activities'),
-    ('Beauty & Personal Care', 'Cosmetics, skincare, and personal grooming products'),
-    ('Home & Garden', 'Decor, gardening tools, and home improvement items'),
-    ('Food & Beverages', 'Groceries, snacks, and drinks'),
-    ('Automotive', 'Car parts, accessories, and maintenance products'),
-    ('Pet Supplies', 'Food, toys, and accessories for pets'),
-    ('Jewelry', 'Necklaces, rings, and other jewelry items'),
-    ('Office Supplies', 'Stationery, desk organizers, and office equipment'),
-    ('Musical Instruments', 'Guitars, pianos, and other musical instruments');
+VALUES ('Electronics', 'Devices such as phones, computers, and TVs'),
+       ('Appliances', 'Home appliances like washing machines, refrigerators'),
+       ('Books', 'Printed books and e-books of various genres'),
+       ('Furniture', 'Tables, chairs, and other home furniture'),
+       ('Clothing', 'Men and women clothing items'),
+       ('Toys', 'Toys for children of all ages'),
+       ('Sports & Outdoors', 'Equipment and gear for various sports and outdoor activities'),
+       ('Beauty & Personal Care', 'Cosmetics, skincare, and personal grooming products'),
+       ('Home & Garden', 'Decor, gardening tools, and home improvement items'),
+       ('Food & Beverages', 'Groceries, snacks, and drinks'),
+       ('Automotive', 'Car parts, accessories, and maintenance products'),
+       ('Pet Supplies', 'Food, toys, and accessories for pets'),
+       ('Jewelry', 'Necklaces, rings, and other jewelry items'),
+       ('Office Supplies', 'Stationery, desk organizers, and office equipment'),
+       ('Musical Instruments', 'Guitars, pianos, and other musical instruments');
 
-INSERT INTO products (name, description, stock, price, brand, category_id)
+INSERT INTO products (name, description, stock, price, brand, category_id, average_rating, rating_count)
 VALUES
-    ('iPhone 13', 'Latest Apple smartphone', 150, 999.99, 'Apple', 1),
-    ('Samsung Galaxy S22', 'Flagship Android smartphone', 100, 899.99, 'Samsung', 1),
-    ('MacBook Pro', 'High-performance laptop', 50, 1999.99, 'Apple', 1),
-    ('Sony Bravia TV', '4K Ultra HD Smart TV', 40, 799.99, 'Sony', 1),
-    ('Washing Machine', 'Front load washing machine', 30, 499.99, 'LG', 2),
-    ('Refrigerator', 'Double-door refrigerator', 25, 699.99, 'Whirlpool', 2),
-    ('Harry Potter and the Sorcerer\'s Stone', 'Fantasy novel by J.K. Rowling', 500, 19.99, 'Scholastic', 3),
-    ('Office Chair', 'Ergonomic office chair', 200, 129.99, 'Herman Miller', 4),
-    ('Men\'s T-shirt', 'Cotton t-shirt', 300, 19.99, 'Nike', 5),
-    ('Toy Car', 'Remote control toy car', 100, 29.99, 'Hot Wheels', 6),
-    ('Tennis Racket', 'Professional grade tennis racket', 50, 199.99, 'Wilson', 7),
-    ('Yoga Mat', 'Non-slip exercise yoga mat', 100, 29.99, 'Lululemon', 7),
-    ('Lipstick', 'Long-lasting matte lipstick', 200, 24.99, 'MAC', 8),
-    ('Electric Shaver', 'Rechargeable electric shaver', 75, 89.99, 'Philips', 8),
-    ('Throw Pillow Set', 'Decorative throw pillow set of 4', 150, 39.99, 'HomeGoods', 9),
-    ('Garden Hose', '50ft expandable garden hose', 80, 34.99, 'Flexzilla', 9),
-    ('Organic Coffee Beans', 'Fair trade organic coffee beans', 300, 14.99, 'Starbucks', 10),
-    ('Protein Bar Variety Pack', 'Assorted flavors protein bars', 500, 19.99, 'KIND', 10),
-    ('Car Phone Mount', 'Universal car phone holder', 200, 19.99, 'iOttie', 11),
-    ('Motor Oil', 'Synthetic blend motor oil', 400, 24.99, 'Mobil 1', 11),
-    ('Dog Food', 'Premium dry dog food', 100, 49.99, 'Royal Canin', 12),
-    ('Cat Litter', 'Clumping cat litter', 150, 19.99, 'Fresh Step', 12),
-    ('Diamond Necklace', '14k gold diamond pendant necklace', 20, 999.99, 'Tiffany & Co.', 13),
-    ('Printer Paper', 'Multipurpose printer paper, 500 sheets', 1000, 9.99, 'HP', 14),
-    ('Acoustic Guitar', 'Beginner acoustic guitar', 30, 199.99, 'Yamaha', 15),
-    ('Digital Piano', '88-key weighted digital piano', 15, 799.99, 'Casio', 15),
-    ('Microwave Oven', 'Countertop microwave oven', 50, 89.99, 'Panasonic', 2),
-    ('The Great Gatsby', 'Classic novel by F. Scott Fitzgerald', 300, 12.99, 'Scribner', 3),
-    ('Dining Table', '6-seater wooden dining table', 30, 399.99, 'IKEA', 4),
-    ('Women\'s Dress', 'Floral print summer dress', 100, 59.99, 'Zara', 5);
+    ('iPhone 13', 'Latest Apple smartphone', 150, 999.99, 'Apple', 1, 4.5, 2),
+    ('Samsung Galaxy S22', 'Flagship Android smartphone', 100, 899.99, 'Samsung', 1, 4.5, 2),
+    ('MacBook Pro', 'High-performance laptop', 50, 1999.99, 'Apple', 1, 5.0, 2),
+    ('Sony Bravia TV', '4K Ultra HD Smart TV', 40, 799.99, 'Sony', 1, 4.5, 2),
+    ('Washing Machine', 'Front load washing machine', 30, 499.99, 'LG', 2, 4.33, 3),
+    ('Refrigerator', 'Double-door refrigerator', 25, 699.99, 'Whirlpool', 2, 4.5, 2),
+    ('Harry Potter and the Sorcerer''s Stone', 'Fantasy novel by J.K. Rowling', 500, 19.99, 'Scholastic', 3, 0.0, 0),
+    ('Office Chair', 'Ergonomic office chair', 200, 129.99, 'Herman Miller', 4, 4.67, 3),
+    ('Men''s T-shirt', 'Cotton t-shirt', 300, 19.99, 'Nike', 5, 0.0, 0),
+    ('Toy Car', 'Remote control toy car', 100, 29.99, 'Hot Wheels', 6, 0.0, 0),
+    ('Tennis Racket', 'Professional grade tennis racket', 50, 199.99, 'Wilson', 7, 0.0, 0),
+    ('Yoga Mat', 'Non-slip exercise yoga mat', 100, 29.99, 'Lululemon', 7, 0.0, 0),
+    ('Lipstick', 'Long-lasting matte lipstick', 200, 24.99, 'MAC', 8, 0.0, 0),
+    ('Electric Shaver', 'Rechargeable electric shaver', 75, 89.99, 'Philips', 8, 0.0, 0),
+    ('Throw Pillow Set', 'Decorative throw pillow set of 4', 150, 39.99, 'HomeGoods', 9, 0.0, 0),
+    ('Garden Hose', '50ft expandable garden hose', 80, 34.99, 'Flexzilla', 9, 0.0, 0),
+    ('Organic Coffee Beans', 'Fair trade organic coffee beans', 300, 14.99, 'Starbucks', 10, 0.0, 0),
+    ('Protein Bar Variety Pack', 'Assorted flavors protein bars', 500, 19.99, 'KIND', 10, 0.0, 0),
+    ('Car Phone Mount', 'Universal car phone holder', 200, 19.99, 'iOttie', 11, 0.0, 0),
+    ('Motor Oil', 'Synthetic blend motor oil', 400, 24.99, 'Mobil 1', 11, 0.0, 0),
+    ('Dog Food', 'Premium dry dog food', 100, 49.99, 'Royal Canin', 12, 0.0, 0),
+    ('Cat Litter', 'Clumping cat litter', 150, 19.99, 'Fresh Step', 12, 0.0, 0),
+    ('Diamond Necklace', '14k gold diamond pendant necklace', 20, 999.99, 'Tiffany & Co.', 13, 0.0, 0),
+    ('Printer Paper', 'Multipurpose printer paper, 500 sheets', 1000, 9.99, 'HP', 14, 0.0, 0),
+    ('Acoustic Guitar', 'Beginner acoustic guitar', 30, 199.99, 'Yamaha', 15, 0.0, 0),
+    ('Digital Piano', '88-key weighted digital piano', 15, 799.99, 'Casio', 15, 0.0, 0),
+    ('Microwave Oven', 'Countertop microwave oven', 50, 89.99, 'Panasonic', 2, 0.0, 0),
+    ('The Great Gatsby', 'Classic novel by F. Scott Fitzgerald', 300, 12.99, 'Scribner', 3, 0.0, 0),
+    ('Dining Table', '6-seater wooden dining table', 30, 399.99, 'IKEA', 4, 0.0, 0),
+    ('Women''s Dress', 'Floral print summer dress', 100, 59.99, 'Zara', 5, 0.0, 0);
 
 INSERT INTO roles (name)
-VALUES
-    ('ROLE_USER'),
-    ('ROLE_ADMIN');
+VALUES ('ROLE_USER'),
+       ('ROLE_ADMIN');
 
 INSERT INTO user_roles (user_id, role_id)
-VALUES
-    (1, 1), -- John Doe as USER
-    (2, 1), -- Jane Smith as USER
-    (3, 1), -- Alice Johnson as USER
-    (4, 1), -- Bob Brown as USER
-    (5, 1), -- Charlie Davis as USER
-    (6, 2), -- Emily Evans as ADMIN
-    (7, 1), -- David Wilson as USER
-    (8, 1), -- Sarah Taylor as USER
-    (9, 1), -- Michael Anderson as USER
-    (10, 1), -- Emma Thomas as USER
-    (11, 1), -- Christopher Roberts as USER
-    (12, 1), -- Olivia Walker as USER
-    (13, 1), -- Daniel White as USER
-    (14, 1), -- Sophia Harris as USER
-    (15, 2); -- Matthew Clark as ADMIN
+VALUES (1, 1),  -- John Doe as USER
+       (2, 1),  -- Jane Smith as USER
+       (3, 1),  -- Alice Johnson as USER
+       (4, 1),  -- Bob Brown as USER
+       (5, 1),  -- Charlie Davis as USER
+       (6, 2),  -- Emily Evans as ADMIN
+       (7, 1),  -- David Wilson as USER
+       (8, 1),  -- Sarah Taylor as USER
+       (9, 1),  -- Michael Anderson as USER
+       (10, 1), -- Emma Thomas as USER
+       (11, 1), -- Christopher Roberts as USER
+       (12, 1), -- Olivia Walker as USER
+       (13, 1), -- Daniel White as USER
+       (14, 1), -- Sophia Harris as USER
+       (15, 2);
+-- Matthew Clark as ADMIN
 
 -- Insert more orders
 INSERT INTO orders (order_date, total_amount, order_status, user_id)
 VALUES
-    ('2023-10-01', 1049.98, 'SHIPPED', 1),
-    ('2023-10-03', 2199.98, 'DELIVERED', 1),
-    ('2023-10-05', 349.97, 'CANCELLED', 1),
-    ('2023-09-15', 899.99, 'DELIVERED', 2),
-    ('2023-09-20', 1299.98, 'SHIPPED', 2),
-    ('2023-09-21', 1299.99, 'PENDING', 3),
-    ('2023-09-25', 449.97, 'PROCESSING', 3),
-    ('2023-10-02', 29.99, 'PROCESSING', 4),
-    ('2023-10-04', 699.99, 'SHIPPED', 4),
-    ('2023-10-03', 1999.99, 'CANCELLED', 5),
-    ('2023-10-06', 149.97, 'PENDING', 5),
-    ('2023-10-07', 89.99, 'PROCESSING', 7),
-    ('2023-10-09', 1099.98, 'SHIPPED', 7),
-    ('2023-10-08', 399.99, 'PENDING', 8),
-    ('2023-10-11', 79.98, 'PROCESSING', 8),
-    ('2023-10-10', 59.99, 'SHIPPED', 9),
-    ('2023-10-13', 1499.97, 'DELIVERED', 9),
-    ('2023-10-12', 199.99, 'DELIVERED', 10),
-    ('2023-10-15', 549.97, 'SHIPPED', 10),
-    ('2023-10-03', 1999.99, 'CANCELLED', 11),
-    ('2023-10-07', 299.97, 'PENDING', 11),
-    ('2023-10-05', 249.98, 'SHIPPED', 12),
-    ('2023-10-09', 799.98, 'PROCESSING', 12),
-    ('2023-10-07', 89.99, 'PROCESSING', 13),
-    ('2023-10-11', 1299.97, 'SHIPPED', 13),
-    ('2023-10-08', 399.99, 'PENDING', 14),
-    ('2023-10-12', 99.98, 'DELIVERED', 14);
+    -- January Week 1 Orders (Users 1-5)
+    ('2024-01-01', 1299.98, 'DELIVERED', 1),   -- Order 1: iPhone 13 (999.99) + Office Chair (299.99)
+    ('2024-01-01', 899.99, 'DELIVERED', 2),    -- Order 2: Samsung Galaxy S22
+    ('2024-01-02', 2499.98, 'DELIVERED', 3),   -- Order 3: MacBook Pro (1999.99) + Washing Machine (499.99)
+    ('2024-01-02', 1599.98, 'DELIVERED', 4),   -- Order 4: Sony TV (799.99) + Digital Piano (799.99)
+    ('2024-01-03', 799.99, 'DELIVERED', 5),    -- Order 5: Sony TV
 
+    -- January Week 2 Orders (Users 7-11)
+    ('2024-01-08', 699.99, 'DELIVERED', 7),    -- Order 6: Refrigerator
+    ('2024-01-08', 299.98, 'DELIVERED', 8),    -- Order 7: Office Chair x2 (149.99 each)
+    ('2024-01-09', 449.99, 'DELIVERED', 9),    -- Order 8: Washing Machine
+    ('2024-01-09', 199.99, 'DELIVERED', 10),   -- Order 9: Acoustic Guitar
+    ('2024-01-10', 999.99, 'DELIVERED', 11),   -- Order 10: iPhone 13
+
+    -- January Week 3 Orders (Users 12-14, 1-3)
+    ('2024-01-15', 2499.98, 'DELIVERED', 12),  -- Order 11: MacBook Pro + Washing Machine
+    ('2024-01-15', 899.99, 'DELIVERED', 13),   -- Order 12: Samsung Galaxy S22
+    ('2024-01-16', 699.99, 'DELIVERED', 14),   -- Order 13: Refrigerator
+    ('2024-01-16', 399.99, 'DELIVERED', 1),    -- Order 14: Dining Table
+    ('2024-01-17', 299.99, 'DELIVERED', 2),    -- Order 15: Office Chair
+
+    -- Recent Orders (Mixed Users)
+    ('2024-01-18', 199.99, 'SHIPPED', 3),      -- Order 16: Acoustic Guitar
+    ('2024-01-18', 149.99, 'SHIPPED', 4),      -- Order 17: Tennis Racket
+    ('2024-01-19', 999.99, 'PROCESSING', 5),   -- Order 18: iPhone 13
+    ('2024-01-19', 799.99, 'PROCESSING', 7),   -- Order 19: Digital Piano
+    ('2024-01-20', 499.99, 'PENDING', 8),      -- Order 20: Washing Machine
+
+    -- Latest Orders
+    ('2024-01-21', 399.99, 'PROCESSING', 9),   -- Order 21: Dining Table
+    ('2024-01-21', 299.99, 'PROCESSING', 10),  -- Order 22: Office Chair
+    ('2024-01-22', 199.99, 'PENDING', 11),     -- Order 23: Tennis Racket
+    ('2024-01-22', 1999.99, 'PENDING', 12),    -- Order 24: MacBook Pro
+    ('2024-01-23', 899.99, 'PENDING', 13);     -- Order 25: Samsung Galaxy S22
 
 -- Insert more order items
 INSERT INTO order_items (quantity, price, order_id, product_id)
 VALUES
-    (1, 999.99, 1, 1),  -- 1 iPhone 13 for Order 1
-    (1, 49.99, 1, 10),  -- 1 Toy Car for Order 1
-    (1, 1999.99, 2, 3), -- 1 MacBook Pro for Order 2
-    (1, 199.99, 2, 11), -- 1 Tennis Racket for Order 2
-    (3, 99.99, 3, 9),   -- 3 Men's T-shirts for Order 3
-    (1, 49.99, 3, 21),  -- 1 Dog Food for Order 3
-    (1, 899.99, 4, 2),  -- 1 Samsung Galaxy S22 for Order 4
-    (2, 599.99, 5, 4),  -- 2 Sony Bravia TVs for Order 5
-    (1, 99.99, 5, 8),   -- 1 Office Chair for Order 5
-    (1, 1299.99, 6, 3), -- 1 MacBook Pro for Order 6
-    (3, 129.99, 7, 8),  -- 3 Office Chairs for Order 7
-    (1, 59.99, 7, 30),  -- 1 Women's Dress for Order 7
-    (1, 29.99, 8, 10),  -- 1 Toy Car for Order 8
-    (1, 699.99, 9, 6),  -- 1 Refrigerator for Order 9
-    (1, 1999.99, 10, 3),-- 1 MacBook Pro for Order 10
-    (3, 39.99, 11, 15), -- 3 Throw Pillow Sets for Order 11
-    (1, 29.99, 11, 12), -- 1 Yoga Mat for Order 11
-    (1, 89.99, 12, 14), -- 1 Electric Shaver for Order 12
-    (1, 999.99, 13, 1), -- 1 iPhone 13 for Order 13
-    (1, 99.99, 13, 8),  -- 1 Office Chair for Order 13
-    (1, 399.99, 14, 29),-- 1 Dining Table for Order 14
-    (2, 39.99, 15, 15), -- 2 Throw Pillow Sets for Order 15
-    (1, 59.99, 16, 30), -- 1 Women's Dress for Order 16
-    (3, 499.99, 17, 5), -- 3 Washing Machines for Order 17
-    (1, 199.99, 18, 25),-- 1 Acoustic Guitar for Order 18
-    (2, 159.99, 19, 26),-- 2 Digital Pianos for Order 19
-    (1, 229.99, 19, 27),-- 1 Microwave Oven for Order 19
-    (1, 1999.99, 20, 3),-- 1 MacBook Pro for Order 20
-    (3, 79.99, 21, 28), -- 3 The Great Gatsby books for Order 21
-    (1, 59.99, 21, 30), -- 1 Women's Dress for Order 21
-    (1, 249.98, 22, 25),-- 1 Acoustic Guitar for Order 22
-    (2, 349.99, 23, 29),-- 2 Dining Tables for Order 23
-    (1, 99.99, 23, 8),  -- 1 Office Chair for Order 23
-    (1, 89.99, 24, 14), -- 1 Electric Shaver for Order 24
-    (1, 1199.99, 25, 1),-- 1 iPhone 13 for Order 25
-    (1, 99.98, 25, 28), -- 1 The Great Gatsby book for Order 25
-    (1, 399.99, 26, 29),-- 1 Dining Table for Order 26
-    (2, 49.99, 27, 21); -- 2 Dog Food for Order 27
+    -- Week 1 Order Items
+    (1, 999.99, 1, 1),    -- iPhone 13 for Order 1
+    (1, 299.99, 1, 8),    -- Office Chair for Order 1
+    (1, 899.99, 2, 2),    -- Samsung Galaxy S22 for Order 2
+    (1, 1999.99, 3, 3),   -- MacBook Pro for Order 3
+    (1, 499.99, 3, 5),    -- Washing Machine for Order 3
+    (1, 799.99, 4, 4),    -- Sony TV for Order 4
+    (1, 799.99, 4, 26),   -- Digital Piano for Order 4
+    (1, 799.99, 5, 4),    -- Sony TV for Order 5
+
+    -- Week 2 Order Items
+    (1, 699.99, 6, 6),    -- Refrigerator for Order 6
+    (2, 149.99, 7, 8),    -- Office Chair x2 for Order 7
+    (1, 449.99, 8, 5),    -- Washing Machine for Order 8
+    (1, 199.99, 9, 25),   -- Acoustic Guitar for Order 9
+    (1, 999.99, 10, 1),   -- iPhone 13 for Order 10
+
+    -- Week 3 Order Items
+    (1, 1999.99, 11, 3),  -- MacBook Pro for Order 11
+    (1, 499.99, 11, 5),   -- Washing Machine for Order 11
+    (1, 899.99, 12, 2),   -- Samsung Galaxy S22 for Order 12
+    (1, 699.99, 13, 6),   -- Refrigerator for Order 13
+    (1, 399.99, 14, 29),  -- Dining Table for Order 14
+    (1, 299.99, 15, 8),   -- Office Chair for Order 15
+
+    -- Recent Order Items
+    (1, 199.99, 16, 25),  -- Acoustic Guitar for Order 16
+    (1, 149.99, 17, 11),  -- Tennis Racket for Order 17
+    (1, 999.99, 18, 1),   -- iPhone 13 for Order 18
+    (1, 799.99, 19, 26),  -- Digital Piano for Order 19
+    (1, 499.99, 20, 5),   -- Washing Machine for Order 20
+
+    -- Latest Order Items
+    (1, 399.99, 21, 29),  -- Dining Table for Order 21
+    (1, 299.99, 22, 8),   -- Office Chair for Order 22
+    (1, 199.99, 23, 11),  -- Tennis Racket for Order 23
+    (1, 1999.99, 24, 3),  -- MacBook Pro for Order 24
+    (1, 899.99, 25, 2);   -- Samsung Galaxy S22 for Order 25
 
 
+
+-- Insert sample product ratings
+INSERT INTO product_ratings (rating, comment, created_at, product_id, user_id)
+VALUES
+    -- iPhone 13 ratings (Product 1)
+    (5, 'Exceptional phone! Camera quality is outstanding.', '2024-01-10', 1, 1),      -- From order 28
+    (4, 'Great device overall. Battery life is impressive.', '2024-01-15', 1, 11),     -- From order 37
+
+    -- Samsung Galaxy S22 ratings (Product 2)
+    (4, 'Excellent Android experience. Great customization options.', '2024-01-05', 2, 2),   -- From order 29
+    (5, 'Amazing camera capabilities and beautiful display.', '2024-01-17', 2, 13),          -- From order 39
+
+    -- MacBook Pro ratings (Product 3)
+    (5, 'Incredible machine for development work.', '2024-01-07', 3, 3),              -- From order 30
+    (5, 'Outstanding performance and battery life is unreal.', '2024-01-17', 3, 12),  -- From order 38
+
+    -- Sony Bravia TV ratings (Product 4)
+    (5, 'Stunning picture quality! Perfect for movies and gaming.', '2024-01-07', 4, 4),  -- From order 31
+    (4, 'Great TV with excellent smart features.', '2024-01-08', 4, 5),                   -- From order 32
+
+    -- Washing Machine ratings (Product 5)
+    (4, 'Energy efficient and cleans thoroughly.', '2024-01-07', 5, 3),              -- From order 30
+    (5, 'Very quiet operation and excellent cleaning power.', '2024-01-17', 5, 12),  -- From order 38
+    (4, 'Good value for money, many useful features.', '2024-01-12', 5, 9),         -- From order 35
+
+    -- Refrigerator ratings (Product 6)
+    (4, 'Spacious and energy efficient. Good temperature control.', '2024-01-12', 6, 7),  -- From order 33
+    (5, 'Perfect size and great organization options.', '2024-01-18', 6, 14),             -- From order 40
+
+    -- Office Chair ratings (Product 8)
+    (5, 'Extremely comfortable for long working hours.', '2024-01-05', 8, 1),     -- From order 28
+    (4, 'Good ergonomic support and adjustability.', '2024-01-12', 8, 8),         -- From order 34
+    (5, 'Best office chair I''ve ever used.', '2024-01-18', 8, 2);                -- From order 42
+
+-- Update products
 # INSERT INTO carts (total_amount, user_id)
 # VALUES
 #     (1049.98, 1), -- Cart for John Doe

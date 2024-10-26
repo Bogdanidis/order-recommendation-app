@@ -16,4 +16,7 @@ public class ProductDto {
     private String description;
     private Category category;
     private List<ImageDto> images;
+    private Double averageRating;
+    private Long ratingCount;
+    private List<ProductRatingDto> ratings;
 }

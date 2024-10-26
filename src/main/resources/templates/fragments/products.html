@@ -2,7 +2,7 @@
     <h2 class="section-title text-center mb-4">Featured Products</h2>
     <div class="row row-cols-1 row-cols-md-3 g-4">
         <div class="col" th:each="product : ${products}">
-            <div class="card h-100 product-card">
+            <div class="card h-100 product-card ">
                 <div class="product-image-container">
                     <!-- Single image display -->
                     <div th:if="${#lists.size(product.images) == 1}" class="single-image-container">
@@ -50,6 +50,20 @@
                 </div>
                 <div class="card-body">
                     <h5 class="card-title" th:text="${product.name}">Product Name</h5>
+                    <!-- Rating Stars -->
+                    <div class="rating-container mb-2">
+                        <div class="stars">
+                            <span th:each="i : ${#numbers.sequence(1, 5)}"
+                                  class="star"
+                                  th:classappend="${product.averageRating != null && i <= product.averageRating} ? 'filled' : ''"
+                                  th:onclick="'window.location.href=\'' + @{/products/{id}(id=${product.id})} + '\''"
+                                  th:text="'★'">
+                            </span>
+                            <span class="rating-count" th:if="${product.ratingCount > 0}">
+                                (<span th:text="${product.ratingCount}">0</span>)
+                            </span>
+                        </div>
+                    </div>
                     <p class="card-text" th:text="${product.description}">Product Description</p>
                     <p class="card-text">
                         <strong th:text="${#numbers.formatCurrency(product.price)}">$0.00</strong>

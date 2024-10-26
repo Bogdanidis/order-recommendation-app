@@ -34,11 +34,10 @@ public class CartItemController {
             RedirectAttributes redirectAttributes) {
         try {
             User user = userService.getAuthenticatedUser();
-            if (cartItemService.isCartOwnedByUser(cartId, user.getId())) {
+            if (!cartItemService.isCartOwnedByUser(cartId, user.getId())) {
                 redirectAttributes.addFlashAttribute("error", "You can only add items to your own cart.");
                 return "redirect:/home";
             }
-
             cartItemService.addItemToCart(cartId, productId, quantity);
             redirectAttributes.addFlashAttribute("success", "Item added to cart successfully!");
         } catch (ResourceNotFoundException e) {
