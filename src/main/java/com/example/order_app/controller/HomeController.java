@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -65,24 +66,23 @@ public class HomeController {
     public String home(Authentication authentication, Model model,
                        @RequestParam(defaultValue = "0") int productPage,
                        @RequestParam(defaultValue = "0") int categoryPage,
-                       @RequestParam(defaultValue = "6") int size) {
+                       @RequestParam(defaultValue = "0") int recommendationPage) {
         if (authentication != null && authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             return "redirect:/admin/dashboard";
         }
 
         // Load paginated products for the main section
-        Page<Product> productPageResult = productService.getAllProducts(PageRequest.of(productPage, size));
+        Page<Product> productPageResult = productService.getAllProducts(PageRequest.of(productPage, 6));
         model.addAttribute("products", productService.getConvertedProducts(productPageResult.getContent()));
         model.addAttribute("currentProductPage", productPage);
         model.addAttribute("totalProductPages", productPageResult.getTotalPages());
-        model.addAttribute("totalProductItems", productPageResult.getTotalElements());
 
         // Load paginated categories
         Page<Category> categoryPageResult = categoryService.getAllCategoriesPaginated(PageRequest.of(categoryPage, 8)); // 8 categories per page
         model.addAttribute("categories", categoryPageResult);
         model.addAttribute("currentCategoryPage", categoryPage);
-
+        model.addAttribute("totalCategoryPages", categoryPageResult.getTotalPages());
 
         // Add user/recommendations to model if authenticated
         if (authentication != null && authentication.isAuthenticated()) {
@@ -90,16 +90,11 @@ public class HomeController {
             UserDto userDto = userService.convertUserToDto(user);
             model.addAttribute("user", userDto);
 
+            Page<ProductDto> recommendationPageResult = recommendationService.getRecommendationsForUser(user,PageRequest.of(recommendationPage, 3));
+            model.addAttribute("recommendations", recommendationPageResult);
+            model.addAttribute("currentRecommendationPage", recommendationPage);
+            model.addAttribute("totalRecommendationPages", recommendationPageResult.getTotalPages());
 
-            List<ProductDto> recommendations = recommendationService.getRecommendationsForUser(user, 6);
-            // Group the recommendations into lists of three for displaying in the fragment
-            List<List<ProductDto>> groupedRecommendations = new ArrayList<>();
-            int batchSize = 3;
-            for (int i = 0; i < recommendations.size(); i += batchSize) {
-                groupedRecommendations.add(recommendations.subList(i, Math.min(i + batchSize, recommendations.size())));
-            }
-            model.addAttribute("groupedRecommendations", groupedRecommendations);
-           // model.addAttribute("recommendations", recommendations);
         }
 
         return "home";

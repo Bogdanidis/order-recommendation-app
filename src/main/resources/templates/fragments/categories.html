@@ -18,14 +18,14 @@
     <nav th:if="${categories.totalPages > 1}" aria-label="Category pages" class="mt-4">
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${categories.number == 0} ? 'disabled'">
-                <a class="page-link" th:href="@{/home(categoryPage=${categories.number - 1}, productPage=${currentProductPage})}" tabindex="-1">Previous</a>
+                <a class="page-link" th:href="@{/home(categoryPage=${categories.number - 1}, productPage=${currentProductPage},recommendationPage=${currentRecommendationPage})}" tabindex="-1">Previous</a>
             </li>
             <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, categories.totalPages - 1)}"
                 th:classappend="${pageNumber == categories.number} ? 'active'">
-                <a class="page-link" th:href="@{/home(categoryPage=${pageNumber}, productPage=${currentProductPage})}" th:text="${pageNumber + 1}"></a>
+                <a class="page-link" th:href="@{/home(categoryPage=${pageNumber}, productPage=${currentProductPage},recommendationPage=${currentRecommendationPage})}" th:text="${pageNumber + 1}"></a>
             </li>
             <li class="page-item" th:classappend="${categories.number + 1 == categories.totalPages} ? 'disabled'">
-                <a class="page-link" th:href="@{/home(categoryPage=${categories.number + 1}, productPage=${currentProductPage})}">Next</a>
+                <a class="page-link" th:href="@{/home(categoryPage=${categories.number + 1}, productPage=${currentProductPage},recommendationPage=${currentRecommendationPage})}">Next</a>
             </li>
         </ul>
     </nav>

@@ -6,9 +6,13 @@ import com.example.order_app.model.OrderItem;
 import com.example.order_app.model.Product;
 import com.example.order_app.model.User;
 import com.example.order_app.repository.OrderRepository;
+import com.example.order_app.repository.ProductRatingRepository;
 import com.example.order_app.repository.ProductRepository;
 import com.example.order_app.service.product.IProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -17,102 +21,75 @@ import java.util.stream.Collectors;
 @Component("itemBasedCF")
 @RequiredArgsConstructor
 public class ItemBasedCFStrategy implements RecommendationStrategy {
-
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final ProductRatingRepository ratingRepository;
     private final IProductService productService;
 
     @Override
-    public List<ProductDto> getRecommendations(User user, int numRecommendations) {
-        Set<Product> userProducts = getUserProducts(user);
-        return getRecommendationsForProducts(userProducts, numRecommendations);
-    }
+    public Page<ProductDto> getRecommendations(User user, Pageable pageable, boolean includeRatingWeight) {
+        List<Product> userProducts = orderRepository.findProductsPurchasedByUser(user.getId());
+        if (userProducts.isEmpty()) {
+            return Page.empty(pageable);
+        }
 
-    /**
-     * Get recommendations based on items in the cart.
-     *
-     * @param cartItems List of products in the cart
-     * @param numRecommendations Number of recommendations to return
-     * @return List of recommended ProductDto objects
-     */
-    public List<ProductDto> getCartBasedRecommendations(List<Product> cartItems, int numRecommendations) {
-        Set<Product> cartItemSet = new HashSet<>(cartItems);
-        return getRecommendationsForProducts(cartItemSet, numRecommendations);
-    }
-
-    /**
-     * Get recommendations based on a set of products.
-     *
-     * @param products Set of products to base recommendations on
-     * @param numRecommendations Number of recommendations to return
-     * @return List of recommended ProductDto objects
-     */
-    private List<ProductDto> getRecommendationsForProducts(Set<Product> products, int numRecommendations) {
-        Map<Product, Double> productSimilarities = calculateProductSimilarities(products);
-
-        // Sort products by similarity and select top recommendations
-        return productSimilarities.entrySet().stream()
-                .sorted(Map.Entry.<Product, Double>comparingByValue().reversed())
-                .limit(numRecommendations)
-                .map(Map.Entry::getKey)
-                .map(productService::convertToDto)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Retrieves all products that the user has ordered.
-     */
-    private Set<Product> getUserProducts(User user) {
-        return orderRepository.findByUserId(user.getId()).stream()
-                .flatMap(order -> order.getOrderItems().stream())
-                .map(OrderItem::getProduct)
-                .collect(Collectors.toSet());
-    }
-
-    /**
-     * Calculates similarity scores between the user's products and all other products.
-     */
-    private Map<Product, Double> calculateProductSimilarities(Set<Product> userProducts) {
         List<Product> allProducts = productRepository.findAll();
-        Map<Product, Double> similarities = new HashMap<>();
+        List<ScoredProduct> recommendations = new ArrayList<>();
 
-        for (Product product : allProducts) {
-            if (!userProducts.contains(product)) {
-                double similarity = calculateSimilarity(product, userProducts);
-                similarities.put(product, similarity);
+        for (Product candidate : allProducts) {
+            if (!userProducts.contains(candidate)) {
+                double score = calculateSimilarityScore(candidate, userProducts, includeRatingWeight);
+                recommendations.add(new ScoredProduct(candidate, score));
             }
         }
 
-        return similarities;
+        Collections.sort(recommendations);
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), recommendations.size());
+
+        List<ProductDto> paginatedResults = recommendations.subList(start, end).stream()
+                .map(scored -> productService.convertToDto(scored.getProduct()))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(
+                paginatedResults,
+                pageable,
+                recommendations.size()
+        );
     }
 
-    /**
-     * Calculates the Jaccard similarity between a product and the user's products.
-     */
-    private double calculateSimilarity(Product product, Set<Product> userProducts) {
-        Set<User> productUsers = getUsersWhoOrderedProduct(product);
-        Set<User> userProductUsers = userProducts.stream()
-                .flatMap(p -> getUsersWhoOrderedProduct(p).stream())
-                .collect(Collectors.toSet());
+    private double calculateSimilarityScore(Product candidate, List<Product> userProducts, boolean includeRatingWeight) {
+        double maxSimilarity = userProducts.stream()
+                .mapToDouble(userProduct -> calculateProductSimilarity(candidate, userProduct))
+                .max()
+                .orElse(0.0);
 
-        Set<User> intersection = new HashSet<>(productUsers);
-        intersection.retainAll(userProductUsers);
+        if (includeRatingWeight) {
+            Double avgRating = ratingRepository.getAverageRating(candidate.getId());
+            Long ratingCount = ratingRepository.getRatingCount(candidate.getId());
 
-        Set<User> union = new HashSet<>(productUsers);
-        union.addAll(userProductUsers);
+            if (avgRating != null && ratingCount != null) {
+                double ratingScore = (avgRating / 5.0) * Math.min(ratingCount / 10.0, 1.0);
+                return maxSimilarity * 0.7 + ratingScore * 0.3;
+            }
+        }
 
-        return union.isEmpty() ? 0 : (double) intersection.size() / union.size();
+        return maxSimilarity;
     }
 
-    /**
-     * Finds all users who have ordered a specific product.
-     */
-    private Set<User> getUsersWhoOrderedProduct(Product product) {
-        return orderRepository.findAll().stream()
-                .filter(order -> order.getOrderItems().stream()
-                        .anyMatch(item -> item.getProduct().equals(product)))
-                .map(Order::getUser)
-                .collect(Collectors.toSet());
-    }
+    private double calculateProductSimilarity(Product p1, Product p2) {
+        // Category similarity
+        boolean sameCategory = p1.getCategory().equals(p2.getCategory());
 
+        // Brand similarity
+        boolean sameBrand = p1.getBrand().equals(p2.getBrand());
+
+        // Price similarity (within 20% range)
+        boolean similarPrice = Math.abs(p1.getPrice().doubleValue() - p2.getPrice().doubleValue()) /
+                p1.getPrice().doubleValue() <= 0.2;
+
+        return (sameCategory ? 0.5 : 0) + (sameBrand ? 0.3 : 0) + (similarPrice ? 0.2 : 0);
+    }
 }
+

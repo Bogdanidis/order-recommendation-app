@@ -68,7 +68,7 @@ public class CartItemController {
             RedirectAttributes redirectAttributes) {
         try {
             User user = userService.getAuthenticatedUser();
-            if (cartItemService.isCartOwnedByUser(cartId, user.getId())) {
+            if (!cartItemService.isCartOwnedByUser(cartId, user.getId())) {
                 redirectAttributes.addFlashAttribute("error", "You can only update items in your own cart.");
                 return "redirect:/home";
             }
@@ -111,7 +111,7 @@ public class CartItemController {
     public String removeItemFromCart(@PathVariable Long cartId, @PathVariable Long itemId, RedirectAttributes redirectAttributes) {
         try {
             User user = userService.getAuthenticatedUser();
-            if (cartItemService.isCartOwnedByUser(cartId, user.getId())) {
+            if (!cartItemService.isCartOwnedByUser(cartId, user.getId())) {
                 redirectAttributes.addFlashAttribute("error", "You can only remove items from your own cart.");
                 return "redirect:/home";
             }

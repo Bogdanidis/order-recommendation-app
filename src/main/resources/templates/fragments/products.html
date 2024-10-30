@@ -5,43 +5,43 @@
             <div class="card h-100 product-card ">
                 <div class="product-image-container">
                     <!-- Single image display -->
-                    <div th:if="${#lists.size(product.images) == 1}" class="single-image-container">
+                    <div th:if="${not #lists.isEmpty(product.images)}" class="single-image-container">
                         <img th:src="@{/images/{imageId}(imageId=${product.images[0].id})}"
                              class="d-block w-100 img-fluid rounded-start product-image"
                              th:alt="${product.name}">
                     </div>
 
-                    <!-- Carousel for multiple images -->
-                    <div th:if="${#lists.size(product.images) > 1}" id="productImageCarousel" class="carousel slide" data-bs-ride="carousel">
-                        <!-- Indicators -->
-                        <div class="carousel-indicators">
-                            <button th:each="image, iterStat : ${product.images}"
-                                    type="button"
-                                    data-bs-target="#productImageCarousel"
-                                    th:data-bs-slide-to="${iterStat.index}"
-                                    th:class="${iterStat.first} ? 'active' : ''"
-                                    th:aria-current="${iterStat.first} ? 'true' : 'false'"
-                                    th:aria-label="'Slide ' + ${iterStat.count}"></button>
-                        </div>
-                        <!-- Carousel items -->
-                        <div class="carousel-inner">
-                            <div th:each="image, iterStat : ${product.images}"
-                                 th:class="${iterStat.first} ? 'carousel-item active' : 'carousel-item'">
-                                <img th:src="@{/images/{imageId}(imageId=${image.id})}"
-                                     class="d-block w-100 img-fluid rounded-start product-image"
-                                     th:alt="${product.name}">
-                            </div>
-                        </div>
-                        <!-- Navigation buttons -->
-                        <button class="carousel-control-prev" type="button" data-bs-target="#productImageCarousel" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#productImageCarousel" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
-                    </div>
+<!--                    &lt;!&ndash; Carousel for multiple images &ndash;&gt;-->
+<!--                    <div th:if="${#lists.size(product.images) > 1}" id="productImageCarousel" class="carousel slide" data-bs-ride="carousel">-->
+<!--                        &lt;!&ndash; Indicators &ndash;&gt;-->
+<!--                        <div class="carousel-indicators">-->
+<!--                            <button th:each="image, iterStat : ${product.images}"-->
+<!--                                    type="button"-->
+<!--                                    data-bs-target="#productImageCarousel"-->
+<!--                                    th:data-bs-slide-to="${iterStat.index}"-->
+<!--                                    th:class="${iterStat.first} ? 'active' : ''"-->
+<!--                                    th:aria-current="${iterStat.first} ? 'true' : 'false'"-->
+<!--                                    th:aria-label="'Slide ' + ${iterStat.count}"></button>-->
+<!--                        </div>-->
+<!--                        &lt;!&ndash; Carousel items &ndash;&gt;-->
+<!--                        <div class="carousel-inner">-->
+<!--                            <div th:each="image, iterStat : ${product.images}"-->
+<!--                                 th:class="${iterStat.first} ? 'carousel-item active' : 'carousel-item'">-->
+<!--                                <img th:src="@{/images/{imageId}(imageId=${image.id})}"-->
+<!--                                     class="d-block w-100 img-fluid rounded-start product-image"-->
+<!--                                     th:alt="${product.name}">-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        &lt;!&ndash; Navigation buttons &ndash;&gt;-->
+<!--                        <button class="carousel-control-prev" type="button" data-bs-target="#productImageCarousel" data-bs-slide="prev">-->
+<!--                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>-->
+<!--                            <span class="visually-hidden">Previous</span>-->
+<!--                        </button>-->
+<!--                        <button class="carousel-control-next" type="button" data-bs-target="#productImageCarousel" data-bs-slide="next">-->
+<!--                            <span class="carousel-control-next-icon" aria-hidden="true"></span>-->
+<!--                            <span class="visually-hidden">Next</span>-->
+<!--                        </button>-->
+<!--                    </div>-->
 
                     <!-- No images placeholder -->
                     <div th:if="${#lists.isEmpty(product.images)}" class="no-image-container bg-light">
@@ -103,14 +103,14 @@
     <nav aria-label="Product pages" th:if="${totalProductPages > 1}">
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${currentProductPage == 0} ? 'disabled'">
-                <a class="page-link" th:href="@{/home(productPage=${currentProductPage - 1}, categoryPage=${currentCategoryPage})}">&laquo; Previous</a>
+                <a class="page-link" th:href="@{/home(productPage=${currentProductPage - 1}, categoryPage=${currentCategoryPage},recommendationPage=${currentRecommendationPage})}">&laquo; Previous</a>
             </li>
             <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, totalProductPages - 1)}"
                 th:classappend="${pageNum == currentProductPage} ? 'active'">
-                <a class="page-link" th:href="@{/home(productPage=${pageNum}, categoryPage=${currentCategoryPage})}" th:text="${pageNum + 1}">1</a>
+                <a class="page-link" th:href="@{/home(productPage=${pageNum}, categoryPage=${currentCategoryPage},recommendationPage=${currentRecommendationPage})}" th:text="${pageNum + 1}">1</a>
             </li>
             <li class="page-item" th:classappend="${currentProductPage == totalProductPages - 1} ? 'disabled'">
-                <a class="page-link" th:href="@{/home(productPage=${currentProductPage + 1}, categoryPage=${currentCategoryPage})}">Next &raquo;</a>
+                <a class="page-link" th:href="@{/home(productPage=${currentProductPage + 1}, categoryPage=${currentCategoryPage},recommendationPage=${currentRecommendationPage})}">Next &raquo;</a>
             </li>
         </ul>
     </nav>

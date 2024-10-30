@@ -7,9 +7,13 @@ import com.example.order_app.model.Cart;
 import com.example.order_app.model.CartItem;
 import com.example.order_app.model.User;
 import com.example.order_app.service.cart.ICartService;
+import com.example.order_app.service.recommendation.IRecommendationService;
 import com.example.order_app.service.recommendation.ItemBasedCFStrategy;
 import com.example.order_app.service.user.IUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +30,7 @@ import java.util.stream.Collectors;
 public class CartController {
     private final ICartService cartService;
     private final IUserService userService;
-    private final ItemBasedCFStrategy itemBasedCFStrategy;
-
+    private final IRecommendationService recommendationService;
     /**
      * Displays the cart view for a specific user.
      *
@@ -37,7 +40,10 @@ public class CartController {
      * @return The name of the cart view or a redirect URL
      */
     @GetMapping("/{cartId}/view")
-    public String getCart(@PathVariable Long cartId, Model model, RedirectAttributes redirectAttributes) {
+    public String getCart(@PathVariable Long cartId,
+                          @RequestParam(defaultValue = "0") int recommendationPage,
+                          Model model,
+                          RedirectAttributes redirectAttributes) {
         try {
             User user = userService.getAuthenticatedUser();
             Cart cart = cartService.getCartByUserId(user.getId());
@@ -53,18 +59,12 @@ public class CartController {
             model.addAttribute("cart", cart);
             model.addAttribute("user", userDto);
 
-            // Get item-based recommendations
-            List<ProductDto> cartRecommendations = itemBasedCFStrategy.getCartBasedRecommendations(
-                    cart.getItems().stream().map(CartItem::getProduct).collect(Collectors.toList()),
-                    6 // Number of recommendations
-            );
-            // Group the recommendations into lists of three for displaying in the fragment
-            List<List<ProductDto>> groupedRecommendations = new ArrayList<>();
-            int batchSize = 3;
-            for (int i = 0; i < cartRecommendations.size(); i += batchSize) {
-                groupedRecommendations.add(cartRecommendations.subList(i, Math.min(i + batchSize, cartRecommendations.size())));
-            }
-            model.addAttribute("groupedRecommendations", groupedRecommendations);
+
+            Page<ProductDto> recommendationPageResult = recommendationService.getRecommendationsForUser(user,PageRequest.of(recommendationPage, 3));
+            model.addAttribute("recommendations", recommendationPageResult);
+            model.addAttribute("currentRecommendationPage", recommendationPage);
+            model.addAttribute("totalRecommendationPages", recommendationPageResult.getTotalPages());
+
 
             return "cart/view";
         } catch (ResourceNotFoundException e) {

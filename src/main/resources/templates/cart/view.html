@@ -95,7 +95,99 @@
     </div>
 
     <!-- Recommended Products -->
-    <div th:replace="~{fragments/recommendations :: recommendations}"></div>
+    <div th:fragment="recommendations" class="container mb-5"
+         th:if="${not #lists.isEmpty(recommendations)}"
+         sec:authorize="isAuthenticated() and hasRole('ROLE_USER')">
+        <h2 class="section-title text-center mb-4">Recommended Products</h2>
+        <!-- Product Grid -->
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col" th:each="product : ${recommendations}">
+                <div class="card h-100 product-card">
+                    <!-- Product Image -->
+                    <div class="product-image-container">
+                        <!-- Single image display -->
+                        <div th:if="${not #lists.isEmpty(product.images)}" class="single-image-container">
+                            <img th:src="@{/images/{imageId}(imageId=${product.images[0].id})}"
+                                 class="d-block w-100 img-fluid rounded-start product-image"
+                                 th:alt="${product.name}">
+                        </div>
+                        <!-- No images placeholder -->
+                        <div th:if="${#lists.isEmpty(product.images)}" class="no-image-container bg-light">
+                            <i class="bi bi-image text-secondary" style="font-size: 5rem;"></i>
+                        </div>
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${product.name}">Product Name</h5>
+
+                        <!-- Rating Display -->
+                        <div class="rating-container mb-2">
+                            <div class="stars">
+                                    <span th:each="i : ${#numbers.sequence(1, 5)}"
+                                          class="star"
+                                          th:classappend="${product.averageRating != null && i <= product.averageRating} ? 'filled' : ''"
+                                          th:text="'★'">
+                                    </span>
+                                <span class="rating-count" th:if="${product.ratingCount > 0}">
+                                        (<span th:text="${product.ratingCount}">0</span>)
+                                    </span>
+                            </div>
+                        </div>
+
+                        <p class="card-text" th:text="${product.description}">Description</p>
+                        <p class="card-text">
+                            <strong th:text="${#numbers.formatCurrency(product.price)}">$0.00</strong>
+                        </p>
+
+                        <!-- Add to Cart Form -->
+                        <form th:action="@{/cart/{cartId}/item/add(cartId=${cart.id})}"
+                              method="post"
+                              class="d-flex align-items-center">
+                            <input type="hidden" name="productId" th:value="${product.id}">
+                            <div class="form-group me-2">
+                                <label for="quantity" class="form-label visually-hidden">Quantity</label>
+                                <input type="number"
+                                       name="quantity"
+                                       class="form-control form-control-sm text-center"
+                                       value="1"
+                                       min="1"
+                                       required
+                                       style="width: 50px; height: 43px;">
+                            </div>
+                            <button type="submit" class="btn btn-success btn-sm">
+                                Add to Cart
+                            </button>
+                        </form>
+
+                        <!-- View Details Button -->
+                        <div class="mt-3">
+                            <a th:href="@{/products/{id}(id=${product.id})}"
+                               class="btn btn-primary w-100">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Recommendation pages" th:if="${totalRecommendationPages > 1}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentRecommendationPage == 0} ? 'disabled'">
+                    <a class="page-link" th:href="@{/cart/{cartId}/view(recommendationPage=${currentRecommendationPage - 1},cartId=${cart.id})}">&laquo; Previous</a>
+                </li>
+                <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, totalRecommendationPages - 1)}"
+                    th:classappend="${pageNum == currentRecommendationPage} ? 'active'">
+                    <a class="page-link" th:href="@{/cart/{cartId}/view(recommendationPage=${pageNum},cartId=${cart.id})}" th:text="${pageNum + 1}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${currentRecommendationPage == totalRecommendationPages - 1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/cart/{cartId}/view(recommendationPage=${currentRecommendationPage + 1},cartId=${cart.id})}">Next &raquo;</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 
 </main>
 </body>
