@@ -18,7 +18,7 @@
         <div th:fragment="recommendations" class="container mb-5"
              th:if="${not #lists.isEmpty(recommendations)}"
              sec:authorize="isAuthenticated() and hasRole('ROLE_USER')">
-            <h2 class="section-title text-center mb-4">Recommended Products</h2>
+            <h2 class=" mb-4">Recommended Products</h2>
             <!-- Product Grid -->
             <div class="row row-cols-1 row-cols-md-3 g-4">
                 <div class="col" th:each="product : ${recommendations}">

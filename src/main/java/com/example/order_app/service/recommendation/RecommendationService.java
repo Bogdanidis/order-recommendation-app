@@ -7,6 +7,7 @@ import com.example.order_app.repository.OrderRepository;
 import com.example.order_app.repository.ProductRatingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,19 +22,12 @@ public class RecommendationService implements IRecommendationService {
     private final OrderRepository orderRepository;
     private final ProductRatingRepository ratingRepository;
 
+    @Cacheable(value = "productRecommendations",
+            key = "#user.id + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     @Override
     public Page<ProductDto> getRecommendationsForUser(User user, Pageable pageable) {
         RecommendationType recommendationType = determineRecommendationType(user);
         return getRecommendations(user, recommendationType, pageable);
-    }
-
-    @Override
-    public Page<ProductDto> getCartBasedRecommendations(List<Product> cartItems, Pageable pageable) {
-        if (cartItems.isEmpty()) {
-            return Page.empty(pageable);
-        }
-        return strategies.get("itemBasedCF")
-                .getRecommendations(null, pageable, true);
     }
 
     private RecommendationType determineRecommendationType(User user) {

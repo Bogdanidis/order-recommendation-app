@@ -45,6 +45,14 @@ public class ItemBasedCFStrategy implements RecommendationStrategy {
 
         Collections.sort(recommendations);
 
+        System.out.println("Total recommendations before pagination: {}");
+        System.out.println(recommendations.size());
+        System.out.println("Page size requested: {}");
+        System.out.println(pageable.getPageSize());
+        System.out.println("Current page requested: {}");
+        System.out.println(pageable.getPageNumber());
+
+
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), recommendations.size());
 
@@ -52,11 +60,19 @@ public class ItemBasedCFStrategy implements RecommendationStrategy {
                 .map(scored -> productService.convertToDto(scored.getProduct()))
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(
+        System.out.println("Returning {} results for page {}");
+        System.out.println(paginatedResults.size());
+        System.out.println(pageable.getPageNumber());
+
+        PageImpl<ProductDto> page = new PageImpl<>(
                 paginatedResults,
                 pageable,
                 recommendations.size()
         );
+        System.out.println("Total pages calculated: {}");
+        System.out.println(page.getTotalPages());
+
+        return page;
     }
 
     private double calculateSimilarityScore(Product candidate, List<Product> userProducts, boolean includeRatingWeight) {

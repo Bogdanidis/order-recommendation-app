@@ -10,5 +10,4 @@ import java.util.List;
 
 public interface IRecommendationService {
     Page<ProductDto> getRecommendationsForUser(User user, Pageable pageable);
-    Page<ProductDto> getCartBasedRecommendations(List<Product> cartItems, Pageable pageable);
 }

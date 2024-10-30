@@ -12,6 +12,8 @@ import com.example.order_app.repository.ProductRepository;
 import com.example.order_app.service.product.IProductService;
 import com.example.order_app.service.user.IUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ public class ProductRatingService implements IProductRatingService {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MMM dd, yyyy");
 
+    @CacheEvict(value = {"productRatings", "products"}, allEntries = true)
     @Override
     @Transactional
     public ProductRating addRating(Long productId, ProductRatingDto ratingDto) {
@@ -68,6 +71,7 @@ public class ProductRatingService implements IProductRatingService {
                 .map(this::convertToDto);
     }
 
+    @Cacheable(value = "productRatings", key = "#productId + '_' + #pageable.pageNumber")
     @Override
     public RatingStatisticsDto getProductRatingStatistics(Long productId, Pageable pageable) {
         Page<ProductRatingDto> ratings = getProductRatings(productId, pageable);

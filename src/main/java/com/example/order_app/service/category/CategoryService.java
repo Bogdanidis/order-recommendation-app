@@ -7,6 +7,8 @@ import com.example.order_app.repository.CategoryRepository;
 import com.example.order_app.request.AddCategoryRequest;
 import com.example.order_app.request.UpdateCategoryRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import java.util.Optional;
 public class CategoryService implements ICategoryService {
    private final CategoryRepository categoryRepository;
 
+    @Cacheable(value = "categories", key = "#id")
     @Override
     public Category getCategoryById(Long id) {
         return categoryRepository.findById(id)
@@ -30,11 +33,13 @@ public class CategoryService implements ICategoryService {
         return categoryRepository.findByName(name);
     }
 
+    @Cacheable(value = "categories")
     @Override
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
 
+    @Cacheable(value = "categories", key = "#pageable.pageNumber + '_' + #pageable.pageSize")
     @Override
     public Page<Category> getAllCategoriesPaginated(Pageable pageable) {
         return categoryRepository.findAll(pageable);
@@ -48,6 +53,8 @@ public class CategoryService implements ICategoryService {
             return categoryRepository.findAll(pageable);
         }
     }
+
+    @CacheEvict(value = "categories", allEntries = true)
     @Override
     public Category addCategory(AddCategoryRequest request) {
         return Optional.of(request)
@@ -60,6 +67,7 @@ public class CategoryService implements ICategoryService {
                 }).orElseThrow(()-> new AlreadyExistsException(request.getName()+" already exists!"));
     }
 
+    @CacheEvict(value = "categories", allEntries = true)
     @Override
     public Category updateCategory(UpdateCategoryRequest request, Long id) {
         return Optional.ofNullable(getCategoryById(id))
@@ -70,7 +78,7 @@ public class CategoryService implements ICategoryService {
                 }).orElseThrow(()-> new ResourceNotFoundException("Category not found!"));
     }
 
-
+    @CacheEvict(value = "categories", allEntries = true)
     @Override
     public void deleteCategoryById(Long id) {
         categoryRepository.findById(id)

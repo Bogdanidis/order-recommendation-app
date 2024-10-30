@@ -11,6 +11,8 @@ import com.example.order_app.request.AddUserRequest;
 import com.example.order_app.request.UpdateUserRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -46,12 +48,14 @@ public class UserService implements IUserService {
         return userPage.map(this::convertUserToDto);
     }
 
+    @Cacheable(value = "users", key = "#userId")
     @Override
     public User getUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found!"));
     }
 
+    @CacheEvict(value = "users", allEntries = true)
     @Override
     public User addUser(AddUserRequest request) {
         return  Optional.of(request)
@@ -67,6 +71,7 @@ public class UserService implements IUserService {
                 }) .orElseThrow(() -> new AlreadyExistsException("Oops!" +request.getEmail() +" already exists!"));
     }
 
+    @CacheEvict(value = "users", allEntries = true)
     @Override
     public User updateUser(UpdateUserRequest request, Long userId) {
         return  userRepository.findById(userId).map(existingUser ->{
@@ -78,6 +83,7 @@ public class UserService implements IUserService {
 
     }
 
+    @CacheEvict(value = "users", allEntries = true)
     @Override
     public void deleteUser(Long userId) {
         User currentUser = getAuthenticatedUser();

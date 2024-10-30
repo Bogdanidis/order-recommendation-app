@@ -44,7 +44,7 @@ public class RecommendationController {
             model.addAttribute("currentRecommendationPage", recommendationPage);
             model.addAttribute("totalRecommendationPages", recommendationPageResult.getTotalPages());
 
-            return "recommendation/list"; // Ensure this matches the Thymeleaf template name (list.html)
+            return "recommendation/list";
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/home";

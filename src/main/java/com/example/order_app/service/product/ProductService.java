@@ -15,6 +15,8 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,7 @@ public class ProductService implements IProductService{
     private final ImageRepository imageRepository;
     private final OrderRepository orderRepository;
 
+    @CacheEvict(value = "products", allEntries = true)
     @Override
     public Product addProduct(AddProductRequest request) {
         if (productExists(request.getName(), request.getBrand())){
@@ -67,13 +70,14 @@ public class ProductService implements IProductService{
         );
     }
 
-
+    @Cacheable(value = "products", key = "#id")
     @Override
     public Product getProductById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Product not found!"));
     }
 
+    @CacheEvict(value = "products", allEntries = true)
     @Override
     public void deleteProductById(Long id) {
         productRepository.findById(id)
@@ -81,6 +85,7 @@ public class ProductService implements IProductService{
                         () -> {throw new ResourceNotFoundException("Product not found!");});
     }
 
+    @CacheEvict(value = "products", allEntries = true)
     @Override
     public Product updateProduct(UpdateProductRequest request, Long productId) {
         return productRepository.findById(productId)
@@ -102,7 +107,7 @@ public class ProductService implements IProductService{
 
     }
 
-
+    @Cacheable(value = "products", key = "#pageable.pageNumber + '_' + #pageable.pageSize")
     @Override
     public Page<Product> getAllProducts(Pageable pageable) {
         return productRepository.findAll(pageable);
