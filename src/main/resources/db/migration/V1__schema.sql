@@ -1,10 +1,17 @@
-DROP SCHEMA IF EXISTS order_app;
+USE order_app;
 
-CREATE SCHEMA order_app;
-
-USE
-    order_app;
-
+-- Drop tables if they exist
+DROP TABLE IF EXISTS order_items;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS cart_items;
+DROP TABLE IF EXISTS carts;
+DROP TABLE IF EXISTS product_ratings;
+DROP TABLE IF EXISTS images;
+DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS user_roles;
+DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS users;
 
 CREATE TABLE users
 (

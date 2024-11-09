@@ -4,11 +4,13 @@ import com.example.order_app.dto.UserDto;
 import com.example.order_app.exception.AlreadyExistsException;
 import com.example.order_app.exception.ResourceNotFoundException;
 import com.example.order_app.exception.UnauthorizedOperationException;
+import com.example.order_app.model.Role;
 import com.example.order_app.model.User;
 import com.example.order_app.repository.RoleRepository;
 import com.example.order_app.repository.UserRepository;
 import com.example.order_app.request.AddUserRequest;
 import com.example.order_app.request.UpdateUserRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
@@ -22,6 +24,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -57,6 +61,7 @@ public class UserService implements IUserService {
 
     @CacheEvict(value = "users", allEntries = true)
     @Override
+    @Transactional
     public User addUser(AddUserRequest request) {
         return  Optional.of(request)
                 .filter(user -> !userRepository.existsByEmail(request.getEmail()))
@@ -67,12 +72,21 @@ public class UserService implements IUserService {
                     user.setFirstName(request.getFirstName());
                     user.setLastName(request.getLastName());
                     user.setRoles(request.getRoles());
+
+//                    // Fetch fresh roles within transaction
+//                    Set<Role> roles = request.getRoles().stream()
+//                            .map(role -> roleRepository.findByName(role.getName()))
+//                            .flatMap(Set::stream)
+//                            .collect(Collectors.toSet());
+//                    user.setRoles(roles);
+
                     return  userRepository.save(user);
                 }) .orElseThrow(() -> new AlreadyExistsException("Oops!" +request.getEmail() +" already exists!"));
     }
 
     @CacheEvict(value = "users", allEntries = true)
     @Override
+    @Transactional
     public User updateUser(UpdateUserRequest request, Long userId) {
         return  userRepository.findById(userId).map(existingUser ->{
             existingUser.setFirstName(request.getFirstName());
@@ -85,6 +99,7 @@ public class UserService implements IUserService {
 
     @CacheEvict(value = "users", allEntries = true)
     @Override
+    @Transactional
     public void deleteUser(Long userId) {
         User currentUser = getAuthenticatedUser();
         User userToDelete = getUserById(userId);

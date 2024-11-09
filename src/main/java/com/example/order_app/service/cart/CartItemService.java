@@ -9,6 +9,7 @@ import com.example.order_app.repository.CartRepository;
 import com.example.order_app.service.product.IProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -21,6 +22,7 @@ public class CartItemService  implements ICartItemService{
     private final ICartService cartService;
 
     @Override
+    @Transactional
     public void addItemToCart(Long cartId, Long productId, int quantity) {
         //1. Get the cart
         //2. Get the product
@@ -49,6 +51,7 @@ public class CartItemService  implements ICartItemService{
     }
 
     @Override
+    @Transactional
     public void removeItemFromCart(Long cartId, Long productId) {
         Cart cart = cartService.getCart(cartId);
         CartItem itemToRemove = getCartItem(cartId, productId);
@@ -57,6 +60,7 @@ public class CartItemService  implements ICartItemService{
     }
 
     @Override
+    @Transactional
     public void updateItemQuantity(Long cartId, Long productId, int quantity) {
         Cart cart = cartService.getCart(cartId);
         cart.getItems()

@@ -20,7 +20,7 @@ public class Order {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name = "order_date", nullable = false)
     private LocalDate orderDate;

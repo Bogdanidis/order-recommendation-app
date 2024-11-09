@@ -9,6 +9,7 @@ import com.example.order_app.repository.ImageRepository;
 import com.example.order_app.service.product.IProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.rowset.serial.SerialBlob;
@@ -34,12 +35,14 @@ public class ImageService implements IImageService {
     }
 
     @Override
+    @Transactional
     public void deleteImageById(Long id) {
         imageRepository.findById(id).ifPresentOrElse(imageRepository::delete, () -> {
             throw new ResourceNotFoundException("Image not found with id " + id);});
     }
 
     @Override
+    @Transactional
     public List<ImageDto> saveImages(List<MultipartFile> files, Long productId) {
         Product product = productService.getProductById(productId);
         List<ImageDto> savedImageDto = new ArrayList<>();
@@ -92,6 +95,7 @@ public class ImageService implements IImageService {
     }
 
     @Override
+    @Transactional
     public void updateImage(MultipartFile file, Long imageId) {
         Image image = getImageById(imageId);
         try {

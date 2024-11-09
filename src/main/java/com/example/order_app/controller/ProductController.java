@@ -165,7 +165,8 @@ public class ProductController {
         }
 
         try {
-            productRatingService.addRating(productId, productRatingDto);
+            User user = userService.getAuthenticatedUser();
+            productRatingService.addRating(productId, productRatingDto, user);
             redirectAttributes.addFlashAttribute("success", "Thank you for your review!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());

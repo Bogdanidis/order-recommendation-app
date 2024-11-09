@@ -67,6 +67,7 @@ public class CartService implements ICartService{
 //                });
 //    }
     @Override
+    @Transactional
     public Cart initializeNewCart(User user) {
         Cart existingCart = getCartByUserId(user.getId());
         if (existingCart != null) {

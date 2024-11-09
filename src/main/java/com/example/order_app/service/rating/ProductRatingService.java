@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.order_app.exception.UnauthorizedOperationException;
 
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Service
@@ -37,8 +38,7 @@ public class ProductRatingService implements IProductRatingService {
     @CacheEvict(value = {"productRatings", "products"}, allEntries = true)
     @Override
     @Transactional
-    public ProductRating addRating(Long productId, ProductRatingDto ratingDto) {
-        User user = userService.getAuthenticatedUser();
+    public ProductRating addRating(Long productId, ProductRatingDto ratingDto, User user) {
 
         // Check if user has already rated this product
         if (hasUserRatedProduct(user.getId(), productId)) {
@@ -58,8 +58,10 @@ public class ProductRatingService implements IProductRatingService {
         rating.setComment(ratingDto.getComment());
         rating.setProduct(product);
         rating.setUser(user);
+        rating.setCreatedAt(LocalDateTime.now());
 
         ProductRating savedRating = ratingRepository.save(rating);
+
         updateProductRatingCache(product);
 
         return savedRating;

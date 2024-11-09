@@ -39,4 +39,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT p FROM Order o JOIN o.orderItems oi JOIN oi.product p WHERE o.user.id = :userId")
     List<Product> findProductsPurchasedByUser(@Param("userId") Long userId);
+
+    List<Order> findByOrderStatus(OrderStatus orderStatus);
 }

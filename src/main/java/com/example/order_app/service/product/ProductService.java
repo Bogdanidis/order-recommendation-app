@@ -20,6 +20,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,7 @@ public class ProductService implements IProductService{
 
     @CacheEvict(value = "products", allEntries = true)
     @Override
+    @Transactional
     public Product addProduct(AddProductRequest request) {
         if (productExists(request.getName(), request.getBrand())){
             throw new AlreadyExistsException(request.getBrand() +" "+request.getName()+ " already exists, you may update this product instead!");
@@ -79,6 +81,7 @@ public class ProductService implements IProductService{
 
     @CacheEvict(value = "products", allEntries = true)
     @Override
+    @Transactional
     public void deleteProductById(Long id) {
         productRepository.findById(id)
                 .ifPresentOrElse(productRepository::delete,
@@ -87,6 +90,7 @@ public class ProductService implements IProductService{
 
     @CacheEvict(value = "products", allEntries = true)
     @Override
+    @Transactional
     public Product updateProduct(UpdateProductRequest request, Long productId) {
         return productRepository.findById(productId)
                 .map(existingProduct -> updateExistingProduct(existingProduct,request))
