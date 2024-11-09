@@ -171,24 +171,6 @@ public class ProductService implements IProductService{
         return productDto;
     }
 
-//    @Override
-//    public List<ProductDto> searchProducts(String brandName, String productName, String category) {
-//        List<ProductDto> products = new ArrayList<>();
-//
-//        if (!StringUtils.isBlank(brandName) && !StringUtils.isBlank(productName)) {
-//            products = getConvertedProducts(getProductsByBrandAndName(brandName, productName));
-//        } else if (!StringUtils.isBlank(category) && !StringUtils.isBlank(brandName)) {
-//            products = getConvertedProducts(getProductsByCategoryAndBrand(category, brandName));
-//        } else if (!StringUtils.isBlank(productName)) {
-//            products = getConvertedProducts(getProductsByName(productName));
-//        } else if (!StringUtils.isBlank(brandName)) {
-//            products = getConvertedProducts(getProductsByBrand(brandName));
-//        } else if (!StringUtils.isBlank(category)) {
-//            products = getConvertedProducts(getProductsByCategory(category));
-//        }
-//        return products;
-//    }
-
     @Override
     public Page<ProductDto> searchProducts(Pageable pageable, String brand, String name, String category) {
         if ((brand != null && !brand.isEmpty()) ||

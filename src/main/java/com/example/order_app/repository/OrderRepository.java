@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,5 +41,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT p FROM Order o JOIN o.orderItems oi JOIN oi.product p WHERE o.user.id = :userId")
     List<Product> findProductsPurchasedByUser(@Param("userId") Long userId);
 
-    List<Order> findByOrderStatus(OrderStatus orderStatus);
+    List<Order> findByOrderStatusNot(OrderStatus orderStatus);
 }

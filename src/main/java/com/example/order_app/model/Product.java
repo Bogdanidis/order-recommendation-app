@@ -60,12 +60,12 @@ public class Product {
     private Long ratingCount = 0L;
 
 
-    public Product(String name, String description, Integer stock, BigDecimal price,String brand, Category category) {
+    public Product(String name,String brand, Integer stock, BigDecimal price, String description, Category category) {
         this.name = name;
-        this.description = description;
+        this.brand=brand;
         this.stock = stock;
         this.price = price;
-        this.brand=brand;
+        this.description = description;
         this.category = category;
     }
 

@@ -4,6 +4,7 @@ import com.example.order_app.dto.ProductRatingDto;
 import com.example.order_app.enums.OrderStatus;
 import com.example.order_app.model.*;
 import com.example.order_app.repository.OrderRepository;
+import com.example.order_app.repository.ProductRatingRepository;
 import com.example.order_app.repository.ProductRepository;
 import com.example.order_app.request.AddProductRequest;
 import com.example.order_app.request.AddUserRequest;
@@ -23,7 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -39,6 +42,7 @@ public class DatabasePopulationService {
     private final IProductRatingService productRatingService;
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final ProductRatingRepository ratingRepository;
 
     private final Faker faker = new Faker();
 
@@ -47,7 +51,7 @@ public class DatabasePopulationService {
         List<User> users = populateUsers();
         List<Product> products = populateProducts();
         populateOrders(users, products);
-        //populateRatings(users, products);
+        populateRatings(users, products);
     }
 
     private List<User> populateUsers() {
@@ -60,7 +64,7 @@ public class DatabasePopulationService {
                 request.setFirstName(faker.name().firstName());
                 request.setLastName(faker.name().lastName());
                 request.setEmail(faker.internet().emailAddress());
-                request.setPassword("password123");
+                request.setPassword(request.getEmail());
                 request.setRoles(userRoles);
 
                 User user = userService.addUser(request);
@@ -172,92 +176,66 @@ public class DatabasePopulationService {
 
     private void populateRatings(List<User> users, List<Product> products) {
         log.info("Starting ratings population...");
-        int ratingCount = 0;
-
-        // Get all DELIVERED orders
-        List<Order> deliveredOrders = orderRepository.findByOrderStatus(OrderStatus.DELIVERED);
-        log.info("Found {} total delivered orders", deliveredOrders.size());
-
         for (Product product : products) {
+            log.debug("For product id {}", product.getId());
             try {
-                // Filter orders containing this product
-                List<Order> productOrders = deliveredOrders.stream()
+                // Get all users who have ordered this product
+                List<User> eligibleUsers = orderRepository.findByOrderStatusNot(OrderStatus.CANCELLED)
+                        .stream()
                         .filter(order -> order.getOrderItems().stream()
                                 .anyMatch(item -> item.getProduct().getId().equals(product.getId())))
-                        .toList();
+                        .map(Order::getUser)
+                        .distinct()
+                        .collect(Collectors.toList());
+                log.debug("Found {} total eligible users", eligibleUsers.size());
 
-                log.debug("Found {} orders containing product {}",
-                        productOrders.size(), product.getId());
+                if (!eligibleUsers.isEmpty()) {
+                    // Randomly select 1-3 users to rate the product
+                    int numRatings = Math.min(faker.random().nextInt(1, 4), eligibleUsers.size());
+                    Collections.shuffle(eligibleUsers);
+                    List<User> selectedUsers = eligibleUsers.subList(0, numRatings);
 
-                if (!productOrders.isEmpty()) {
-                    // Get unique users who have ordered this product
-                    List<Long> eligibleUserIds = new ArrayList<>(productOrders.stream()
-                            .map(order -> order.getUser().getId())
-                            .distinct()
-                            .toList());
+                    for (User user : selectedUsers) {
+                        try {
+                            if (!productRatingService.hasUserRatedProduct(user.getId(), product.getId())) {
+                                log.debug("Creating rating for product {} by user {}", product.getId(), user.getId());
+                                ProductRatingDto ratingDto = new ProductRatingDto();
+                                ratingDto.setRating(faker.random().nextInt(1, 5));
+                                log.debug("Generated rating value: {} ", ratingDto.getRating());
+                                ratingDto.setComment(generateRatingComment(ratingDto.getRating()));
 
-                    log.debug("Found {} eligible users for product {}",
-                            eligibleUserIds.size(), product.getId());
+                                // Create and save the rating directly
+                                ProductRating rating = new ProductRating();
+                                rating.setRating(ratingDto.getRating());
+                                rating.setComment(ratingDto.getComment());
+                                rating.setProduct(product);
+                                rating.setUser(user);
+                                rating.setCreatedAt(LocalDateTime.now());
 
-                    if (!eligibleUserIds.isEmpty()) {
-                        // Generate random number of ratings (1-3) for this product
-                        int numRatings = Math.min(faker.random().nextInt(1, 4), eligibleUserIds.size());
-                        log.debug("Will generate {} ratings for product {}",
-                                numRatings, product.getId());
+                                ratingRepository.save(rating);
 
-                        // Randomly select users without repeating
-                        Collections.shuffle(eligibleUserIds);
-                        List<Long> selectedUserIds = eligibleUserIds.subList(0, numRatings);
+                                // Update product rating cache
+                                double avgRating = ratingRepository.calculateAverageRating(product.getId());
+                                long ratingCount = ratingRepository.countByProductId(product.getId());
+                                product.setAverageRating(avgRating);
+                                product.setRatingCount(ratingCount);
+                                productRepository.save(product);
 
-                        for (Long userId : selectedUserIds) {
-                            try {
-                                // Check if rating already exists
-                                if (!productRatingService.hasUserRatedProduct(userId, product.getId())) {
-                                    User user = userService.getUserById(userId);
-                                    if (user != null && product != null) {
-                                        ProductRatingDto ratingDto = new ProductRatingDto();
-                                        ratingDto.setRating(faker.random().nextInt(3, 6)); // 3-5 rating
-                                        ratingDto.setComment(generateRatingComment(ratingDto.getRating()));
-
-                                        ProductRating savedRating = productRatingService.addRating(
-                                                product.getId(),
-                                                ratingDto,
-                                                user
-                                        );
-
-                                        if (savedRating != null && savedRating.getId() != null) {
-                                            ratingCount++;
-                                            log.debug("Created rating {} for product {} by user {}",
-                                                    ratingDto.getRating(), product.getId(), userId);
-                                        } else {
-                                            log.warn("Rating was not properly saved for product {} by user {}",
-                                                    product.getId(), userId);
-                                        }
-                                    } else {
-                                        log.warn("Skipping rating creation - null user or product. User ID: {}, Product ID: {}",
-                                                userId, product.getId());
-                                    }
-                                } else {
-                                    log.debug("User {} has already rated product {}, skipping",
-                                            userId, product.getId());
-                                }
-                            } catch (Exception e) {
-                                log.error("Failed to create rating for product {} by user {}: {}",
-                                        product.getId(), userId, e.getMessage());
+                                log.debug("Created rating for product {} by user {}", product.getId(), user.getId());
                             }
+                            else {
+                                log.debug("User {} has already rated product {}", user.getId(), product.getId());
+                            }
+                        } catch (Exception e) {
+                            log.warn("Failed to create individual rating for product {} by user {}: {}",
+                                    product.getId(), user.getId(), e.getMessage());
                         }
                     }
-                } else {
-                    log.debug("No delivered orders found for product {}, skipping ratings",
-                            product.getId());
                 }
             } catch (Exception e) {
-                log.error("Failed to process ratings for product {}: {}",
-                        product.getId(), e.getMessage());
+                log.warn("Failed to process ratings for product {}: {}", product.getId(), e.getMessage());
             }
         }
-
-        log.info("Completed ratings population. Created {} total ratings", ratingCount);
     }
 
     private String generateProductName(Category category) {
@@ -268,7 +246,7 @@ public class DatabasePopulationService {
     }
 
     private String generateBrand() {
-        String brand = faker.company().name().split(" ")[0];
+        String brand = faker.company().name().split(" ")[0].replace(",","");
         return brand.length() > 255 ? brand.substring(0, 252) + "..." : brand;
     }
 

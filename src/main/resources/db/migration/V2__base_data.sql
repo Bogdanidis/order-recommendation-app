@@ -5,8 +5,8 @@ VALUES ('ROLE_USER'),
 
 -- Insert admin users (static data)
 INSERT INTO users (first_name, last_name, email, password)
-VALUES ('Admin', 'User', 'admin@example.com', '$2a$10$dL5/MUXVUZh1c0c9CDp4reBlktk2EVLsv/4yZ/TW7qPtTl5UaY9am'),
-       ('System', 'Admin', 'system@example.com', '$2a$10$dL5/MUXVUZh1c0c9CDp4reBlktk2EVLsv/4yZ/TW7qPtTl5UaY9am');
+VALUES ('Admin', 'User', 'admin@example.com', '$2a$10$XEOFJf7s9X/IdQtr2BwuwuNuEMFJXQO6V0JAjkCmdnXKw8hP7sB8K'),
+       ('System', 'Admin', 'system@example.com', '$2a$10$ZDUCiDaQ5HJOnDhytO28NeVshP03uZBZPbbynxp1kuWK58K4mo64m');
 
 -- Assign admin roles
 INSERT INTO user_roles (user_id, role_id)
