@@ -1,0 +1,58 @@
+<!-- Star Rating Fragment (fragments/starRating.html) -->
+<div th:fragment="starRating(rating, showCount)">
+    <div class="rating-container">
+        <div class="stars-outer">
+            <div class="stars-inner"></div>
+        </div>
+        <span class="rating-count" th:if="${showCount}"
+              th:text="'(' + ${#numbers.formatDecimal(rating, 1, 1)} +
+              (${ratingCount != null} ? ' - ' + ${ratingCount} + ' reviews' : '') + ')'">
+        </span>
+    </div>
+
+    <style>
+        .rating-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stars-outer {
+            position: relative;
+            display: inline-block;
+            color: #ddd;
+        }
+
+        .stars-outer::before {
+            content: "★★★★★";
+        }
+
+        .stars-inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            color: #ffd700;
+        }
+
+        .stars-inner::before {
+            content: "★★★★★";
+        }
+
+        .rating-count {
+            font-size: 0.875rem;
+            color: #666;
+        }
+    </style>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const rating = /*[[${rating != null ? rating : 0}]]*/ 0;
+            const starPercentage = (rating / 5) * 100;
+            const starPercentageRounded = Math.round(starPercentage * 10) / 10; // Round to 1 decimal place
+            const starsInner = document.currentScript.parentElement.querySelector('.stars-inner');
+            starsInner.style.width = starPercentageRounded + '%';
+        });
+    </script>
+</div>
