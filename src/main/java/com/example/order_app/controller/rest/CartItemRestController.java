@@ -4,11 +4,14 @@ import com.example.order_app.exception.ResourceNotFoundException;
 import com.example.order_app.model.Cart;
 import com.example.order_app.model.Product;
 import com.example.order_app.model.User;
-import com.example.order_app.response.ApiResponse;
+import com.example.order_app.response.RestResponse;
 import com.example.order_app.service.cart.ICartItemService;
 import com.example.order_app.service.cart.ICartService;
 import com.example.order_app.service.user.IUserService;
-import io.jsonwebtoken.JwtException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,7 @@ import static org.springframework.http.HttpStatus.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.prefix}/cart-items")
+@Tag(name = "Cart Items", description = "Endpoints for managing items in shopping cart")
 public class CartItemRestController {
     private final ICartItemService cartItemService;
     private final ICartService cartService;
@@ -32,7 +36,13 @@ public class CartItemRestController {
      * Add item to cart
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<?>> addItemToCart(
+    @Operation(summary = "Add item to cart")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Item added successfully"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
+    public ResponseEntity<RestResponse<?>> addItemToCart(
             @NotNull @RequestParam Long productId,
             @NotNull @Min(1) @RequestParam Integer quantity) {
         try {
@@ -40,13 +50,13 @@ public class CartItemRestController {
             Cart cart = cartService.initializeNewCart(user);
 
             cartItemService.addItemToCart(cart.getId(), productId, quantity);
-            return ResponseEntity.ok(new ApiResponse<>("Item added to cart successfully", null));
+            return ResponseEntity.ok(new RestResponse<>("Item added to cart successfully", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND)
-                    .body(new ApiResponse<>(e.getMessage(), null));
+                    .body(new RestResponse<>(e.getMessage(), null));
         } catch (Exception e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>("Error adding item to cart: " + e.getMessage(), null));
+                    .body(new RestResponse<>("Error adding item to cart: " + e.getMessage(), null));
         }
     }
 
@@ -54,7 +64,13 @@ public class CartItemRestController {
      * Remove item from cart
      */
     @DeleteMapping("/{cartId}/items/{itemId}")
-    public ResponseEntity<ApiResponse<?>> removeItemFromCart(
+    @Operation(summary = "Remove item from cart")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Item removed successfully"),
+            @ApiResponse(responseCode = "404", description = "Item not found"),
+            @ApiResponse(responseCode = "403", description = "Not authorized to modify this cart")
+    })
+    public ResponseEntity<RestResponse<?>> removeItemFromCart(
             @PathVariable Long cartId,
             @PathVariable Long itemId) {
         try {
@@ -62,15 +78,15 @@ public class CartItemRestController {
 
             if (!cartItemService.isCartOwnedByUser(cartId, user.getId())) {
                 return ResponseEntity.status(FORBIDDEN)
-                        .body(new ApiResponse<>("You can only remove items from your own cart", null));
+                        .body(new RestResponse<>("You can only remove items from your own cart", null));
             }
 
             Product product = cartItemService.getProduct(cartId, itemId);
             cartItemService.removeItemFromCart(cartId, product.getId());
-            return ResponseEntity.ok(new ApiResponse<>("Item removed from cart successfully", null));
+            return ResponseEntity.ok(new RestResponse<>("Item removed from cart successfully", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND)
-                    .body(new ApiResponse<>(e.getMessage(), null));
+                    .body(new RestResponse<>(e.getMessage(), null));
         }
     }
 
@@ -78,7 +94,13 @@ public class CartItemRestController {
      * Update item quantity
      */
     @PutMapping("/{cartId}/items/{itemId}")
-    public ResponseEntity<ApiResponse<?>> updateItemQuantity(
+    @Operation(summary = "Update item quantity")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Quantity updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid quantity"),
+            @ApiResponse(responseCode = "404", description = "Item not found")
+    })
+    public ResponseEntity<RestResponse<?>> updateItemQuantity(
             @PathVariable Long cartId,
             @PathVariable Long itemId,
             @NotNull @Min(1) @RequestParam Integer quantity,
@@ -88,7 +110,7 @@ public class CartItemRestController {
 
             if (!cartItemService.isCartOwnedByUser(cartId, user.getId())) {
                 return ResponseEntity.status(FORBIDDEN)
-                        .body(new ApiResponse<>("You can only update items in your own cart", null));
+                        .body(new RestResponse<>("You can only update items in your own cart", null));
             }
 
             Product product = cartItemService.getProduct(cartId, itemId);
@@ -102,16 +124,16 @@ public class CartItemRestController {
                     case "update" -> newQuantity = quantity;
                     default -> {
                         return ResponseEntity.badRequest()
-                                .body(new ApiResponse<>("Invalid action specified", null));
+                                .body(new RestResponse<>("Invalid action specified", null));
                     }
                 }
             }
 
             cartItemService.updateItemQuantity(cartId, product.getId(), newQuantity);
-            return ResponseEntity.ok(new ApiResponse<>("Item quantity updated successfully", null));
+            return ResponseEntity.ok(new RestResponse<>("Item quantity updated successfully", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND)
-                    .body(new ApiResponse<>(e.getMessage(), null));
+                    .body(new RestResponse<>(e.getMessage(), null));
         }
     }
 

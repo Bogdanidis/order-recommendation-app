@@ -7,10 +7,14 @@ import com.example.order_app.exception.UnauthorizedOperationException;
 import com.example.order_app.model.User;
 import com.example.order_app.request.AddUserRequest;
 import com.example.order_app.request.UpdateUserRequest;
-import com.example.order_app.response.ApiResponse;
+import com.example.order_app.response.RestResponse;
 import com.example.order_app.response.SearchResponse;
 import com.example.order_app.service.role.IRoleService;
 import com.example.order_app.service.user.IUserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,13 +23,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-
 import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.prefix}/users")
+@Tag(name = "Users", description = "Endpoints for user management")
 public class UserRestController {
     private final IUserService userService;
     private final IRoleService roleService;
@@ -35,6 +38,10 @@ public class UserRestController {
      */
     @GetMapping("/search")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "Search users", description = "Admin only")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Users found")
+    })
     public ResponseEntity<SearchResponse<UserDto>> searchUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -51,7 +58,12 @@ public class UserRestController {
      * Get user details
      */
     @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponse<UserDto>> getUserById(@PathVariable Long userId) {
+    @Operation(summary = "Get user by ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User found"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public ResponseEntity<RestResponse<UserDto>> getUserById(@PathVariable Long userId) {
         try {
             User user = userService.getUserById(userId);
             User currentUser = userService.getAuthenticatedUser();
@@ -62,14 +74,14 @@ public class UserRestController {
 
             if (!isOwnProfile && !isAdmin) {
                 return ResponseEntity.status(FORBIDDEN)
-                        .body(new ApiResponse<>("You don't have permission to view this profile", null));
+                        .body(new RestResponse<>("You don't have permission to view this profile", null));
             }
 
             UserDto userDto = userService.convertUserToDto(user);
-            return ResponseEntity.ok(new ApiResponse<>("User found", userDto));
+            return ResponseEntity.ok(new RestResponse<>("User found", userDto));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND)
-                    .body(new ApiResponse<>(e.getMessage(), null));
+                    .body(new RestResponse<>(e.getMessage(), null));
         }
     }
     /**
@@ -77,7 +89,12 @@ public class UserRestController {
      */
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ApiResponse<UserDto>> addUser(
+    @Operation(summary = "Add new user", description = "Admin only")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User created successfully"),
+            @ApiResponse(responseCode = "409", description = "Email already exists")
+    })
+    public ResponseEntity<RestResponse<UserDto>> addUser(
             @Valid @RequestBody AddUserRequest request) {
         try {
             if (request.getRoles() == null || request.getRoles().isEmpty()) {
@@ -86,10 +103,10 @@ public class UserRestController {
 
             User user = userService.addUser(request);
             UserDto userDto = userService.convertUserToDto(user);
-            return ResponseEntity.ok(new ApiResponse<>("User created successfully", userDto));
+            return ResponseEntity.ok(new RestResponse<>("User created successfully", userDto));
         } catch (AlreadyExistsException e) {
             return ResponseEntity.status(CONFLICT)
-                    .body(new ApiResponse<>(e.getMessage(), null));
+                    .body(new RestResponse<>(e.getMessage(), null));
         }
     }
 
@@ -97,7 +114,12 @@ public class UserRestController {
      * Update user
      */
     @PutMapping("/{userId}")
-    public ResponseEntity<ApiResponse<UserDto>> updateUser(
+    @Operation(summary = "Update user")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User updated successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public ResponseEntity<RestResponse<UserDto>> updateUser(
             @PathVariable Long userId,
             @Valid @RequestBody UpdateUserRequest request) {
         try {
@@ -108,15 +130,15 @@ public class UserRestController {
 
             if (!isOwnProfile && !isAdmin) {
                 return ResponseEntity.status(FORBIDDEN)
-                        .body(new ApiResponse<>("You don't have permission to update this profile", null));
+                        .body(new RestResponse<>("You don't have permission to update this profile", null));
             }
 
             User user = userService.updateUser(request, userId);
             UserDto userDto = userService.convertUserToDto(user);
-            return ResponseEntity.ok(new ApiResponse<>("User updated successfully", userDto));
+            return ResponseEntity.ok(new RestResponse<>("User updated successfully", userDto));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND)
-                    .body(new ApiResponse<>(e.getMessage(), null));
+                    .body(new RestResponse<>(e.getMessage(), null));
         }
     }
     /**
@@ -124,16 +146,21 @@ public class UserRestController {
      */
     @DeleteMapping("/{userId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ApiResponse<?>> deleteUser(@PathVariable Long userId) {
+    @Operation(summary = "Delete user", description = "Admin only")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public ResponseEntity<RestResponse<?>> deleteUser(@PathVariable Long userId) {
         try {
             userService.deleteUser(userId);
-            return ResponseEntity.ok(new ApiResponse<>("User deleted successfully", null));
+            return ResponseEntity.ok(new RestResponse<>("User deleted successfully", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND)
-                    .body(new ApiResponse<>(e.getMessage(), null));
+                    .body(new RestResponse<>(e.getMessage(), null));
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(FORBIDDEN)
-                    .body(new ApiResponse<>(e.getMessage(), null));
+                    .body(new RestResponse<>(e.getMessage(), null));
         }
     }
 }

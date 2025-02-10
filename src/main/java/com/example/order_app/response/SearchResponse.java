@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
  * @param <T> Type of data being returned
  */
 @Data
-public class SearchResponse<T> extends ApiResponse<T> {
+public class SearchResponse<T> extends RestResponse<T> {
     private String searchTerm;
 
     public SearchResponse() {
