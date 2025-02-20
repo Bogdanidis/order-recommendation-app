@@ -125,6 +125,16 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
     public UserDto convertUserToDto(User user) {
         return modelMapper.map(user, UserDto.class);
     }

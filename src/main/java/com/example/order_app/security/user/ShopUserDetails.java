@@ -1,5 +1,4 @@
 package com.example.order_app.security.user;
-
 import com.example.order_app.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,21 +7,23 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShopUserDetails implements UserDetails {
+public class ShopUserDetails implements UserDetails, OAuth2User {
     private Long id;
     private String email;
     private String password;
-
     private Collection<GrantedAuthority> authorities;
+    private Map<String, Object> attributes;
 
     public static ShopUserDetails buildUserDetails(User user) {
         List<GrantedAuthority> authorities = user.getRoles()
@@ -34,7 +35,15 @@ public class ShopUserDetails implements UserDetails {
                 user.getId(),
                 user.getEmail(),
                 user.getPassword(),
-                authorities);
+                authorities,
+                null  // attributes can be null for non-OAuth2 login
+        );
+    }
+
+    public static ShopUserDetails buildUserDetails(User user, Map<String, Object> attributes) {
+        ShopUserDetails userDetails = buildUserDetails(user);
+        userDetails.setAttributes(attributes);
+        return userDetails;
     }
 
     @Override
@@ -54,21 +63,32 @@ public class ShopUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return true;
+    }
+
+    // OAuth2User methods
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
+    @Override
+    public String getName() {
+        return String.valueOf(id);
     }
 }

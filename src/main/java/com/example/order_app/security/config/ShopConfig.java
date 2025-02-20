@@ -3,6 +3,7 @@ package com.example.order_app.security.config;
 
 import com.example.order_app.security.jwt.AuthTokenFilter;
 import com.example.order_app.security.jwt.JwtAuthEntryPoint;
+import com.example.order_app.security.user.CustomOAuth2UserService;
 import com.example.order_app.security.user.ShopUserDetailsService;
 import com.example.order_app.service.cart.ICartService;
 import com.example.order_app.service.user.IUserService;
@@ -36,7 +37,8 @@ public class ShopConfig {
     private final ShopUserDetailsService userDetailsService;
     private final JwtAuthEntryPoint authEntryPoint;
     private final CustomLoginSuccessHandler customLoginSuccessHandler;
-
+    private final CustomOAuth2UserService oAuth2UserService;
+    private final CustomOAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
     private static final List<String> SECURED_URLS =
             List.of("/order-api/v1/carts/**", "/order-api/v1/cartItems/**");
@@ -76,18 +78,18 @@ public class ShopConfig {
     @Order(1)
     public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
 
-        http.securityMatcher("/order-api/v1/**");
-        http.csrf(AbstractHttpConfigurer::disable)
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth ->auth
+        http.securityMatcher("/order-api/v1/**")
+            .csrf(AbstractHttpConfigurer::disable)
+            .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth ->auth
                         .requestMatchers(SECURED_URLS.toArray(String[]::new)).authenticated()
                         //.requestMatchers("/order-api/v1/**").authenticated()
-                        .anyRequest().permitAll());
-        http.authenticationProvider(daoAuthenticationProvider());
-        http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-        return http.build();
+                        .anyRequest().permitAll())
+            .authenticationProvider(daoAuthenticationProvider())
+            .addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
+        return http.build();
     }
 
     // Session-based security for non-API routes (Thymeleaf pages, etc.)
@@ -105,7 +107,7 @@ public class ShopConfig {
                     .maxSessionsPreventsLogin(false)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/home", "/auth/**","/error").permitAll()  // Public access
+                        .requestMatchers("/","/home", "/auth/**","/error", "/oauth2/**").permitAll()  // Public access
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()  // Allow static resources
                         .requestMatchers("/admin/**").hasRole("ADMIN")  // Admin only
                         .anyRequest().permitAll()
@@ -122,6 +124,13 @@ public class ShopConfig {
                         .invalidateHttpSession(true)  // This ensures the session is invalidated
                         .deleteCookies("JSESSIONID")  // This deletes the session cookie
                         .permitAll()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/auth/login")
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(oAuth2UserService)
+                        )
+                        .successHandler(oAuth2LoginSuccessHandler)
                 );
 
         return http.build();

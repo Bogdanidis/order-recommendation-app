@@ -24,4 +24,7 @@ public interface IUserService {
 
     Long countUsers();
 
+    boolean existsByEmail(String email);
+
+    User findByEmail(String email);
 }
