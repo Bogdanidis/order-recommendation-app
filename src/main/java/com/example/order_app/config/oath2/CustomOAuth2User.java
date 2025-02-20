@@ -1,4 +1,4 @@
-package com.example.order_app.security.user;
+package com.example.order_app.config.oath2;
 
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;

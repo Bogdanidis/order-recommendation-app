@@ -1,13 +1,8 @@
-package com.example.order_app.security.config;
+package com.example.order_app.security.handler;
 
-import com.example.order_app.model.User;
 import com.example.order_app.security.user.ShopUserDetails;
-import com.example.order_app.service.cart.ICartService;
-import com.example.order_app.service.user.IUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;

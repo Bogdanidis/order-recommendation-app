@@ -1,4 +1,4 @@
-package com.example.order_app.security.config;
+package com.example.order_app.security.handler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
