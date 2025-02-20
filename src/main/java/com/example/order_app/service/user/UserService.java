@@ -135,6 +135,7 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Transactional
     public UserDto convertUserToDto(User user) {
         return modelMapper.map(user, UserDto.class);
     }
