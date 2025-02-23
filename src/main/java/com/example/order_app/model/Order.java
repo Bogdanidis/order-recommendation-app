@@ -16,9 +16,8 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 @Table(name = "orders")
-public class Order {
+public class Order extends BaseEntity {
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

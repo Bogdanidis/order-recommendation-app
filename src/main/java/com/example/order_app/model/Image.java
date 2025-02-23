@@ -12,7 +12,7 @@ import java.sql.Blob;
 @Setter
 @NoArgsConstructor
 @Table(name = "images")
-public class Image {
+public class Image extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
