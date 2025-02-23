@@ -371,7 +371,7 @@ public class ProductController {
     public String deleteProduct(@PathVariable Long productId, RedirectAttributes redirectAttributes) {
         try {
             productService.deleteProductById(productId);
-            redirectAttributes.addFlashAttribute("success", "Product deleted successfully");
+            redirectAttributes.addFlashAttribute("success", "Product deactivated successfully");
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }

@@ -93,11 +93,11 @@ public class ImageController {
                                      RedirectAttributes redirectAttributes) {
         try {
             imageService.deleteImageById(imageId);
-            redirectAttributes.addFlashAttribute("success", "Image deleted successfully");
+            redirectAttributes.addFlashAttribute("success", "Image deactivated successfully");
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", "Image not found: " + e.getMessage());
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "An error occurred while deleting the image: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "An error occurred while deactivating the image: " + e.getMessage());
         }
         return "redirect:/products/" + productId;
     }

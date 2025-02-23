@@ -233,7 +233,7 @@ public class UserController {
     public String deleteUser(@PathVariable Long userId, RedirectAttributes redirectAttributes) {
         try {
             userService.deleteUser(userId);
-            redirectAttributes.addFlashAttribute("success", "User deleted successfully");
+            redirectAttributes.addFlashAttribute("success", "User deactivated successfully");
         } catch (ResourceNotFoundException | UnauthorizedOperationException e) {
             redirectAttributes.addFlashAttribute("error",  e.getMessage());
         }

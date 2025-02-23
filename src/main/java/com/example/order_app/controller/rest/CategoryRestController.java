@@ -128,7 +128,7 @@ public class CategoryRestController {
         try {
             categoryService.deleteCategoryById(id);
             return ResponseEntity.ok(new RestResponse<>(
-                    "Category deleted successfully", null));
+                    "Category deactivated successfully", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND)
                     .body(new RestResponse<>(e.getMessage(), null));

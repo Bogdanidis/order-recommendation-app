@@ -167,5 +167,24 @@ public class OrderController {
         }
         return "redirect:/orders/" + orderId;
     }
+
+    /**
+     * Handles order deletion.
+     *
+     * @param orderId ID of the order to delete
+     * @param redirectAttributes RedirectAttributes for flash messages
+     * @return Redirect URL
+     */
+    @DeleteMapping("/{orderId}/delete")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String deleteOrder(@PathVariable Long orderId, RedirectAttributes redirectAttributes) {
+        try {
+            orderService.deleteOrder(orderId);
+            redirectAttributes.addFlashAttribute("success", "Order deactivated successfully");
+        } catch (ResourceNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/orders";
+    }
 }
 

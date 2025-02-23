@@ -156,7 +156,7 @@ public class ImageRestController {
     public ResponseEntity<RestResponse<?>> deleteImage(@PathVariable Long imageId) {
         try {
             imageService.deleteImageById(imageId);
-            return ResponseEntity.ok(new RestResponse<>("Image deleted successfully", null));
+            return ResponseEntity.ok(new RestResponse<>("Image deactivated successfully", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND)
                     .body(new RestResponse<>(e.getMessage(), null));

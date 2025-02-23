@@ -163,4 +163,24 @@ public class OrderRestController {
                     .body(new RestResponse<>("Error cancelling order: " + e.getMessage(), null));
         }
     }
+
+    /**
+     * Delete order
+     */
+    @DeleteMapping("/{orderId}")
+    @Operation(summary = "Delete order")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Order deactivated successfully"),
+            @ApiResponse(responseCode = "404", description = "Order not found"),
+    })
+    public ResponseEntity<RestResponse<?>> deleteOrder(@PathVariable Long orderId) {
+        try {
+            orderService.deleteOrder(orderId);
+            return ResponseEntity.ok(new RestResponse<>("Order deactivated successfully", null));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND)
+                    .body(new RestResponse<>(e.getMessage(), null));
+        }
+    }
 }

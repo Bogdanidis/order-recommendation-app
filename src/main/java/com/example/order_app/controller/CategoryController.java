@@ -178,7 +178,7 @@ public class CategoryController {
     public String deleteCategory(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             categoryService.deleteCategoryById(id);
-            redirectAttributes.addFlashAttribute("success", "Category deleted successfully");
+            redirectAttributes.addFlashAttribute("success", "Category deactivated  successfully");
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }

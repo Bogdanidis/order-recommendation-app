@@ -154,7 +154,7 @@ public class UserRestController {
     public ResponseEntity<RestResponse<?>> deleteUser(@PathVariable Long userId) {
         try {
             userService.deleteUser(userId);
-            return ResponseEntity.ok(new RestResponse<>("User deleted successfully", null));
+            return ResponseEntity.ok(new RestResponse<>("User deactivated successfully", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND)
                     .body(new RestResponse<>(e.getMessage(), null));

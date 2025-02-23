@@ -148,7 +148,7 @@ public class ProductRestController {
     public ResponseEntity<RestResponse<?>> deleteProduct(@PathVariable Long productId) {
         try {
             productService.deleteProductById(productId);
-            return ResponseEntity.ok(new RestResponse<>("Product deleted successfully", null));
+            return ResponseEntity.ok(new RestResponse<>("Product deactivated successfully", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND)
                     .body(new RestResponse<>(e.getMessage(), null));
