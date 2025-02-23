@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 
@@ -166,6 +167,16 @@ public class OrderService implements IOrderService {
         });
 
         // refund payment would be here.
+    }
+
+    @Override
+    @Transactional
+    public void deleteOrder(Long orderId) {
+        orderRepository.findById(orderId)
+                .ifPresentOrElse(
+                        product -> orderRepository.softDelete(orderId, LocalDateTime.now()),
+                        () -> { throw new ResourceNotFoundException("Order not found!"); }
+                );
     }
 
     @Override

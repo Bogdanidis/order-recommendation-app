@@ -107,4 +107,22 @@ public class ProductRatingService implements IProductRatingService {
 
         productRepository.save(product);
     }
+
+    @Override
+    @Transactional
+    public void deleteRating(Long ratingId, Long userId) {
+        ProductRating rating = ratingRepository.findById(ratingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Rating not found"));
+
+        if (!rating.getUser().getId().equals(userId)) {
+            throw new UnauthorizedOperationException("Cannot delete other user's ratings");
+        }
+
+        ratingRepository.findById(ratingId)
+                .ifPresentOrElse(
+                        product -> ratingRepository.softDelete(ratingId, LocalDateTime.now()),
+                        () -> { throw new ResourceNotFoundException("Product Rating not found!"); }
+                );
+        updateProductRatingCache(rating.getProduct());
+    }
 }

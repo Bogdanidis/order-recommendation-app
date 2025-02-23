@@ -48,10 +48,16 @@ public class DatabasePopulationService {
 
     @Transactional
     protected void populateDatabase() {
-        List<User> users = populateUsers();
-        List<Product> products = populateProducts();
-        populateOrders(users, products);
-        populateRatings(users, products);
+        if (shouldPopulateData()) {
+            List<User> users = populateUsers();
+            List<Product> products = populateProducts();
+            populateOrders(users, products);
+            populateRatings(users, products);
+        }
+    }
+
+    private boolean shouldPopulateData() {
+        return userService.findAllActive().size() <= 2;
     }
 
     private List<User> populateUsers() {

@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -113,9 +114,11 @@ public class UserService implements IUserService {
         if (isUserToDeleteAdmin) {
             throw new UnauthorizedOperationException("Admins cannot delete other admin accounts.");
         }else{
-            userRepository.findById(userId).ifPresentOrElse(userRepository :: delete, () ->{
-                throw new ResourceNotFoundException("User not found!");
-            });
+            userRepository.findById(userId)
+                .ifPresentOrElse(
+                        product -> userRepository.softDelete(userId, LocalDateTime.now()),
+                        () -> { throw new ResourceNotFoundException("User not found!"); }
+                );
         }
     }
 

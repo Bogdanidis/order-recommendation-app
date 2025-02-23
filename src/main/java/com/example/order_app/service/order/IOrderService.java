@@ -22,5 +22,6 @@ public interface IOrderService {
 
     void cancelOrder(Long orderId, Long userId);
     void cancelOrder(Long orderId);
+    void deleteOrder(Long orderId);
 
 }

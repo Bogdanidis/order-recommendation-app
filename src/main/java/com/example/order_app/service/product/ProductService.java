@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -84,8 +85,10 @@ public class ProductService implements IProductService{
     @Transactional
     public void deleteProductById(Long id) {
         productRepository.findById(id)
-                .ifPresentOrElse(productRepository::delete,
-                        () -> {throw new ResourceNotFoundException("Product not found!");});
+                .ifPresentOrElse(
+                        product -> productRepository.softDelete(id, LocalDateTime.now()),
+                        () -> { throw new ResourceNotFoundException("Product not found!"); }
+                );
     }
 
     @CacheEvict(value = "products", allEntries = true)

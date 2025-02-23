@@ -24,4 +24,6 @@ public interface IProductRatingService {
     ProductRatingDto convertToDto(ProductRating rating);
 
     void updateProductRatingCache(Product product);
+
+    void deleteRating(Long ratingId, Long userId);
 }

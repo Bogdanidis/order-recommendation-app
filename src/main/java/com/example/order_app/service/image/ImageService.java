@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.sql.rowset.serial.SerialBlob;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,8 +38,11 @@ public class ImageService implements IImageService {
     @Override
     @Transactional
     public void deleteImageById(Long id) {
-        imageRepository.findById(id).ifPresentOrElse(imageRepository::delete, () -> {
-            throw new ResourceNotFoundException("Image not found with id " + id);});
+        imageRepository.findById(id)
+                .ifPresentOrElse(
+                        product -> imageRepository.softDelete(id, LocalDateTime.now()),
+                        () -> { throw new ResourceNotFoundException("Image not found with id " + id); }
+                );
     }
 
     @Override
