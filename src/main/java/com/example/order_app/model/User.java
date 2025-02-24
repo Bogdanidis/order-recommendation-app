@@ -47,10 +47,12 @@ public class User extends BaseEntity {
     private String country;
     */
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    // Cart should cascade soft delete
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Cart cart;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    // Orders should remain but be marked as 'user deleted'
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Order> orders;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade =

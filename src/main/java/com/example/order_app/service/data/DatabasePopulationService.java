@@ -57,7 +57,7 @@ public class DatabasePopulationService {
     }
 
     private boolean shouldPopulateData() {
-        return userService.findAllActive().size() <= 2;
+        return userService.findAll().size() <= 2;
     }
 
     private List<User> populateUsers() {

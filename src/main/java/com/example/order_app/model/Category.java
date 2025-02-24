@@ -25,8 +25,9 @@ public class Category extends BaseEntity {
     @Column(name = "description", nullable = false)
     private String description;
 
+    // Products should not be deleted when category is deleted
     @JsonIgnore
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Product> products ;
 
     public Category(String name, String description) {

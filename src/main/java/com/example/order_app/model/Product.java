@@ -39,16 +39,18 @@ public class Product extends BaseEntity {
     @Column(name = "brand", nullable = false)
     private String brand;
 
+    // Images should be soft deleted with product
     @OneToMany(mappedBy = "product",
-            cascade = CascadeType.ALL, orphanRemoval = true)
+            cascade = CascadeType.ALL)
     private List<Image> images;
 
     @ManyToOne
     @JoinColumn(name="category_id")
     private Category category ;
 
+    // Ratings should be soft deleted with product
     @OneToMany(mappedBy = "product",
-            cascade = CascadeType.ALL, orphanRemoval = true)
+            cascade = CascadeType.ALL)
     private List<ProductRating> ratings = new ArrayList<>();
 
 

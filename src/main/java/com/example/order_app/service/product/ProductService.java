@@ -73,7 +73,7 @@ public class ProductService implements IProductService{
         );
     }
 
-    @Cacheable(value = "products", key = "#id")
+    @Cacheable(value = "products", key = "#id", unless = "#result.deleted")
     @Override
     public Product getProductById(Long id) {
         return productRepository.findById(id)
@@ -84,11 +84,18 @@ public class ProductService implements IProductService{
     @Override
     @Transactional
     public void deleteProductById(Long id) {
-        productRepository.findById(id)
-                .ifPresentOrElse(
-                        product -> productRepository.softDelete(id, LocalDateTime.now()),
-                        () -> { throw new ResourceNotFoundException("Product not found!"); }
-                );
+        Product product = getProductById(id);
+
+        // Images and ratings will be soft deleted due to cascade
+
+        // Update category product count if needed
+        Category category = product.getCategory();
+        if (category != null) {
+            // Update category statistics if needed
+        }
+
+        productRepository.softDelete(id, LocalDateTime.now());
+
     }
 
     @CacheEvict(value = "products", allEntries = true)

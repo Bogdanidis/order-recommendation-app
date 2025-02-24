@@ -22,7 +22,7 @@ import java.util.Optional;
 public class CategoryService implements ICategoryService {
    private final CategoryRepository categoryRepository;
 
-    @Cacheable(value = "categories", key = "#id")
+    @Cacheable(value = "categories", key = "#id", unless = "#result.deleted")
     @Override
     public Category getCategoryById(Long id) {
         return categoryRepository.findById(id)
@@ -82,11 +82,16 @@ public class CategoryService implements ICategoryService {
     @CacheEvict(value = "categories", allEntries = true)
     @Override
     public void deleteCategoryById(Long id) {
-        categoryRepository.findById(id)
-                .ifPresentOrElse(
-                        product -> categoryRepository.softDelete(id, LocalDateTime.now()),
-                        () -> { throw new ResourceNotFoundException("Category not found!"); }
-                );
+        Category category = getCategoryById(id);
 
+        // Check if category has active products
+        boolean hasActiveProducts = category.getProducts().stream()
+                .anyMatch(product -> !product.isDeleted());
+
+        if (hasActiveProducts) {
+            throw new IllegalStateException("Cannot delete category with active products");
+        }
+
+        categoryRepository.softDelete(id, LocalDateTime.now());
     }
 }

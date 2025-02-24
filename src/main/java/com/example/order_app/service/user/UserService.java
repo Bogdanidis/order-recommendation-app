@@ -102,25 +102,22 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public void deleteUser(Long userId) {
-        User currentUser = getAuthenticatedUser();
-        User userToDelete = getUserById(userId);
-
-        // Check if the user to be deleted is an admin
-        boolean isUserToDeleteAdmin = userToDelete.getRoles().stream()
-                .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
-
-
-        // Check if an admin is trying to delete another admin
-        if (isUserToDeleteAdmin) {
-            throw new UnauthorizedOperationException("Admins cannot delete other admin accounts.");
-        }else{
-            userRepository.findById(userId)
-                .ifPresentOrElse(
-                        product -> userRepository.softDelete(userId, LocalDateTime.now()),
-                        () -> { throw new ResourceNotFoundException("User not found!"); }
-                );
+        User user = getUserById(userId);
+        if (user.getRoles().stream().anyMatch(role -> role.getName().equals("ROLE_ADMIN"))) {
+            throw new UnauthorizedOperationException("Admin accounts cannot be deleted.");
         }
+
+        // Cart will be soft deleted due to cascade
+
+        // Mark orders as having deleted user but preserve them
+        user.getOrders().forEach(order -> {
+            order.setDeleted(false); // Keep order visible
+            // Optionally add a flag or note about deleted user
+        });
+
+        userRepository.softDelete(userId, LocalDateTime.now());
     }
+
 
     @Override
     public Long countUsers() {

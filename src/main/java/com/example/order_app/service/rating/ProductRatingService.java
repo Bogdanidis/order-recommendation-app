@@ -10,7 +10,6 @@ import com.example.order_app.model.User;
 import com.example.order_app.repository.ProductRatingRepository;
 import com.example.order_app.repository.ProductRepository;
 import com.example.order_app.service.product.IProductService;
-import com.example.order_app.service.user.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -30,12 +29,10 @@ public class ProductRatingService implements IProductRatingService {
 
     private final ProductRatingRepository ratingRepository;
     private final ProductRepository productRepository;
-    private final IUserService userService;
     private final IProductService productService;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MMM dd, yyyy");
 
-    @CacheEvict(value = {"productRatings", "products"}, allEntries = true)
     @Override
     @Transactional
     public ProductRating addRating(Long productId, ProductRatingDto ratingDto, User user) {
@@ -98,6 +95,7 @@ public class ProductRatingService implements IProductRatingService {
     }
 
     @Override
+    @CacheEvict(value = {"productRatings", "products"}, allEntries = true)
     public void updateProductRatingCache(Product product) {
         double avgRating = ratingRepository.calculateAverageRating(product.getId());
         long ratingCount = ratingRepository.countByProductId(product.getId());
