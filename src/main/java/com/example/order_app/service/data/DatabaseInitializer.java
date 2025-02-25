@@ -1,27 +1,35 @@
 package com.example.order_app.service.data;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.annotation.Profile;
-import org.springframework.context.event.EventListener;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
+import javax.sql.DataSource;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 
-@Component
-@Profile("!test")
-@RequiredArgsConstructor
+/**
+ * Database initialization configuration that runs BEFORE Spring Boot's standard database setup.
+ * Ensures the database exists before any JPA or Flyway components try to connect.
+ */
+@Configuration
+@EnableConfigurationProperties(DataSourceProperties.class)
 @Slf4j
 public class DatabaseInitializer {
-    private final JdbcTemplate jdbcTemplate;
-    private final DatabasePopulationService populationService;
+
+    @Value("${app.db.create:true}")
+    private boolean shouldCreateDatabase;
 
     @Value("${app.db.reinitialize:false}")
     private boolean reinitializeDb;
@@ -29,32 +37,60 @@ public class DatabaseInitializer {
     @Value("classpath:db/init/init-database.sql")
     private Resource initScript;
 
-    @EventListener(ApplicationStartedEvent.class)
-    public void initialize() {
-        if (reinitializeDb) {
-            try {
-                log.info("Reinitializing database...");
-                reinitializeDatabase();
-                // Your existing population service will run after reinitialization
-                // because of the ApplicationStartedEvent
-            } catch (IOException e) {
-                log.error("Database initialization failed", e);
-                throw new RuntimeException("Database initialization failed", e);
-            }
+    /**
+     * Initialize the database BEFORE the main DataSource is created.
+     * This ensures the database exists before Spring Boot attempts to connect.
+     */
+    @Bean
+    public DataSource dataSource(DataSourceProperties properties) {
+        String url = properties.getUrl();
+        String username = properties.getUsername();
+        String password = properties.getPassword();
+        String driverClassName = properties.getDriverClassName();
+
+        if (shouldCreateDatabase || reinitializeDb) {
+            initializeDatabase(url, username, password);
+        }
+
+        // Return a standard DataSource for Spring to use
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setUrl(url);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
+        dataSource.setDriverClassName(driverClassName);
+
+        return dataSource;
+    }
+
+    private void initializeDatabase(String url, String username, String password) {
+        // Extract the base URL (MySQL server without database name)
+        String baseUrl = url.substring(0, url.lastIndexOf("/"));
+
+        try (Connection conn = DriverManager.getConnection(baseUrl, username, password)) {
+            log.info("Connected to MySQL server, executing initialization script...");
+            executeInitScript(conn);
+            log.info("Database initialization completed successfully.");
+        } catch (SQLException | IOException e) {
+            log.error("Error initializing database: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to initialize database", e);
         }
     }
 
-    private void reinitializeDatabase() throws IOException {
+    private void executeInitScript(Connection conn) throws SQLException, IOException {
         String sql = new String(FileCopyUtils.copyToByteArray(initScript.getInputStream()));
-        Arrays.stream(sql.split(";"))
-                .filter(StringUtils::hasText)
-                .forEach(statement -> {
-                    try {
-                        jdbcTemplate.execute(statement.trim());
-                    } catch (Exception e) {
-                        log.warn("Error executing statement: {}. Error: {}",
-                                statement, e.getMessage());
-                    }
-                });
+        try (Statement stmt = conn.createStatement()) {
+            // Execute each statement in the script
+            Arrays.stream(sql.split(";"))
+                    .filter(StringUtils::hasText)
+                    .forEach(statement -> {
+                        try {
+                            stmt.execute(statement.trim());
+                            log.debug("Executed SQL: {}", statement.trim());
+                        } catch (SQLException e) {
+                            log.warn("Error executing statement: {}. Error: {}",
+                                    statement.trim(), e.getMessage());
+                        }
+                    });
+        }
     }
 }

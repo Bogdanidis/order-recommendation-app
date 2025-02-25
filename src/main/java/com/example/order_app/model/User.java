@@ -61,4 +61,9 @@ public class User extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
     private Collection<Role> roles = new HashSet<>();
+
+    // Ratings should be soft deleted with user
+    @OneToMany(mappedBy = "user",
+            cascade = CascadeType.ALL)
+    private List<ProductRating> ratings = new ArrayList<>();
 }

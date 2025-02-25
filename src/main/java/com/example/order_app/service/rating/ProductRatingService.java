@@ -55,7 +55,11 @@ public class ProductRatingService implements IProductRatingService {
         rating.setComment(ratingDto.getComment());
         rating.setProduct(product);
         rating.setUser(user);
-        rating.setCreatedAt(LocalDateTime.now());
+        // Also add the rating to the product's list
+        product.getRatings().add(rating);
+        // Also add the rating to the user's rating list
+        user.getRatings().add(rating);
+
 
         ProductRating savedRating = ratingRepository.save(rating);
 
