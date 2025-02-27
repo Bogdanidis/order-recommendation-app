@@ -3,6 +3,7 @@ package com.example.order_app.service.product;
 import com.example.order_app.dto.ProductDto;
 import com.example.order_app.model.Product;
 import com.example.order_app.request.AddProductRequest;
+import com.example.order_app.request.SearchRequest;
 import com.example.order_app.request.UpdateProductRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +30,8 @@ public interface IProductService {
 
     ProductDto convertToDto(Product product);
 
-//    List<ProductDto> searchProducts(String brandName, String productName, String category);
-    Page<ProductDto> searchProducts(Pageable pageable, String brand, String name, String category);
+    //List<ProductDto> searchProducts(String brandName, String productName, String category);
+    // Page<ProductDto> searchProducts(Pageable pageable, String brand, String name, String category);
+    Page<ProductDto> searchProducts(SearchRequest request, Pageable pageable);
 
 }

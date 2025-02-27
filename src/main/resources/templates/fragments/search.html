@@ -1,0 +1,83 @@
+<div th:fragment="searchForm">
+    <!-- Search Toggle Button -->
+    <button class="btn btn-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#search" aria-expanded="false" aria-controls="search">
+        <i class="bi bi-funnel-fill me-2"></i> Search
+    </button>
+
+    <!-- Search Form -->
+    <div class="collapse mb-4" id="search">
+        <div class="card card-body">
+            <form th:action="@{/products/search}" method="get" id="searchForm">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="name" class="form-label">Product Name</label>
+                        <input type="text" class="form-control" id="name" name="name" th:value="${request != null and request.name != null ? request.name : ''}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="brand" class="form-label">Brand</label>
+                        <input type="text" class="form-control" id="brand" name="brand" th:value="${request != null and request.brand != null ? request.brand : ''}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="categoryName" class="form-label">Category</label>
+                        <select class="form-control" id="categoryName" name="categoryName">
+                            <option value="">Select category</option>
+                            <option th:each="cat : ${categories}"
+                                    th:value="${cat.name}"
+                                    th:text="${cat.name}"
+                                    th:selected="${request != null and request.categoryName != null and cat.name == request.categoryName}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="minPrice" class="form-label">Min Price</label>
+                        <input type="number" class="form-control" id="minPrice" name="minPrice" min="0" step="0.01" th:value="${request != null and request.minPrice != null ? request.minPrice : ''}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="maxPrice" class="form-label">Max Price</label>
+                        <input type="number" class="form-control" id="maxPrice" name="maxPrice" min="0" step="0.01" th:value="${request != null and request.maxPrice != null ? request.maxPrice : ''}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="minStock" class="form-label">Min Stock</label>
+                        <input type="number" class="form-control" id="minStock" name="minStock" min="0" th:value="${request != null and request.minStock != null ? request.minStock : ''}">
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-check mt-4">
+                            <input class="form-check-input" type="checkbox" id="inStock" name="inStock" th:checked="${request != null and request.inStock != null and request.inStock}">
+                            <label class="form-check-label" for="inStock">
+                                In Stock Only
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Sorting Options -->
+                    <div class="col-md-6">
+                        <label for="sortBy" class="form-label">Sort By</label>
+                        <select class="form-control" id="sortBy" name="sortBy">
+                            <option value="name" th:selected="${request != null and request.sortBy != null and request.sortBy == 'name'}">Name</option>
+                            <option value="price" th:selected="${request != null and request.sortBy != null and request.sortBy == 'price'}">Price</option>
+                            <option value="brand" th:selected="${request != null and request.sortBy != null and request.sortBy == 'brand'}">Brand</option>
+                            <option value="stock" th:selected="${request != null and request.sortBy != null and request.sortBy == 'stock'}">Stock</option>
+                            <option value="averageRating" th:selected="${request != null and request.sortBy != null and request.sortBy == 'averageRating'}">Rating</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="sortDirection" class="form-label">Sort Direction</label>
+                        <select class="form-control" id="sortDirection" name="sortDirection">
+                            <option value="asc" th:selected="${request != null and request.sortDirection != null and request.sortDirection == 'asc'}">Ascending</option>
+                            <option value="desc" th:selected="${request != null and request.sortDirection != null and request.sortDirection == 'desc'}">Descending</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-12 mt-3">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search me-2"></i> Search
+                        </button>
+                        <button type="reset" class="btn btn-secondary ms-2">
+                            <i class="bi bi-x-circle me-2"></i> Reset
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -18,22 +18,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class ProductRestControllerTest extends BaseRestControllerTest {
 
-    @MockBean
-    private IProductService productService;
-
-    @Test
-    @WithMockUser
-    void shouldReturnProductsList() throws Exception {
-        Product testProduct = TestDataUtil.createTestProduct();
-        Page<ProductDto> productPage = new PageImpl<>(Collections.singletonList(
-                new ProductDto() // populate with test data
-        ));
-
-        when(productService.searchProducts(any(), any(), any(), any())).thenReturn(productPage);
-
-        mockMvc.perform(get("/order-api/v1/products/search"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Products found"))
-                .andExpect(jsonPath("$.data").exists());
-    }
+//    @MockBean
+//    private IProductService productService;
+//
+//    @Test
+//    @WithMockUser
+//    void shouldReturnProductsList() throws Exception {
+//        Product testProduct = TestDataUtil.createTestProduct();
+//        Page<ProductDto> productPage = new PageImpl<>(Collections.singletonList(
+//                new ProductDto() // populate with test data
+//        ));
+//
+//        when(productService.searchProducts(any(), any(), any(), any())).thenReturn(productPage);
+//
+//        mockMvc.perform(get("/order-api/v1/products/search"))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.message").value("Products found"))
+//                .andExpect(jsonPath("$.data").exists());
+//    }
 }

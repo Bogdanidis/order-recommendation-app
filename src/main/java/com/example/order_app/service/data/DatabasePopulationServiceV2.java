@@ -248,7 +248,7 @@ public class DatabasePopulationServiceV2 {
                 .distinct()
                 .collect(Collectors.toList());
     }
-    
+
     private void createRandomRating(User user, Product product) {
         try {
             log.debug("Creating rating with user ID: {} and product ID: {}",

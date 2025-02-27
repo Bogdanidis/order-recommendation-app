@@ -7,6 +7,7 @@ import com.example.order_app.exception.ResourceNotFoundException;
 import com.example.order_app.model.Product;
 import com.example.order_app.model.User;
 import com.example.order_app.request.AddProductRequest;
+import com.example.order_app.request.SearchRequest;
 import com.example.order_app.request.UpdateProductRequest;
 import com.example.order_app.response.RestResponse;
 import com.example.order_app.response.PageMetadata;
@@ -36,27 +37,48 @@ public class ProductRestController {
     private final IProductRatingService ratingService;
     private final IUserService userService;
 
+//    /**
+//     * Search products with optional filters
+//     */
+//    @GetMapping("/search")
+//    @Operation(summary = "Search products")
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "200", description = "Products found")
+//    })
+//    public ResponseEntity<RestResponse<?>> searchProducts(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "9") int size,
+//            @RequestParam(required = false) String brandName,
+//            @RequestParam(required = false) String productName,
+//            @RequestParam(required = false) String category) {
+//
+//        Page<ProductDto> productPage = productService.searchProducts(
+//                PageRequest.of(page, size), brandName, productName, category);
+//
+//        return ResponseEntity.ok(new RestResponse<>("Products found", productPage));
+//    }
     /**
-     * Search products with optional filters
+     * Search products with multiple criteria
      */
     @GetMapping("/search")
-    @Operation(summary = "Search products")
+    @Operation(summary = "Search for products")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Products found")
+            @ApiResponse(responseCode = "200", description = "Products found"),
+            @ApiResponse(responseCode = "400", description = "Invalid search criteria")
     })
     public ResponseEntity<RestResponse<?>> searchProducts(
+            @ModelAttribute SearchRequest request,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "9") int size,
-            @RequestParam(required = false) String brandName,
-            @RequestParam(required = false) String productName,
-            @RequestParam(required = false) String category) {
-
-        Page<ProductDto> productPage = productService.searchProducts(
-                PageRequest.of(page, size), brandName, productName, category);
-
-        return ResponseEntity.ok(new RestResponse<>("Products found", productPage));
+            @RequestParam(defaultValue = "9") int size) {
+        try {
+            Page<ProductDto> productPage = productService.searchProducts(
+                    request, PageRequest.of(page, size));
+            return ResponseEntity.ok(new RestResponse<>("Products found", productPage));
+        } catch (Exception e) {
+            return ResponseEntity.status(BAD_REQUEST)
+                    .body(new RestResponse<>(e.getMessage(), null));
+        }
     }
-
     /**
      * Get product details including ratings
      */

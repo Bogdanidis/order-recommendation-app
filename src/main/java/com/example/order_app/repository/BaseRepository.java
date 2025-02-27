@@ -33,6 +33,9 @@ public interface BaseRepository<T, ID> extends JpaRepository<T, ID> {
     @Query("SELECT COUNT(e) FROM #{#entityName} e WHERE e.deleted = false")
     long count();
 
+    @Query("SELECT e FROM #{#entityName} e WHERE e.deleted = true")
+    List<T> findAllDeleted();
+
     @Modifying
     @Query("UPDATE #{#entityName} e SET e.deleted = true, e.deletedAt = :deletedAt WHERE e.id = :id")
     void softDelete(@Param("id") ID id, @Param("deletedAt") LocalDateTime deletedAt);

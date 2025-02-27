@@ -3,13 +3,11 @@ package com.example.order_app.controller;
 import com.example.order_app.dto.ProductDto;
 import com.example.order_app.dto.ProductRatingDto;
 import com.example.order_app.dto.RatingStatisticsDto;
-import com.example.order_app.exception.AlreadyExistsException;
 import com.example.order_app.exception.ResourceNotFoundException;
-import com.example.order_app.exception.UnauthorizedOperationException;
-import com.example.order_app.model.Category;
 import com.example.order_app.model.Product;
 import com.example.order_app.model.User;
 import com.example.order_app.request.AddProductRequest;
+import com.example.order_app.request.SearchRequest;
 import com.example.order_app.request.UpdateProductRequest;
 import com.example.order_app.service.category.ICategoryService;
 import com.example.order_app.service.product.IProductService;
@@ -17,7 +15,7 @@ import com.example.order_app.service.rating.IProductRatingService;
 import com.example.order_app.service.user.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,12 +28,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/products")
 public class ProductController {
@@ -51,9 +47,7 @@ public class ProductController {
      *
      * @param page The page number (default: 0)
      * @param size The number of items per page (default: 9)
-     * @param brandName Optional brand name to filter products
-     * @param productName Optional product name to filter products
-     * @param category Optional category name to filter products
+     * @param request The search request containing filter criteria
      * @param model Spring MVC Model
      * @return The name of the product list view
      */
@@ -61,30 +55,95 @@ public class ProductController {
     public String getAllProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "9") int size,
-            @RequestParam(required = false) String brandName,
-            @RequestParam(required = false) String productName,
-            @RequestParam(required = false) String category,
+            @ModelAttribute SearchRequest request,
             Model model) {
 
-        Page<ProductDto> productPage = productService.searchProducts(
-                PageRequest.of(page, size), brandName, productName, category);
+        // Initialize a default request if not provided
+        if (request == null) {
+            request = new SearchRequest();
+        }
 
+        // Set default sorting if not specified
+        if (request.getSortBy() == null || request.getSortBy().isEmpty()) {
+            request.setSortBy("name");
+        }
+        if (request.getSortDirection() == null || request.getSortDirection().isEmpty()) {
+            request.setSortDirection("asc");
+        }
+
+        // Get the search results
+        Page<ProductDto> productPage = productService.searchProducts(
+                request, PageRequest.of(page, size));
+
+        // Add data to model
         model.addAttribute("products", productPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", productPage.getTotalPages());
         model.addAttribute("totalItems", productPage.getTotalElements());
-
-        // Add search parameters to the model for form persistence
-        model.addAttribute("brandName", brandName);
-        model.addAttribute("productName", productName);
-        model.addAttribute("category", category);
+        model.addAttribute("request", request);
+        model.addAttribute("size", size);
 
         // Add categories for the dropdown
         model.addAttribute("categories", categoryService.getAllCategories());
 
         return "product/list";
     }
+    /**
+     * Displays a list of products based on search criteria.
+     *
+     * @param request The search request with multiple criteria
+     * @param page The page number (default: 0)
+     * @param size The number of items per page (default: 9)
+     * @param model Spring MVC Model
+     * @return The name of the product list view
+     */
+    @GetMapping("/search")
+    public String search(
+            @ModelAttribute SearchRequest request,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "9") int size,
+            Model model) {
+        try {
+            // Clean up request parameters if necessary
+            if (request.getCategoryName() != null && request.getCategoryName().isEmpty()) {
+                request.setCategoryName(null);
+            }
 
+            log.debug("Search request: name={}, brand={}, category={}, " +
+                            "price={}~{}, stock={}, inStock={}, sort={}({})",
+                    request.getName(), request.getBrand(), request.getCategoryName(),
+                    request.getMinPrice(), request.getMaxPrice(), request.getMinStock(),
+                    request.getInStock(), request.getSortBy(), request.getSortDirection());
+
+            // Ensure default sort values if not present
+            if (request.getSortBy() == null || request.getSortBy().isEmpty()) {
+                request.setSortBy("name");
+            }
+
+            if (request.getSortDirection() == null || request.getSortDirection().isEmpty()) {
+                request.setSortDirection("asc");
+            }
+
+            // Get search results
+            Page<ProductDto> productPage = productService.searchProducts(
+                    request, PageRequest.of(page, size));
+
+            // Add data to model
+            model.addAttribute("products", productPage.getContent());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", productPage.getTotalPages());
+            model.addAttribute("totalItems", productPage.getTotalElements());
+            model.addAttribute("request", request);
+            model.addAttribute("size", size);
+            model.addAttribute("categories", categoryService.getAllCategories());
+
+            return "product/list";
+        } catch (Exception e) {
+            log.error("Error in search: ", e);
+            model.addAttribute("error", "Error in search: " + e.getMessage());
+            return "redirect:/products";
+        }
+    }
 
     /**
      * Displays product details along with ratings and reviews
