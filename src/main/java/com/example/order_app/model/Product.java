@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -40,8 +41,8 @@ public class Product extends BaseEntity {
     private String brand;
 
     // Images should be soft deleted with product
-    @OneToMany(mappedBy = "product",
-            cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @BatchSize(size = 20) // Batch fetch images
     private List<Image> images;
 
     @ManyToOne
