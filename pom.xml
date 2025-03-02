@@ -160,6 +160,23 @@
             <artifactId>flyway-mysql</artifactId>
         </dependency>
 
+        <!-- Spring Boot Caffeine Cache Support -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+
+        <!-- For image processing capabilities -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-imaging</artifactId>
+            <version>1.0-alpha3</version>
+        </dependency>
+
         <!-- OAuth2 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
