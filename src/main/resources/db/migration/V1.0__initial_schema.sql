@@ -67,5 +67,13 @@ CREATE INDEX idx_products_rating ON products (average_rating, rating_count);
 CREATE INDEX idx_products_deleted ON products (deleted);
 CREATE INDEX idx_categories_deleted ON categories (deleted);
 CREATE INDEX idx_users_deleted ON users (deleted);
+CREATE INDEX idx_products_name ON products (name);
+CREATE INDEX idx_products_price ON products (price);
+CREATE INDEX idx_products_stock ON products (stock);
+CREATE INDEX idx_products_brand_category ON products (brand, category_id);
+
+-- For order related queries
+CREATE INDEX idx_orders_date_status ON orders (order_date, order_status);
+CREATE INDEX idx_order_items_product ON order_items (product_id);
 
 COMMIT;
