@@ -1,5 +1,6 @@
 package com.example.order_app.service.cart;
 
+import com.example.order_app.exception.OutOfStockException;
 import com.example.order_app.exception.ResourceNotFoundException;
 import com.example.order_app.model.Cart;
 import com.example.order_app.model.CartItem;
@@ -31,6 +32,12 @@ public class CartItemService  implements ICartItemService{
         //5. If No, then initiate a new CartItem entry.
         Cart cart = cartService.getCart(cartId);
         Product product = productService.getProductById(productId);
+
+        // Check if there's enough stock
+        if (product.getStock() < quantity) {
+            throw new OutOfStockException(productId, quantity, product.getStock());
+        }
+
         CartItem cartItem = cart.getItems()
                 .stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
@@ -42,6 +49,10 @@ public class CartItemService  implements ICartItemService{
             cartItem.setUnitPrice(product.getPrice());
         }
         else {
+            // Check if increasing quantity would exceed available stock
+            if (product.getStock() < cartItem.getQuantity() + quantity) {
+                throw new OutOfStockException(productId, cartItem.getQuantity() + quantity, product.getStock());
+            }
             cartItem.setQuantity(cartItem.getQuantity() + quantity);
             cartItem.setUnitPrice(product.getPrice());
         }

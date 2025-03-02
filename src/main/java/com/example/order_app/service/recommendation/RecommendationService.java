@@ -5,11 +5,14 @@ import com.example.order_app.model.Product;
 import com.example.order_app.model.User;
 import com.example.order_app.repository.OrderRepository;
 import com.example.order_app.repository.ProductRatingRepository;
+import com.example.order_app.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -23,9 +26,11 @@ public class RecommendationService implements IRecommendationService {
     private final ProductRatingRepository ratingRepository;
 
     @Cacheable(value = "productRecommendations",
-            key = "#user.id + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
+            key = "#user.id + '_' + #pageable.pageNumber + '_' + #pageable.pageSize",
+            unless = "#result.totalElements == 0")
     @Override
     public Page<ProductDto> getRecommendationsForUser(User user, Pageable pageable) {
+        // Decide which strategy to use based on user data
         RecommendationType recommendationType = determineRecommendationType(user);
         return getRecommendations(user, recommendationType, pageable);
     }
@@ -61,5 +66,7 @@ public class RecommendationService implements IRecommendationService {
         CONTENT_BASED,
         MATRIX_FACTORIZATION
     }
+
+
 }
 

@@ -2,6 +2,7 @@ package com.example.order_app.controller;
 
 import com.example.order_app.dto.OrderDto;
 import com.example.order_app.dto.UserDto;
+import com.example.order_app.exception.OrderCancellationException;
 import com.example.order_app.exception.ResourceNotFoundException;
 import com.example.order_app.model.Order;
 import com.example.order_app.model.User;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequiredArgsConstructor
@@ -159,9 +161,13 @@ public class OrderController {
             if (isAdmin) {
                 orderService.cancelOrder(orderId);
             } else {
-                orderService.cancelOrder(orderId, currentUser.getId());
+                if(Objects.equals(currentUser.getId(), orderService.getOrder(orderId).getUserId())) {
+                    orderService.cancelOrder(orderId);
+                }else throw new OrderCancellationException("Order does not belong to User");
             }
             redirectAttributes.addFlashAttribute("success", "Order cancelled successfully");
+        } catch (ResourceNotFoundException | OrderCancellationException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error cancelling order: " + e.getMessage());
         }

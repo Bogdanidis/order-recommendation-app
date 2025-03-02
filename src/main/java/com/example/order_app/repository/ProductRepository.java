@@ -57,4 +57,5 @@ public interface ProductRepository extends BaseRepository<Product, Long> {
     List<Product> findProductsByCategoryIds(@Param("categoryIds") Set<Long> categoryIds);
 
     Page<Product> findAll(Specification<Product> spec, Pageable pageable);
+
 }

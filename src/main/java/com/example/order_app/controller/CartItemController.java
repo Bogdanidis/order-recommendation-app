@@ -1,5 +1,6 @@
 package com.example.order_app.controller;
 
+import com.example.order_app.exception.OutOfStockException;
 import com.example.order_app.exception.ResourceNotFoundException;
 import com.example.order_app.model.Product;
 import com.example.order_app.model.User;
@@ -42,6 +43,10 @@ public class CartItemController {
             redirectAttributes.addFlashAttribute("success", "Item added to cart successfully!");
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+        } catch (OutOfStockException e) {
+            redirectAttributes.addFlashAttribute("error",
+                    "Not enough stock available. Requested: " + e.getRequestedQuantity() +
+                            ", Available: " + e.getAvailableStock());
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "An unexpected error occurred while adding the item to cart.");
         }

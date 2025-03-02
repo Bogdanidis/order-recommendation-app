@@ -1,5 +1,6 @@
 package com.example.order_app.controller.rest;
 
+import com.example.order_app.exception.OutOfStockException;
 import com.example.order_app.exception.ResourceNotFoundException;
 import com.example.order_app.model.Cart;
 import com.example.order_app.model.Product;
@@ -54,6 +55,10 @@ public class CartItemRestController {
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND)
                     .body(new RestResponse<>(e.getMessage(), null));
+        } catch (OutOfStockException e) {
+            return ResponseEntity.status(BAD_REQUEST)
+                    .body(new RestResponse<>("Insufficient stock. Requested: " + e.getRequestedQuantity() +
+                            ", Available: " + e.getAvailableStock(), null));
         } catch (Exception e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR)
                     .body(new RestResponse<>("Error adding item to cart: " + e.getMessage(), null));

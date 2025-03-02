@@ -1,9 +1,11 @@
 package com.example.order_app.controller.rest;
 
 import com.example.order_app.dto.OrderDto;
+import com.example.order_app.exception.OrderCancellationException;
 import com.example.order_app.exception.ResourceNotFoundException;
 import com.example.order_app.model.Order;
 import com.example.order_app.model.User;
+import com.example.order_app.repository.OrderRepository;
 import com.example.order_app.response.RestResponse;
 import com.example.order_app.service.order.IOrderService;
 import com.example.order_app.service.user.IUserService;
@@ -18,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
@@ -27,6 +31,7 @@ import static org.springframework.http.HttpStatus.*;
 public class OrderRestController {
     private final IOrderService orderService;
     private final IUserService userService;
+    private final OrderRepository orderRepository;
 
     /**
      * Get all orders (Admin only)
@@ -148,15 +153,14 @@ public class OrderRestController {
             if (isAdmin) {
                 orderService.cancelOrder(orderId);
             } else {
-                orderService.cancelOrder(orderId, currentUser.getId());
+               if(Objects.equals(currentUser.getId(), orderService.getOrder(orderId).getUserId())) {
+                   orderService.cancelOrder(orderId);
+               }else throw new OrderCancellationException("Order does not belong to User");
             }
 
             return ResponseEntity.ok(new RestResponse<>("Order cancelled successfully", null));
-        } catch (ResourceNotFoundException e) {
+        } catch (ResourceNotFoundException | OrderCancellationException e) {
             return ResponseEntity.status(NOT_FOUND)
-                    .body(new RestResponse<>(e.getMessage(), null));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(BAD_REQUEST)
                     .body(new RestResponse<>(e.getMessage(), null));
         } catch (Exception e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR)

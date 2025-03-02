@@ -2,6 +2,7 @@ package com.example.order_app.service.order;
 
 import com.example.order_app.dto.OrderDto;
 import com.example.order_app.enums.OrderStatus;
+import com.example.order_app.exception.OrderCancellationException;
 import com.example.order_app.exception.ResourceNotFoundException;
 import com.example.order_app.model.Cart;
 import com.example.order_app.model.Order;
@@ -39,23 +40,6 @@ public class OrderService implements IOrderService {
         return orderPage.map(this::convertToDto);
     }
 
-    //    @Transactional
-//    @Override
-//    public Order placeOrder(Long userId) {
-//        Cart cart   = cartService.getCartByUserId(userId);
-//        if (cart == null || cart.getItems().isEmpty()) {
-//            throw new ResourceNotFoundException("Cart is empty or not found");
-//        }
-//        Order order = createOrder(cart);
-//        List<OrderItem> orderItemList = createOrderItems(order, cart);
-//        order.setOrderItems(new HashSet<>(orderItemList));
-//        order.setTotalAmount(calculateTotalAmount(orderItemList));
-//        //Save the order
-//        Order savedOrder = orderRepository.save(order);
-//        //clear the cart
-//        cartService.clearCart(cart.getId());
-//        return savedOrder;
-//    }
     @Transactional
     @Override
     public Order placeOrder(Long userId) {
@@ -123,36 +107,12 @@ public class OrderService implements IOrderService {
 
     @Transactional
     @Override
-    public void cancelOrder(Long orderId, Long userId) {
-        Order order = orderRepository.findByIdAndUserId(orderId, userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found or does not belong to the user"));
-
-        if ((order.getOrderStatus() != OrderStatus.PENDING) && (order.getOrderStatus() != OrderStatus.PROCESSING) ) {
-            throw new IllegalStateException("Only pending or processing orders can be cancelled");
-        }
-
-        order.setOrderStatus(OrderStatus.CANCELLED);
-        orderRepository.save(order);
-
-
-        // Return items to inventory
-        order.getOrderItems().forEach(orderItem -> {
-            Product product = orderItem.getProduct();
-            product.setStock(product.getStock() + orderItem.getQuantity());
-            productRepository.save(product);
-        });
-
-        // refund payment would be here.
-    }
-
-    @Transactional
-    @Override
     public void cancelOrder(Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
         if ((order.getOrderStatus() != OrderStatus.PENDING) && (order.getOrderStatus() != OrderStatus.PROCESSING) ) {
-            throw new IllegalStateException("Only pending or processing orders can be cancelled");
+            throw new OrderCancellationException("Only pending or processing orders can be cancelled");
         }
 
         order.setOrderStatus(OrderStatus.CANCELLED);
