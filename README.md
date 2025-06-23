@@ -1,123 +1,245 @@
-# Order Recommendation Application
+# Order App
 
-This project is a simple e-commerce application that allows users to browse products, place orders, and manage accounts. The application supports user roles, including customers and admins, with different home pages and functionalities for each role.
+A comprehensive Spring Boot e-commerce application featuring intelligent product recommendations, multi-layer security, and modern containerization support.
 
-## Project Tech Stack
+## Features
 
-- **Java 17**
-- **Spring Boot 3.x**
-    - Spring MVC
-    - Spring Data JPA
-    - Spring Security 6.x
-- **MySQL**: Database for storing user, product, order, and category data.
-- **Thymeleaf**: Template engine for rendering HTML views.
-- **Bootstrap 5**: For responsive UI design.
-- **Maven**: Build and dependency management tool.
+### Core Functionality
+- **Product Management:** Full CRUD operations with category assignment, stock tracking, and image upload support
+- **Order Processing:** Complete order lifecycle management with real-time status tracking
+- **User Management:** Role-based access control (Admin/Customer) with comprehensive user profiles
+- **Shopping Cart:** Persistent cart functionality with real-time updates
 
-## Requirements
+### Recommendation System
+- **Multi-Algorithm Approach:** Dynamically selects optimal recommendation strategy based on user behavior:
+  - **User-Based Collaborative Filtering:** For users with 5+ orders and ratings
+  - **Item-Based Collaborative Filtering:** For users with 2-5 orders  
+  - **Content-Based Filtering:** For new users with minimal interaction history
+  - **Matrix Factorization:** Advanced algorithm for users with extensive rating data
+- **Intelligent Scoring:** Combines purchase history, ratings, and product popularity
+- **Paginated Results:** Efficiently handles large recommendation sets
 
-- **JDK 17**: Ensure Java 17 is installed and configured on your machine.
-- **MySQL**: Set up a MySQL server and create a database named `order_app`.
-- **Maven**: Install Maven for building and running the project.
+### Security & Authentication
+- **JWT Authentication:** Stateless token-based authentication for REST APIs
+- **OAuth2 Integration:** Google OAuth2 login support (GitHub ready)
+- **Multi-Layer Security:** Separate configurations for web and API endpoints
+- **Role-Based Authorization:** Fine-grained access control with method-level security
+- **Password Encryption:** BCrypt hashing with secure session management
 
-## ER Diagram
-Below is the Entity-Relationship (ER) diagram for the application:
+### Performance & Scalability
+- **Caffeine Caching:** Multi-level caching for products, categories, recommendations, and user data
+- **Database Optimization:** Connection pooling, batch operations, and query optimization
+- **Pagination:** Efficient data handling across all major entities
+- **Soft Deletes:** Data integrity preservation with logical deletion
+
+### REST API
+- **Comprehensive API:** Full REST endpoints for all major functionalities
+- **OpenAPI/Swagger:** Interactive API documentation at `/swagger-ui.html`
+- **Standardized Responses:** Consistent response format across all endpoints
+- **API Versioning:** Organized under `/order-api/v1/` prefix
+
+### Data Management
+- **Flyway Migrations:** Version-controlled database schema management
+- **Test Data Generation:** JavaFaker integration for realistic sample data
+- **Flexible Configuration:** Environment-specific settings with comprehensive property management
+- **MySQL Integration:** Optimized for MySQL 8.0 with proper indexing
+
+### Containerization
+- **Docker Support:** Multi-stage Dockerfile for optimized production builds
+- **Docker Compose:** Complete development environment with MySQL integration
+- **Production Ready:** Separate build and runtime stages for minimal image size
+
+### User Interface
+- **Responsive Design:** Bootstrap 5 integration for mobile-friendly interface
+- **Thymeleaf Templates:** Server-side rendering with dynamic content
+- **Real-time Updates:** Live cart updates and recommendation refreshing
+- **Admin Dashboard:** Comprehensive management interface for all entities
+
+## Architecture
+
+### Technology Stack
+- **Backend:** Spring Boot 3.3.3, Spring Security, Spring Data JPA
+- **Database:** MySQL 8.0 with Flyway migrations
+- **Caching:** Caffeine with Spring Cache abstraction
+- **Security:** JWT + OAuth2 (Google/GitHub)
+- **Documentation:** OpenAPI 3 + Swagger UI
+- **Frontend:** Thymeleaf + Bootstrap 5
+- **Testing:** Spring Boot Test + Security Test
+- **Containerization:** Docker + Docker Compose
+
+### Key Dependencies
+- **Security:** JWT (jjwt), OAuth2, Spring Security
+- **Data:** MySQL Connector, Flyway, HikariCP
+- **Utilities:** Lombok, ModelMapper, JavaFaker, Apache Commons Math
+- **Monitoring:** Spring Actuator with cache metrics
+
+<!-- ## API Endpoints
+
+### Authentication
+- `POST /order-api/v1/auth/login` - User login
+- `POST /order-api/v1/auth/register` - User registration
+- `GET /order-api/v1/auth/validate-token` - Token validation
+
+### Products
+- `GET /order-api/v1/products` - List products (paginated)
+- `POST /order-api/v1/products` - Create product (Admin)
+- `PUT /order-api/v1/products/{id}` - Update product (Admin)
+- `DELETE /order-api/v1/products/{id}` - Delete product (Admin)
+
+### Orders
+- `GET /order-api/v1/orders` - List user orders
+- `POST /order-api/v1/orders` - Create order
+- `GET /order-api/v1/orders/{id}` - Get order details
+
+### Recommendations
+- Integrated into home page with intelligent algorithm selection
+- Cached results for optimal performance -->
+
+## Database Schema
+
+The application uses Flyway for database versioning with the following key entities:
+- **Users & Roles:** Role-based access control
+- **Products & Categories:** Hierarchical product organization  
+- **Orders & Order Items:** Complete order management
+- **Shopping Cart:** Persistent cart functionality
+- **Product Ratings:** User rating system for recommendations
+- **Images:** Product image management with blob storage
+
+### ER Diagram
+
+Below is the Entity-Relationship diagram for the application:
 
 ![ER](ER.png)
 
-The diagram outlines the database schema, including tables for users, customers, admins, orders, products, categories, and their relationships.
 
-## Key Features
+## Quick Start
 
-## Key Features
-
-- **User Authentication and Authorization**
-  - **Secure Login:** Users can securely log in using their credentials, with passwords hashed for security.
-  - **Role-Based Access Control:** Users are assigned roles (`ADMIN` or `CUSTOMER`) which determine their access level within the application.
-    - **Admin Role:** Grants access to management functionalities such as viewing and managing products, orders, and user accounts.
-    - **Customer Role:** Allows access to browsing products, placing orders, and viewing personal order history.
-  - **Custom User Entities:** The application uses an abstract `User` entity extended by `Admin` and `Customer` entities, enabling role-specific functionality and data.
-
-- **Dynamic Home Pages**
-  - **Role-Specific Dashboards:** Upon login, users are redirected to a home page tailored to their role.
-    - **Admin Dashboard:** Includes options for:
-      - **Product Management:** Add, update, or delete products.
-      - **Order Management:** View, update, or delete customer orders; change order statuses.
-      - **User Management:** View and manage user accounts and roles.
-    - **Customer Dashboard:** Includes options for:
-      - **Browse Products:** View available products in a card format with product details.
-      - **My Orders:** View a list of all orders placed by the customer, with details and statuses.
-
-- **Product Management**
-  - **Product Listings:** Admins can add new products, edit existing product details, and manage inventory levels.
-  - **Category Assignment:** Products can be categorized, and users can filter products by category when browsing.
-  <!-- 
-  - **Stock Management:** Track product stock levels and update them as necessary.
-  -->
-- **Order Management**
-  - **Order Placement:** Customers can place orders for products directly from the product browsing interface.
-  - **Order Tracking:** Customers can view the status of their orders, with updates as they progress through different stages (e.g., Pending, Shipped, Delivered).
-  - **Order Details:** View detailed information about each order, including product quantities, prices, and total costs.
-<!--
-- **User Registration**
-  - **Registration Page:** A unified registration form allows new users to sign up as either an Admin or a Customer.
-  - **Dynamic Form Fields:** Customer-specific fields such as First Name, Last Name, Phone, City, and Country appear dynamically based on the role selection.
-  - **Form Validation:** Real-time form validation feedback is provided to guide users in filling out required fields correctly.
-
-- **Responsive Design**
-  - **Bootstrap 5 Integration:** The application uses Bootstrap 5 for responsive design, ensuring a consistent look and feel across all devices.
-  - **User-Friendly Interface:** Clean and modern UI elements make navigation and use of the application intuitive for all users.
-
-- **Database Schema**
-  - **Optimized for Performance:** The schema is designed to minimize redundancy and improve query performance, with proper indexing and relationships.
-  - **Referential Integrity:** Foreign key constraints ensure data integrity across related tables (e.g., Users, Orders, Products).
-
-- **Security Features**
-  - **CSRF Protection:** Cross-Site Request Forgery protection is enabled to safeguard against malicious actions.
-  - **Password Encryption:** User passwords are encrypted using secure hashing algorithms to prevent unauthorized access.
-  - **Session Management:** Secure session management practices are employed to maintain the integrity of user sessions.
-
-- **Extensibility**
-  - **Modular Design:** The application is built with extensibility in mind, allowing easy addition of new features or changes to existing functionality.
-  - **API Ready:** The backend is designed to easily expose APIs for future integrations, such as a mobile app or external services.
-
-- **Error Handling and Logging**
-  - **Comprehensive Error Handling:** The application gracefully handles errors, providing meaningful feedback to users.
-  - **Logging:** Application events and errors are logged for monitoring and debugging purposes.
--->
-
-## Setup Instructions
-
-### 1. Clone the Repository
-
-Clone the repository to your local machine using the following command:
+### Using Docker Compose (Recommended)
 
 ```bash
-git clone https://github.com/yourusername/ecommerce-app.git
-cd ecommerce-app
+# Clone the repository
+git clone <repository-url>
+cd order-app
+
+# Start the application with Docker Compose
+docker-compose up -d
+
+# Access the application
+# Web Interface: http://localhost:8080
+# API Documentation: http://localhost:8080/swagger-ui.html
 ```
 
-### 2. Configure the Application
-Update the src/main/resources/application.properties file with your MySQL database credentials:
+### Manual Setup
 
+**Prerequisites:**
+- Java 17+
+- Maven 3.6+
+- MySQL 8.0+
+
+**Steps:**
+1. **Clone and navigate:**
+   ```bash
+   git clone <repository-url>
+   cd order-app
+   ```
+
+2. **Database setup:**
+   ```bash
+   # Create database and user
+   mysql -u root -p < src/main/resources/db/create_user.sql
+   mysql -u root -p < src/main/resources/db/init/init-database.sql
+   ```
+
+3. **Configure application:**
+   ```properties
+   # Update src/main/resources/application.properties
+   spring.datasource.url=jdbc:mysql://localhost:3306/order_app
+   spring.datasource.username=your_username
+   spring.datasource.password=your_password
+   ```
+
+4. **Build and run:**
+   ```bash
+   mvn clean install
+   mvn spring-boot:run
+   ```
+
+## Configuration
+
+### Docker Environment Variables
+```yaml
+environment:
+  - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/order_app
+  - SPRING_DATASOURCE_USERNAME=nikos
+  - SPRING_DATASOURCE_PASSWORD=nikos
+```
+
+### Key Application Properties
 ```properties
+# Database
 spring.datasource.url=jdbc:mysql://localhost:3306/order_app
-spring.datasource.username=your_mysql_username
-spring.datasource.password=your_mysql_password
+spring.jpa.hibernate.ddl-auto=validate
+
+# Security
+auth.token.expirationInMils=3600000
+spring.security.oauth2.client.registration.google.client-id=your-client-id
+
+# API
+api.prefix=/order-api/v1
+springdoc.swagger-ui.path=/swagger-ui.html
+
+# Caching
+cache.ttl.products=3600
+cache.ttl.categories=7200
 ```
 
-### 3. Build the Project
-Build the project using Maven:
+
+## Default Credentials
+
+**Admin User:**
+- Email: `admin@example.com`
+- Password: `admin123`
+
+**System Admin:**
+- Email: `system@example.com`  
+- Password: `system123`
+
+## Development
+
+### Building from Source
 ```bash
-mvn clean install
+# Build application
+mvn clean compile
+
+# Run tests
+mvn test
+
+# Package application
+mvn package
+
+# Skip tests (faster build)
+mvn package -DskipTests
 ```
 
-### 4. Run the Application
-Run the application using the following command:
+### Docker Development
 ```bash
-mvn spring-boot:run
+# Build custom image
+docker build -t order-app .
+
+# Run with custom configuration
+docker run -p 8080:8080 \
+  -e SPRING_DATASOURCE_URL=jdbc:mysql://host:3306/order_app \
+  order-app
 ```
-### 5. Access the Application
-Open your browser and go to http://localhost:8080 to access the application.
 
+## Contributing
 
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/new-feature`)
+3. Commit changes (`git commit -am 'Add new feature'`)
+4. Push to branch (`git push origin feature/new-feature`)
+5. Create Pull Request
+
+<!-- ## License
+
+This project is licensed under the MIT License - see the LICENSE file for details. -->
